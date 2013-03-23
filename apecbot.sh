@@ -119,7 +119,13 @@ function fetch_rss_feed()
 	
 	# xmlstarlet leaves an empty line at the end of the file. Let's remove it
 	sed -i '/^$/d' $TMP0_FILE
-	
+
+	# Some offers begin with '* Title', lets remove the star
+	sed -i 's/^\* //' $TMP0_FILE
+
+	# Some offers begin with '/ Title', lets remove the '/'
+	sed -i 's/^\/ //' $TMP0_FILE
+
 	while read line
 	do
 		TITLE=`echo "$line" | awk -F';;' '{print $1}'`
@@ -132,9 +138,6 @@ function fetch_rss_feed()
 		# Remove remaining HTML chars
 		TITLE=`echo $TITLE | sed 's/\&amp;/\&/'`
 	
-		# Some offers begin with '* Title', lets remove the star
-		TITLE=`echo "$TITLE" | sed 's/\* //'`
-
 		echo "- Fetching \"$TITLE\""
 
 		if [ ! -e $JOB_DIR ]; then
