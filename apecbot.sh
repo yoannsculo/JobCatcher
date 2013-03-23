@@ -2,6 +2,15 @@
 
 # http://www.apec.fr/fluxRss/XML/OffresCadre_F101833.xml
 
+FILE=OffresCadre_F101810.xml
+TMP0_FILE=./tmp
+TMP_FILE=./toto
+TMP_FILE2=./toto2
+JOBS_DIR=./jobs
+STAT_DIR=./stat
+DL_DIR=./dl
+CFG_FILE=./config
+
 function usage()
 {
 	echo "add_entry"
@@ -45,32 +54,30 @@ function parse_html()
 		echo "html2text error "
 		exit 1
 	fi
-	
+
 	# Remove remaining HTML chars
 	sed -i 's/\&amp;/\&/' $TMP_FILE
-	
+
 	# Locate what's interesting
 	BEGIN=`grep -n '^\[Submit .*rien.jpg\]$' $TMP_FILE | cut -d':' -f1`
 	END=`grep -n '^Postuler_à_cette_offre$' $TMP_FILE | tail -n 1 | cut -d':' -f1`
 	BEGIN=$(( $BEGIN + 3 ))
 	END=$(( $END - 1 ))
-	
+
 	# Parsing error
 	[[ $BEGIN -eq 0 || $END -eq 0 ]] && exit 1
-	
+
 	# Remove the rest of the content
 	cat $TMP_FILE | awk 'NR >= '$BEGIN' && NR <= '$END > $TMP_FILE2
 
 	# Retrieve information
-	# TITLE=`grep "^<title>\(.*\) - - Offre d'emploi.*</title>" $INPUT_FILE | sed 's/^<title>\(.*\) - Apec.*/\1/'`
-	# echo "TITLE = $TITLE"
 	REF=`grep "^Référence Apec :" $TMP_FILE2 | cut -d':' -f2 | sed 's/^ *\(.*\) *$/\1/'`
 	CONTRACT=`grep "^Type de contrat :" $TMP_FILE2 | cut -d':' -f2 | sed 's/^ *\(.*\) *$/\1/'`
 	LOCATION=`grep "^Lieu :" $TMP_FILE2 | cut -d':' -f2 | sed 's/^ *\(.*\) *$/\1/'`
 	SALARY=`grep "^Salaire :" $TMP_FILE2 | cut -d':' -f2 | sed 's/^ *\(.*\) *$/\1/'`
 	EXPERIENCE=`grep "^Expérience :" $TMP_FILE2 | cut -d':' -f2 | sed 's/^ *\(.*\) *$/\1/'`
 	PUBDATE=`grep "^Date de publication :" $TMP_FILE2 | cut -d':' -f2 | sed 's/^ *\(.*\) *$/\1/'`
-	
+
 	# Is there a logo ?
 	grep "\/.*logo_[0-9]*" $INPUT_FILE &> /dev/null
 	if [ $? -eq 0 ]; then
@@ -80,20 +87,20 @@ function parse_html()
 		# no
 		COMPANY=`grep "^Société :" $TMP_FILE | cut -d':' -f2 | sed 's/^ *\(.*\) *$/\1/'`
 	fi
-	
+
 	# Some clean-up
 	sed -i '/^\[Submit\]$/d' $TMP_FILE2
 
 	# Retrieve content of the job offer
 	BEGIN=`grep -n '^Sauvegarder_cette_offre$' $TMP_FILE2 | cut -d':' -f1`
 	BEGIN=$(($BEGIN + 1))
-	
+
 	# Parsing error
 	[[ $BEGIN -eq 0 || $END -eq 0 ]] && exit 1
-	
+
 	# Remove multiple blank lines
 	sed -i '/^$/N;/^\n$/D' $TMP_FILE2
-	
+
 	# echo "cat $TMP_FILE2 | awk 'NR >= $BEGIN'"
 	CONTENT=`cat $TMP_FILE2 | awk 'NR >= '$BEGIN`
 	# cat $TMP_FILE2 | awk 'NR >= '$BEGIN >> $JOB_FILE
@@ -111,10 +118,13 @@ function fetch_rss_feed()
 	FILE=$1
 	[[ ! -e $FILE ]] && return
 
+	OLD_DATE=$2
+	[[ -z $OLD_DATE ]] && return
+
 	PUBDATE=`xmlstarlet sel -t -v "rss/channel/pubDate" $FILE`
-	
+
 	xmlstarlet sel -t -m //item -v "concat(title, ';;', link, ';;', pubDate)" -n $FILE > $TMP0_FILE
-	
+
 	# xmlstarlet leaves an empty line at the end of the file. Let's remove it
 	sed -i '/^$/d' $TMP0_FILE
 
@@ -126,16 +136,21 @@ function fetch_rss_feed()
 
 	while read line
 	do
+		JOB_PUBDATE=`echo "$line" | awk -F';;' '{print $3}'`
+		EPOCH_DATE=`date -d "$JOB_PUBDATE" +%s`
+
+		# If we already parsed this, don't go further
+		[[ $(($EPOCH_DATE)) -le $(($OLD_DATE)) ]] && break
+
 		TITLE=`echo "$line" | awk -F';;' '{print $1}'`
 		URL=`echo "$line" | awk -F';;' '{print $2}' | awk -F'?' '{print $1}'`
-		JOB_PUBDATE=`echo "$line" | awk -F';;' '{print $3}'`
 		REF_SHORT=`echo "$line" | sed 's/^.*_*\([0-9]\{8\}[A-Z]\)_*\.html.*/\1/'`
 		DATE_PATH=`date -d "$JOB_PUBDATE" +%Y/%m/%d`
 		JOB_DIR=$JOBS_DIR/$DATE_PATH
 
 		# Remove remaining HTML chars
 		TITLE=`echo $TITLE | sed 's/\&amp;/\&/'`
-	
+
 		echo "- Fetching \"$TITLE\""
 
 		if [ ! -e $JOB_DIR ]; then
@@ -153,9 +168,9 @@ function fetch_rss_feed()
 	
 		parse_html $JOB_DIR/$REF_SHORT
 		store_mkd $JOB_DIR/APEC-$REF.mkd
-		
+
 		# rm $JOB_DIR/$REF_SHORT	
-	
+
 		REF=`escape_var $REF`
 		PUBDATE=`escape_var $PUBDATE`
 		COMPANY=`escape_var $COMPANY`
@@ -171,15 +186,6 @@ function fetch_rss_feed()
 	rm $TMP0_FILE
 }
 
-FILE=OffresCadre_F101810.xml
-TMP0_FILE=./tmp
-TMP_FILE=./toto
-TMP_FILE2=./toto2
-JOBS_DIR=./jobs
-STAT_DIR=./stat
-DL_DIR=./dl
-CFG_FILE=./config
-
 [ ! -e $STAT_DIR ] && mkdir $STAT_DIR
 [ ! -e $DL_DIR ] && mkdir $DL_DIR
 
@@ -189,6 +195,7 @@ CFG_FILE=./config
 # Open the config file
 while read line
 do
+	# We parse uncommented lines
 	echo $line | grep "^#.*" > /dev/null
 	if [ ! $? -eq 0 ]; then
 		NAME=`echo $line | cut -d' ' -f1`
@@ -213,7 +220,7 @@ do
 			continue
 		fi
 
-		fetch_rss_feed $DL_DIR/$NAME.xml
+		fetch_rss_feed $DL_DIR/$NAME.xml $OLD_DATE
 		echo $NEW_DATE > $STAT_DIR/$NAME.stat
 	fi
 done < $CFG_FILE
