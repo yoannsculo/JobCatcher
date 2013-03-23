@@ -36,7 +36,7 @@ function store_mkd()
 
 function store_db()
 {
-	echo "TODO"
+	echo ./db_add_entry.sh 'APEC' "$REF" "$PUBDATE" "$COMPANY" "$CONTRACT" "$LOCATION" "$SALARY" "$URL" "$CONTENT"
 }
 
 # $1 : html input
@@ -165,11 +165,12 @@ function fetch_rss_feed()
 		if [ ! -e $JOB_DIR/$REF_SHORT ]; then
 			wget -q $URL -O $JOB_DIR/$REF_SHORT
 		fi
-	
-		parse_html $JOB_DIR/$REF_SHORT
-		store_mkd $JOB_DIR/APEC-$REF.mkd
 
-		# rm $JOB_DIR/$REF_SHORT	
+		parse_html $JOB_DIR/$REF
+		#store_mkd $JOB_DIR/$REF.mkd
+		#store_bdd
+
+		# rm $JOB_DIR/$REF
 
 		REF=`escape_var $REF`
 		PUBDATE=`escape_var $PUBDATE`
@@ -180,7 +181,8 @@ function fetch_rss_feed()
 		URL=`escape_var $URL`
 		CONTENT=`escape_var $CONTENT`
 		 
-		# ./add_bdd.sh \"APEC\" \"$REF\" \"$PUBDATE\" \"$COMPANY\" \"$CONTRACT\" \"$LOCATION\" \"$SALARY\" \"$URL\" \"$CONTENT\"
+		#./db_add_entry.sh \"APEC\" \"$REF\" \"$PUBDATE\" \"$COMPANY\" \"$CONTRACT\" \"$LOCATION\" \"$SALARY\" \"$URL\" \"$CONTENT\"
+		./db_add_entry.sh 'APEC' "$REF" "$PUBDATE" "$COMPANY" "$CONTRACT" "$LOCATION" "$SALARY" "$URL" "$CONTENT"
 	
 	done < $TMP0_FILE
 	rm $TMP0_FILE
