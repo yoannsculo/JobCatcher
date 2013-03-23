@@ -2,8 +2,6 @@
 
 # http://www.apec.fr/fluxRss/XML/OffresCadre_F101833.xml
 
-# http://fr.lolix.org/
-
 function usage()
 {
 	echo "add_entry"
