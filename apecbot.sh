@@ -134,6 +134,8 @@ function fetch_rss_feed()
 	# Some offers begin with '/ Title', lets remove the '/'
 	sed -i 's/^\/ //' $TMP0_FILE
 
+	COUNT=0
+
 	while read line
 	do
 		JOB_PUBDATE=`echo "$line" | awk -F';;' '{print $3}'`
@@ -180,12 +182,16 @@ function fetch_rss_feed()
 		SALARY=`escape_var $SALARY`
 		URL=`escape_var $URL`
 		CONTENT=`escape_var $CONTENT`
-		 
+
+		COUNT=$(($COUNT + 1))
+
 		#./db_add_entry.sh \"APEC\" \"$REF\" \"$PUBDATE\" \"$COMPANY\" \"$CONTRACT\" \"$LOCATION\" \"$SALARY\" \"$URL\" \"$CONTENT\"
 		./db_add_entry.sh 'APEC' "$REF" "$PUBDATE" "$COMPANY" "$CONTRACT" "$LOCATION" "$SALARY" "$URL" "$CONTENT"
 	
 	done < $TMP0_FILE
 	rm $TMP0_FILE
+
+	echo "$COUNT job offers fetched since the last checkout."
 }
 
 [ ! -e $STAT_DIR ] && mkdir $STAT_DIR
