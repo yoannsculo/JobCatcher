@@ -198,6 +198,11 @@ function fetch_rss_feed()
 # parse_html ./jobs/2013/03/15/42543852W
 # exit 0
 
+if [ ! -e $CFG_FILE ]; then
+	echo "config file missing."
+	exit 1
+fi
+
 # Open the config file
 while read line
 do
