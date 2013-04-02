@@ -89,7 +89,9 @@ function parse_html()
 	fi
 
 	# Some clean-up
-	sed -i '/^\[Submit\]$/d' $TMP_FILE2
+	# Remove multiple blank lines
+	sed -i -e '/^\[Submit\]$/d' \
+	       -e '/^$/N;/^\n$/D' $TMP_FILE2
 
 	# Retrieve content of the job offer
 	BEGIN=`grep -n '^Sauvegarder_cette_offre$' $TMP_FILE2 | cut -d':' -f1`
@@ -98,8 +100,6 @@ function parse_html()
 	# Parsing error
 	[[ $BEGIN -eq 0 || $END -eq 0 ]] && exit 1
 
-	# Remove multiple blank lines
-	sed -i '/^$/N;/^\n$/D' $TMP_FILE2
 
 	# echo "cat $TMP_FILE2 | awk 'NR >= $BEGIN'"
 	CONTENT=`cat $TMP_FILE2 | awk 'NR >= '$BEGIN`
@@ -126,13 +126,11 @@ function fetch_rss_feed()
 	xmlstarlet sel -t -m //item -v "concat(title, ';;', link, ';;', pubDate)" -n $FILE > $TMP0_FILE
 
 	# xmlstarlet leaves an empty line at the end of the file. Let's remove it
-	sed -i '/^$/d' $TMP0_FILE
-
 	# Some offers begin with '* Title', lets remove the star
-	sed -i 's/^\* //' $TMP0_FILE
-
 	# Some offers begin with '/ Title', lets remove the '/'
-	sed -i 's/^\/ //' $TMP0_FILE
+	sed -i -e '/^$/d' \
+	       -e 's/^\* //' \
+	       -e 's/^\/ //' $TMP0_FILE
 
 	COUNT=0
 
