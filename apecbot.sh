@@ -31,7 +31,7 @@ function store_mkd()
 	echo "experience: $EXPERIENCE" >> $JOB_FILE
 	echo "url: $URL" >> $JOB_FILE
 	echo -e "---\n" >> $JOB_FILE
-	echo $CONTENT >> $JOB_FILE
+	echo "$CONTENT" >> $JOB_FILE
 }
 
 function store_db()
@@ -104,7 +104,7 @@ function parse_html()
 	# echo "cat $TMP_FILE2 | awk 'NR >= $BEGIN'"
 	CONTENT=`cat $TMP_FILE2 | awk 'NR >= '$BEGIN`
 	# cat $TMP_FILE2 | awk 'NR >= '$BEGIN >> $JOB_FILE
-	# echo $CONTENT	
+	# echo "$CONTENT"
 }
 
 function escape_var()
@@ -162,12 +162,13 @@ function fetch_rss_feed()
 			exit 1
 		fi
 
-		if [ ! -e $JOB_DIR/$REF_SHORT ]; then
+		if [ ! -e "$JOB_DIR/$REF_SHORT" ]; then
 			wget -q $URL -O $JOB_DIR/$REF_SHORT
 		fi
 
-		parse_html $JOB_DIR/$REF
-		#store_mkd $JOB_DIR/$REF.mkd
+		parse_html $JOB_DIR/$REF_SHORT
+		store_mkd $JOB_DIR/$REF.mkd
+		rm "$JOB_DIR/$REF_SHORT"
 		#store_bdd
 
 		# rm $JOB_DIR/$REF
