@@ -89,9 +89,12 @@ function parse_html()
 	fi
 
 	# Some clean-up
-	# Remove multiple blank lines
+	# Remove non-breaking space (ugh!)
 	sed -i -e '/^\[Submit\]$/d' \
-	       -e '/^$/N;/^\n$/D' $TMP_FILE2
+	       -e 's/\xc2\xa0//' $TMP_FILE2
+
+	# Remove multiple blank lines (TODO : it seems we can't use the 3 sed commands together...)
+	sed -i '/^$/N;/^\n$/D' $TMP_FILE2
 
 	# Retrieve content of the job offer
 	BEGIN=`grep -n '^Sauvegarder_cette_offre$' $TMP_FILE2 | cut -d':' -f1`
