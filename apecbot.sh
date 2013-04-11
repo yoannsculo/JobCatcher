@@ -42,7 +42,7 @@ function store_db()
 # $1 : html input
 function parse_html()
 {
-	if [[ ! -e $1 ]]; then
+	if [[ ! -f $1 ]]; then
 		echo "parse_html error : wrong parameters ($1) ";
 		exit 1
 	fi
