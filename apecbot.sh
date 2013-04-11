@@ -50,6 +50,7 @@ function parse_html()
 	INPUT_FILE=$1
 
 	html2text $INPUT_FILE > $TMP_FILE
+
 	if [ $? -ne 0 ]; then
 		echo "html2text error "
 		exit 1
@@ -173,8 +174,6 @@ function fetch_rss_feed()
 		store_mkd $JOB_DIR/$REF.mkd
 		rm "$JOB_DIR/$REF_SHORT"
 		#store_bdd
-
-		# rm $JOB_DIR/$REF
 
 		REF=`escape_var $REF`
 		PUBDATE=`escape_var $PUBDATE`
