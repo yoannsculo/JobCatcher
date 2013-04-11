@@ -144,7 +144,7 @@ function fetch_rss_feed()
 
 		TITLE=`echo "$line" | awk -F';;' '{print $1}'`
 		URL=`echo "$line" | awk -F';;' '{print $2}' | awk -F'?' '{print $1}'`
-		REF_SHORT=`echo "$line" | sed 's/^.*_*\([0-9]\{8\}[A-Z]\)_*\.html.*/\1/'`
+		REF_SHORT=`echo "$line" | sed 's/^.*_*\([0-9]\{8\}[a-Z]\)_*\.html.*/\1/'`
 		DATE_PATH=`date -d "$JOB_PUBDATE" +%Y/%m/%d`
 		JOB_DIR=$JOBS_DIR/$DATE_PATH
 
