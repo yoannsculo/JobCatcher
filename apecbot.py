@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 __authors__ = 'Yoann Sculo <yoann.sculo@gmail.com>'
 __copyright__ = 'Copyright (C) 2013 Yoann Sculo'
@@ -7,17 +8,88 @@ __version__ = '0.1'
 
 import os
 import sys
+import urllib2 as urllib
 import sqlite3 as lite
 import datetime
+import re
+
+import codecs
+import html2text
+
 from optparse import OptionParser
+from xml.dom import minidom
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
+class Jobboard():
+
+    def load(self, file):
+        self.name = "APEC"
+        self.lastFetch = ""
+        self.processingDir = "./test-dir"
+        self.lastFetchDate = 0
+
+    def fetch(self):
+
+        url = "http://www.apec.fr/fluxRss/XML/OffresCadre_F101810.xml"
+        filename = url.split('/')[-1]
+        # download_file(url)
+
+        xmldoc = minidom.parse(filename)
+
+        MainPubDate = xmldoc.getElementsByTagName('pubDate')[0].firstChild.data
+        epochPubDate = datetime.datetime.strptime(MainPubDate, "%a, %d %b %Y %H:%M:%S +0200").strftime('%s')
+
+        # if (epochPubDate <= self.lastFetchDate):
+        #     return 0
+
+        itemlist = xmldoc.getElementsByTagName('item')
+
+        for elt in itemlist :
+            # TODO : Test object first
+            title = elt.getElementsByTagName('title')[0].firstChild.data
+            link = elt.getElementsByTagName('link')[0].firstChild.data
+            pubDate = elt.getElementsByTagName('pubDate')[0].firstChild.data
+
+            if (epochPubDate <= self.lastFetchDate):
+                break
+
+            print "Downloading %s" % (link)
+            # download_file(link, self.processingDir)
+
+        self.processOffers()
+
+    def processOffers(self):
+        for file in os.listdir(self.processingDir):
+            print "Processing %s" % (file)
+            offer = Offer()
+            offer.loadFromHtml(os.path.join(self.processingDir, file))
+            # offer.save2mkd()
+            # offer.add_db()
+
+
+
+
+def download_file(url, path="./"):
+    filename = os.path.join(path, url.split('/')[-1])
+    file = urllib.urlopen(url, filename);
+    out = open(filename,'wb') #iso-8859-1
+    #encoding=file.headers #['content-type'].split('charset=')[-1]
+    #print encoding
+    #ucontent = unicode(content, encoding)
+    # Python sees "Content-Type: text/html" for Apec pages, no charset information...
+    # Let's force encoding
+    out.write(unicode(file.read(), 'iso-8859-1'))
+    out.close()
+
+
 class Offer():
-    def __init__(self, src, ref, date_pub, date_add, title, company, contract, location, salary, url, content):
+    def load(self, src, ref, date_pub, date_add, title, company, contract, location, salary, url, content):
+        # self.jobboard = Jobboard()
         self.src = src
         self.ref = ref
+
         self.date_pub = datetime.datetime.fromtimestamp(int(date_pub))
         self.date_add = datetime.datetime.fromtimestamp(int(date_add))
         self.title = title.encode("utf-8")
@@ -27,6 +99,15 @@ class Offer():
         self.salary = salary.encode("utf-8")
         self.url = url.encode("utf-8")
         self.content = content.encode("utf-8")
+
+    def loadFromHtml(self, filename):
+        html = open(filename, 'rb')
+        mkd = html2text.html2text(html.read())
+        html.close()
+        # print re.search(s'^Sauvegarder_cette_offre$', mkd)
+
+    def add_db(self):
+        db_add_offer(self)
 
     #def set_from_row(row):
     #    self.src = row[0]
@@ -107,7 +188,8 @@ def report_generate():
     report.write("</thead>")
 
     for row in data:
-        offer = Offer(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10])
+        offer = Offer()
+        offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10])
         report.write("<tr>")
         report.write('<td>' + offer.date_pub.strftime('%Y-%m-%d') + '</a></td>')
         report.write('<td>' + offer.src + '</td>')
@@ -136,6 +218,9 @@ if __name__ == '__main__':
     parser.add_option('-c', '--create',
                           action = 'store_true', dest = 'create',
                           help = 'create the databse')
+    parser.add_option('-s', '--start',
+                          action = 'store_true', dest = 'start',
+                          help = 'start the fetch')
 
     (options, args) = parser.parse_args(args)
 
@@ -154,7 +239,8 @@ if __name__ == '__main__':
     if options.add:
         if len(args) == 11:
             print "%s" % args[10]
-            offer = Offer(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10])
+            offer = Offer()
+            offer.load(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10])
             db_add_offer(offer)
 
         sys.exit(0)
@@ -162,3 +248,10 @@ if __name__ == '__main__':
     if options.create:
         db_create()
         sys.exit(0)
+
+    if options.start:
+        jb = Jobboard()
+        jb.load("apec.jb")
+        jb.fetch()
+        sys.exit(0)
+
