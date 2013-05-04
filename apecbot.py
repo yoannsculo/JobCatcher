@@ -11,6 +11,7 @@ import sys
 import urllib2 as urllib
 import sqlite3 as lite
 import datetime
+import time
 import re
 
 import codecs
@@ -18,6 +19,9 @@ import html2text
 
 from optparse import OptionParser
 from xml.dom import minidom
+
+from HTMLParser import HTMLParser
+from BeautifulSoup import BeautifulSoup
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -63,13 +67,10 @@ class Jobboard():
     def processOffers(self):
         for file in os.listdir(self.processingDir):
             print "Processing %s" % (file)
-            offer = Offer()
+            offer = OfferApec()
             offer.loadFromHtml(os.path.join(self.processingDir, file))
-            # offer.save2mkd()
-            # offer.add_db()
-
-
-
+            offer.date_add = time.time()
+            offer.add_db()
 
 def download_file(url, path="./"):
     filename = os.path.join(path, url.split('/')[-1])
@@ -101,10 +102,7 @@ class Offer():
         self.content = content.encode("utf-8")
 
     def loadFromHtml(self, filename):
-        html = open(filename, 'rb')
-        mkd = html2text.html2text(html.read())
-        html.close()
-        # print re.search(s'^Sauvegarder_cette_offre$', mkd)
+        ""
 
     def add_db(self):
         db_add_offer(self)
@@ -121,6 +119,52 @@ class Offer():
     #    self.salary = row[8].encode("utf-8")
     #    self.url = row[9].encode("utf-8")
     #    self.content = row[10].encode("utf-8")
+
+class OfferApec(Offer):
+
+    src="APEC"
+
+    def loadFromHtml(self, filename):
+        fd = open(filename, 'rb')
+        html = fd.read()
+        fd.close()
+
+        soup = BeautifulSoup(html, fromEncoding="UTF-8")
+
+        # Title
+        res = soup.body.find('div', attrs={'class':'boxMain boxOffres box'})
+        res = res.find("h2", attrs={'class':'borderBottom0'})
+        self.title = HTMLParser().unescape(res.text)
+
+        # Other information
+        res = soup.body.find('div', attrs={'class':'content1_9ImbLeft'})
+        res = res.findAll("tr")
+
+        for elt in res:
+            th = elt.find('th')
+            td = elt.find('td')
+            if (th.text == u'Référence Apec :'):
+                self.ref = HTMLParser().unescape(td.text)
+            if (th.text == u'Date de publication :'):
+                apec_date = HTMLParser().unescape(td.text)
+                self.date_pub = datetime.datetime.strptime(apec_date, "%d/%m/%Y").strftime('%s')
+            if (th.text == u'Société :'):
+                self.company = HTMLParser().unescape(td.text)
+            if (th.text == u'Type de contrat :'):
+                self.contract = HTMLParser().unescape(td.text)
+            if (th.text == u'Lieu :'):
+                self.location = HTMLParser().unescape(td.text)
+            if (th.text == u'Salaire :'):
+                self.salary = HTMLParser().unescape(td.text)
+            if (th.text == u'Expérience :'):
+                self.experience = HTMLParser().unescape(td.text)
+
+        # Content
+        res = soup.body.find('div', attrs={'class':'contentWithDashedBorderTop marginTop boxContent'})
+        res = res.find('div', attrs={'class':'boxContentInside'})
+        self.content = HTMLParser().unescape(res.text);
+
+        self.url='http://toto.com'
 
 def db_create():
     conn = None
@@ -148,12 +192,11 @@ def db_add_offer(offer):
         conn = lite.connect("jobs.db")
         conn.text_factory = str
         cursor = conn.cursor()
-        #print "%s" % offer.content
-        # cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?)",
-        #         (offer.src, offer.ref,
-        #          offer.date_pub.strftime('%s'), offer.date_add.strftime('%s'),
-        #          offer.title, offer.company, offer.contract, offer.location, offer.salary, offer.url, offer.content))
-        # conn.commit()
+        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+                (offer.src, offer.ref,
+                 offer.date_pub, offer.date_add,
+                 offer.title, offer.company, offer.contract, offer.location, offer.salary, offer.url, offer.content))
+        conn.commit()
 
     except lite.Error, e:
         print "Error %s:" % e.args[0]
