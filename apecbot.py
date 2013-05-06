@@ -19,7 +19,6 @@ import html2text
 
 from optparse import OptionParser
 from xml.dom import minidom
-
 from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
 
@@ -53,14 +52,15 @@ class Jobboard():
         for elt in itemlist :
             # TODO : Test object first
             title = elt.getElementsByTagName('title')[0].firstChild.data
-            link = elt.getElementsByTagName('link')[0].firstChild.data
+            link = elt.getElementsByTagName('link')[0].firstChild.data.split("?")[0]
             pubDate = elt.getElementsByTagName('pubDate')[0].firstChild.data
 
             if (epochPubDate <= self.lastFetchDate):
                 break
 
-            print "Downloading %s" % (link)
-            # download_file(link, self.processingDir)
+            if (not os.path.isfile(os.path.join(self.processingDir, link.split('/')[-1]))):
+                print "Downloading %s" % (link)
+                download_file(link, self.processingDir)
 
         self.processOffers()
 
@@ -150,12 +150,34 @@ class OfferApec(Offer):
                 self.date_pub = datetime.datetime.strptime(apec_date, "%d/%m/%Y").strftime('%s')
             if (th.text == u'Société :'):
                 self.company = HTMLParser().unescape(td.text)
+                matchObj = re.match( ur'(.*)Voir toutes les offres', self.company)
+                if matchObj:
+                    self.company = matchObj.group(1)
+                matchObj = re.match( ur'(.*)Voir plus d\'infos sur la société', self.company)
+                if matchObj:
+                    self.company = matchObj.group(1)
+
             if (th.text == u'Type de contrat :'):
                 self.contract = HTMLParser().unescape(td.text)
             if (th.text == u'Lieu :'):
                 self.location = HTMLParser().unescape(td.text)
             if (th.text == u'Salaire :'):
                 self.salary = HTMLParser().unescape(td.text)
+                self.salary = re.sub(ur'à déterminer', "NA", self.salary)
+                self.salary = re.sub(ur'Selon profil', "NA", self.salary)
+                self.salary = re.sub(ur'selon profil', "NA", self.salary)
+                self.salary = re.sub(ur'Selon Profil', "NA", self.salary)
+                self.salary = re.sub(ur'à négocier', "NA", self.salary)
+                self.salary = re.sub(ur'à définir selon expérience', "NA", self.salary)
+                self.salary = re.sub(ur'à définir', "NA", self.salary)
+                self.salary = re.sub(ur'À définir', "NA", self.salary)
+                self.salary = re.sub(ur'A définir', "NA", self.salary)
+                self.salary = re.sub(ur'selon expérience', "NA", self.salary)
+                self.salary = re.sub(ur'Selon expérience', "NA", self.salary)
+                self.salary = re.sub(ur'A négocier selon profil', "NA", self.salary)
+                self.salary = re.sub(ur'Selon diplôme et expérience', "NA", self.salary)
+                self.salary = re.sub(ur'Négociable', "NA", self.salary)
+                self.salary = re.sub(ur'A négocier', "NA", self.salary)
             if (th.text == u'Expérience :'):
                 self.experience = HTMLParser().unescape(td.text)
 
@@ -164,7 +186,8 @@ class OfferApec(Offer):
         res = res.find('div', attrs={'class':'boxContentInside'})
         self.content = HTMLParser().unescape(res.text);
 
-        self.url='http://toto.com'
+        self.url = "http://cadres.apec.fr/offres-emploi-cadres/" + os.path.basename(filename)
+
 
 def db_create():
     conn = None
