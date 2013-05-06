@@ -3,7 +3,7 @@
 
 __authors__ = 'Yoann Sculo <yoann.sculo@gmail.com>'
 __copyright__ = 'Copyright (C) 2013 Yoann Sculo'
-__license__ = '????'
+__license__ = 'GPLv2'
 __version__ = '0.1'
 
 import os
