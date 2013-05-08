@@ -135,6 +135,9 @@ class OfferApec(Offer):
         res = soup.body.find('div', attrs={'class':'boxMain boxOffres box'})
         res = res.find("h2", attrs={'class':'borderBottom0'})
         self.title = HTMLParser().unescape(res.text)
+        matchObj = re.match( ur'Offre d\'emploi (.*)', self.title)
+        if matchObj:
+            self.title = matchObj.group(1)
 
         # Other information
         res = soup.body.find('div', attrs={'class':'content1_9ImbLeft'})
@@ -163,21 +166,22 @@ class OfferApec(Offer):
                 self.location = HTMLParser().unescape(td.text)
             if (th.text == u'Salaire :'):
                 self.salary = HTMLParser().unescape(td.text)
-                self.salary = re.sub(ur'à déterminer', "NA", self.salary)
+                self.salary = re.sub(ur'à définir selon expérience', "NA", self.salary)
+                self.salary = re.sub(ur'Selon diplôme et expérience', "NA", self.salary)
+                self.salary = re.sub(ur'A négocier selon profil', "NA", self.salary)
+                self.salary = re.sub(ur'selon profil et expérience', "NA", self.salary)
                 self.salary = re.sub(ur'Selon profil', "NA", self.salary)
                 self.salary = re.sub(ur'selon profil', "NA", self.salary)
                 self.salary = re.sub(ur'Selon Profil', "NA", self.salary)
+                self.salary = re.sub(ur'à déterminer', "NA", self.salary)
                 self.salary = re.sub(ur'à négocier', "NA", self.salary)
-                self.salary = re.sub(ur'à définir selon expérience', "NA", self.salary)
+                self.salary = re.sub(ur'A négocier', "NA", self.salary)
                 self.salary = re.sub(ur'à définir', "NA", self.salary)
                 self.salary = re.sub(ur'À définir', "NA", self.salary)
                 self.salary = re.sub(ur'A définir', "NA", self.salary)
                 self.salary = re.sub(ur'selon expérience', "NA", self.salary)
                 self.salary = re.sub(ur'Selon expérience', "NA", self.salary)
-                self.salary = re.sub(ur'A négocier selon profil', "NA", self.salary)
-                self.salary = re.sub(ur'Selon diplôme et expérience', "NA", self.salary)
                 self.salary = re.sub(ur'Négociable', "NA", self.salary)
-                self.salary = re.sub(ur'A négocier', "NA", self.salary)
             if (th.text == u'Expérience :'):
                 self.experience = HTMLParser().unescape(td.text)
 
