@@ -270,6 +270,28 @@ def db_add_offer(offer):
         if conn:
             conn.close()
 
+def blocklist_load():
+    url = "http://raw.github.com/yoannsculo/emploi/master/ssii/ssii_extended.csv"
+    filename = url.split('/')[-1]
+    file = urllib.urlopen(url, filename);
+    list = []
+    for line in file:
+        company = unicode(line.rstrip('\n'))
+        list.append([company])
+
+    # fp = open('/home/yoann/dev/emploi/ssii/ssii_extended.csv','r') #iso-8859-1
+    # list = []
+    # for line in fp:
+    #     line = unicode(line.rstrip('\n'))
+    #     list.append([line])
+
+    print list
+
+    try:
+        conn = lite.connect("jobs.db")
+        conn.text_factory = str
+        cursor = conn.cursor()
+        res = cursor.executemany("INSERT INTO blacklist VALUES(?)", list)
         conn.commit()
 
     except lite.Error, e:
@@ -283,7 +305,8 @@ def report_generate():
     report = open('full_report.html', 'w')
     conn = lite.connect("jobs.db")
     cursor = conn.cursor()
-    sql = "SELECT * FROM offers ORDER BY date_pub DESC"
+    # sql = "SELECT * FROM offers ORDER BY date_pub DESC"
+    sql = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
     cursor.execute(sql)
     data = cursor.fetchall()
 
@@ -292,6 +315,8 @@ def report_generate():
     report.write("<style>table{border:1px solid black; font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>")
     report.write("<meta http-equiv=\"Content-type\" content=\"text/html\"; charset=\"utf-8\"></head>")
     report.write("<body><table class=\"table table-bordered\">")
+
+    report.write("<p>There are <b>%s</b> offers</p>" %(len(data)))
 
     report.write("<thead>")
     report.write("<tr>")
@@ -338,6 +363,9 @@ if __name__ == '__main__':
     parser.add_option('-s', '--start',
                           action = 'store_true', dest = 'start',
                           help = 'start the fetch')
+    parser.add_option('-b', '--blocklist',
+                          action = 'store_true', dest = 'blocklist',
+                          help = 'update blocklist')
 
     (options, args) = parser.parse_args(args)
 
@@ -370,5 +398,9 @@ if __name__ == '__main__':
         jb = Jobboard()
         jb.load("apec.jb")
         jb.fetch()
+        sys.exit(0)
+
+    if options.blocklist:
+        blocklist_load();
         sys.exit(0)
 
