@@ -40,7 +40,7 @@ class Jobboard():
 
         url = "http://www.apec.fr/fluxRss/XML/OffresCadre_F101810.xml"
         filename = url.split('/')[-1]
-        # download_file(url)
+        download_file(url)
 
         xmldoc = minidom.parse(filename)
 
