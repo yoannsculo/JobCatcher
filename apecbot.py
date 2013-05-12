@@ -17,6 +17,8 @@ import re
 import codecs
 import html2text
 
+import requests
+
 from optparse import OptionParser
 from xml.dom import minidom
 from HTMLParser import HTMLParser
@@ -69,8 +71,36 @@ class Jobboard():
             print "Processing %s" % (file)
             offer = OfferApec()
             offer.loadFromHtml(os.path.join(self.processingDir, file))
-            offer.date_add = time.time()
+            offer.date_add = int(time.time())
+            loc = Location()
+            loc.loadFromAddress(offer.location)
+            offer.lat = loc.lat
+            offer.lon = loc.lon
             offer.add_db()
+            # offer.printElt()
+
+class Location():
+
+    lon = ""
+    lat = ""
+
+    def loadFromAddress(self, address):
+
+        r = requests.get("http://nominatim.openstreetmap.org/search",
+                params={'q': address,
+                        'format':'xml',
+                        'polygon': 0,
+                        'addressdetails': 1})
+        if (r.status_code != 200):
+            return
+
+        xmldoc = minidom.parseString(r.content)
+        if (xmldoc.getElementsByTagName('place').length <= 0):
+            return
+
+        res = xmldoc.getElementsByTagName('place')[0]
+        self.lat = res.getAttribute('lat')
+        self.lon = res.getAttribute('lon')
 
 def download_file(url, path="./"):
     filename = os.path.join(path, url.split('/')[-1])
@@ -86,7 +116,7 @@ def download_file(url, path="./"):
 
 
 class Offer():
-    def load(self, src, ref, date_pub, date_add, title, company, contract, location, salary, url, content):
+    def load(self, src, ref, date_pub, date_add, title, company, contract, location, lat, lon, salary, url, content):
         # self.jobboard = Jobboard()
         self.src = src
         self.ref = ref
@@ -106,6 +136,10 @@ class Offer():
 
     def add_db(self):
         db_add_offer(self)
+
+    def printElt(self):
+        #print "Title :" + self.title
+        print "Company : " + self.company
 
     #def set_from_row(row):
     #    self.src = row[0]
@@ -208,21 +242,32 @@ def db_create():
                         company TEXT, \
                         contract TEXT, \
                         location TEXT, \
+                        lat TEXT, \
+                        lon TEXT, \
                         salary TEXT, \
                         url TEXT, \
                         content TEXT, \
                         PRIMARY KEY(source, ref))""")
-    # cursor.execute("""CREATE TABLE blacklist(company TEXT, PRIMARY KEY(company))""")
+    cursor.execute("""CREATE TABLE blacklist(company TEXT, PRIMARY KEY(company))""")
 
 def db_add_offer(offer):
     try:
         conn = lite.connect("jobs.db")
         conn.text_factory = str
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (offer.src, offer.ref,
                  offer.date_pub, offer.date_add,
-                 offer.title, offer.company, offer.contract, offer.location, offer.salary, offer.url, offer.content))
+                 offer.title, offer.company, offer.contract, offer.location, offer.lat, offer.lon, offer.salary, offer.url, offer.content))
+        conn.commit()
+
+    except lite.Error, e:
+        print "Error %s:" % e.args[0]
+
+    finally:
+        if conn:
+            conn.close()
+
         conn.commit()
 
     except lite.Error, e:
@@ -259,7 +304,7 @@ def report_generate():
 
     for row in data:
         offer = Offer()
-        offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10])
+        offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12])
         report.write("<tr>")
         report.write('<td>' + offer.date_pub.strftime('%Y-%m-%d') + '</a></td>')
         report.write('<td>' + offer.src + '</td>')
