@@ -31,6 +31,7 @@ class Jobboard():
 
     def load(self, file):
         self.name = "APEC"
+        self.url = "http://www.apec.fr"
         self.lastFetch = ""
         self.processingDir = "./test-dir"
         self.lastFetchDate = 0
