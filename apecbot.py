@@ -199,6 +199,7 @@ class OfferApec(Offer):
                 self.contract = HTMLParser().unescape(td.text)
             if (th.text == u'Lieu :'):
                 self.location = HTMLParser().unescape(td.text)
+                self.location = re.sub(ur'IDF', "Île-de-France", self.location)
             if (th.text == u'Salaire :'):
                 self.salary = HTMLParser().unescape(td.text)
                 self.salary = re.sub(ur'Selon diplôme et expérience', "NA", self.salary)
@@ -206,8 +207,12 @@ class OfferApec(Offer):
                 self.salary = re.sub(ur'à définir selon expérience', "NA", self.salary)
                 self.salary = re.sub(ur'A négocier selon profil', "NA", self.salary)
                 self.salary = re.sub(ur'A voir selon profil', "NA", self.salary)
+                self.salary = re.sub(ur'En fonction du profil', "NA", self.salary)
                 self.salary = re.sub(ur'Selon profil et expérience', "NA", self.salary)
                 self.salary = re.sub(ur'selon profil et expérience', "NA", self.salary)
+                self.salary = re.sub(ur'selon profil et avantages', "NA", self.salary)
+                self.salary = re.sub(ur'selon votre profil', "NA", self.salary)
+                self.salary = re.sub(ur'Selon profils', "NA", self.salary)
                 self.salary = re.sub(ur'Selon profil', "NA", self.salary)
                 self.salary = re.sub(ur'selon profil', "NA", self.salary)
                 self.salary = re.sub(ur'Selon Profil', "NA", self.salary)
