@@ -71,7 +71,9 @@ class Jobboard():
         for file in os.listdir(self.processingDir):
             print "Processing %s" % (file)
             offer = OfferApec()
-            offer.loadFromHtml(os.path.join(self.processingDir, file))
+            res = offer.loadFromHtml(os.path.join(self.processingDir, file))
+            if (res != 0):
+                continue
             offer.date_add = int(time.time())
             loc = Location()
             loc.loadFromAddress(offer.location)
@@ -166,8 +168,17 @@ class OfferApec(Offer):
 
         soup = BeautifulSoup(html, fromEncoding="UTF-8")
 
+        # Offer still available ?
+        res = soup.body.find('div', attrs={'class':'boxSingleMain box'})
+        if (res != None):
+            content = res.find('p')
+            if (content.text == u'L\'offre que vous souhaitez afficher n\'est plus disponible.Cliquer sur le bouton ci-dessous pour revenir à l\'onglet Mes Offres'):
+                return 1
+
         # Title
         res = soup.body.find('div', attrs={'class':'boxMain boxOffres box'})
+        if (res == None):
+            return -1
         res = res.find("h2", attrs={'class':'borderBottom0'})
         self.title = HTMLParser().unescape(res.text)
         matchObj = re.match( ur'Offre d\'emploi (.*)', self.title)
@@ -250,6 +261,8 @@ class OfferApec(Offer):
         self.content = HTMLParser().unescape(res.text);
 
         self.url = "http://cadres.apec.fr/offres-emploi-cadres/" + os.path.basename(filename)
+
+        return 0
 
 
 def db_create():
@@ -421,6 +434,8 @@ if __name__ == '__main__':
         jb = Jobboard()
         jb.load("apec.jb")
         jb.fetch()
+        # offer = OfferApec()
+        # offer.loadFromHtml(os.path.join("./test-dir", "1___44802671W________.html"))
         sys.exit(0)
 
     if options.blocklist:
