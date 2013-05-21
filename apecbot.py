@@ -215,6 +215,7 @@ class OfferApec(Offer):
                 self.salary = HTMLParser().unescape(td.text)
                 self.salary = re.sub(ur'Selon diplôme et expérience', "NA", self.salary)
                 self.salary = re.sub(ur'A définir selon profil', "NA", self.salary)
+                self.salary = re.sub(ur'à définir selon profils', "NA", self.salary)
                 self.salary = re.sub(ur'à définir selon expérience', "NA", self.salary)
                 self.salary = re.sub(ur'A négocier selon profil', "NA", self.salary)
                 self.salary = re.sub(ur'à négocier selon profil', "NA", self.salary)
