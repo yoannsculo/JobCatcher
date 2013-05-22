@@ -223,6 +223,7 @@ class OfferApec(Offer):
                 self.salary = re.sub(ur'En fonction du profil', "NA", self.salary)
                 self.salary = re.sub(ur'Selon profil et expérience', "NA", self.salary)
                 self.salary = re.sub(ur'selon profil et expérience', "NA", self.salary)
+                self.salary = re.sub(ur'selon profil et exp', "NA", self.salary)
                 self.salary = re.sub(ur'selon profil et avantages', "NA", self.salary)
                 self.salary = re.sub(ur'selon votre profil', "NA", self.salary)
                 self.salary = re.sub(ur'Selon profils', "NA", self.salary)
@@ -251,7 +252,7 @@ class OfferApec(Offer):
                 self.salary = re.sub(ur'non précisé', "NA", self.salary)
                 self.salary = re.sub(ur'NC K€ brut/an', "NA", self.salary)
                 self.salary = re.sub(ur'xx K€ brut/an', "NA", self.salary)
-                self.salary = re.sub(ur'0K€ brut/an', "NA", self.salary)
+                # self.salary = re.sub(ur'0K€ brut/an', "NA", self.salary)
                 self.salary = re.sub(ur'-K€ brut/an', "NA", self.salary)
             if (th.text == u'Expérience :'):
                 self.experience = HTMLParser().unescape(td.text)
