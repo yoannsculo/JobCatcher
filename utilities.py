@@ -7,6 +7,8 @@ from xml.dom import minidom
 import sqlite3 as lite
 import datetime
 
+from apecbot import Offer
+
 def download_file(url, path="./"):
     filename = os.path.join(path, url.split('/')[-1])
     file = urllib.urlopen(url, filename);
@@ -100,15 +102,18 @@ def blocklist_load():
             conn.close()
 
 def report_generate(filtered=True):
+
+    html_dir = "./www"
+
     conn = lite.connect("jobs.db")
     cursor = conn.cursor()
 
     if (filtered):
         sql = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
-        report = open('report_filtered.html', 'w')
+        report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
     else:
         sql = "SELECT * FROM offers ORDER BY date_pub DESC"
-        report = open('report_full.html', 'w')
+        report = open(os.path.join(html_dir, 'report_full.html'), 'w')
     
     #sql = "SELECT * FROM offers WHERE company IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
     cursor.execute(sql)
