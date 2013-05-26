@@ -8,6 +8,7 @@ __version__ = '0.1'
 
 import os
 import sys
+import datetime
 import codecs
 import html2text
 import requests
@@ -151,8 +152,8 @@ if __name__ == '__main__':
 
     if options.report:
         print "Report generation..."
-        report_generate(True)
-        report_generate(False)
+        utilities.report_generate(True)
+        utilities.report_generate(False)
         print "Done."
         sys.exit(0)
 
