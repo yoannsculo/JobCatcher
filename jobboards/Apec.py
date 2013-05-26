@@ -32,13 +32,7 @@ class Apec(Jobboard):
         self.processingDir = self.dlDir + "/apec"
         self.lastFetchDate = 0
 
-    def fetch(self):
-        print "Fetching " + self.name
-
-        if (not os.path.isdir(self.processingDir)):
-                os.makedirs(self.processingDir)
-
-        url = "http://www.apec.fr/fluxRss/XML/OffresCadre_F101810.xml"
+    def fetch_url(self, url):
         filename = url.split('/')[-1]
         download_file(url, self.processingDir)
 
@@ -64,6 +58,21 @@ class Apec(Jobboard):
             if (not os.path.isfile(os.path.join(self.processingDir, link.split('/')[-1]))):
                 print "Downloading %s" % (link)
                 download_file(link, self.processingDir)
+
+
+    def fetch(self):
+        print "Fetching " + self.name
+
+        feed_list = ['http://www.apec.fr/fluxRss/XML/OffresCadre_F101833.xml', # informatique
+                     'http://www.apec.fr/fluxRss/XML/OffresCadre_F101810.xml', # informatique industrielle
+                     'http://www.apec.fr/fluxRss/XML/OffresCadre_F101813.xml'] # système, réseaux, donnée
+
+        for url in feed_list :
+            self.fetch_url(url)
+
+        if (not os.path.isdir(self.processingDir)):
+                os.makedirs(self.processingDir)
+
 
         self.processOffers()
 
