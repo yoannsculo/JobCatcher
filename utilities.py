@@ -54,6 +54,7 @@ def db_add_offer(offer):
                  offer.date_pub, offer.date_add,
                  offer.title, offer.company, offer.contract, offer.location, offer.lat, offer.lon, offer.salary, offer.url, offer.content))
         conn.commit()
+        return 0
 
     except lite.Error, e:
         """ TODO : Waiting for this ... http://bugs.python.org/issue16379
