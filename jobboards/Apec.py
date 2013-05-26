@@ -15,6 +15,9 @@ from utilities import *
 from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
 
+""" License : http://cadres.apec.fr/delia/core/common/site/ApecViewDetailConseil/currentArticle_ART_46448/Voir+les+conditions+g%C3%A9n%C3%A9rales+d+utilisation.html
+"""
+
 class Apec(Jobboard):
 
     def __init__(self):
