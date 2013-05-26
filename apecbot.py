@@ -14,7 +14,7 @@ import requests
 
 from optparse import OptionParser
 from xml.dom import minidom
-from utilities import *
+import utilities
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -75,7 +75,7 @@ class Offer():
         ""
 
     def add_db(self):
-        return db_add_offer(self)
+        return utilities.db_add_offer(self)
 
     def printElt(self):
         #print "Title :" + self.title
