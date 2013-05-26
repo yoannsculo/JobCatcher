@@ -85,8 +85,6 @@ def blocklist_load():
     #     line = unicode(line.rstrip('\n'))
     #     list.append([line])
 
-    print list
-
     try:
         conn = lite.connect("jobs.db")
         conn.text_factory = str
