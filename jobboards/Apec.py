@@ -34,7 +34,7 @@ class Apec(Jobboard):
         filename = url.split('/')[-1]
         download_file(url, self.processingDir)
 
-        xmldoc = minidom.parse(filename)
+        xmldoc = minidom.parse(os.path.join(self.processingDir, filename))
 
         MainPubDate = xmldoc.getElementsByTagName('pubDate')[0].firstChild.data
         epochPubDate = datetime.datetime.strptime(MainPubDate, "%a, %d %b %Y %H:%M:%S +0200").strftime('%s')
