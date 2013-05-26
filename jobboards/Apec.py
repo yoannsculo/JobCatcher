@@ -74,7 +74,7 @@ class Apec(Jobboard):
                 continue
             offer.date_add = int(time.time())
             loc = Location()
-            loc.loadFromAddress(offer.location)
+            # loc.loadFromAddress(offer.location)
             offer.lat = loc.lat
             offer.lon = loc.lon
             if (offer.add_db() == 0):

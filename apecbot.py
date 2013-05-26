@@ -34,11 +34,10 @@ class Jobboard():
 
 class Location():
 
-    lon = ""
-    lat = ""
+    lon = "0"
+    lat = "0"
 
     def loadFromAddress(self, address):
-
         r = requests.get("http://nominatim.openstreetmap.org/search",
                 params={'q': address,
                         'format':'xml',
@@ -54,7 +53,6 @@ class Location():
         res = xmldoc.getElementsByTagName('place')[0]
         self.lat = res.getAttribute('lat')
         self.lon = res.getAttribute('lon')
-
 
 class Offer():
     def load(self, src, ref, date_pub, date_add, title, company, contract, location, lat, lon, salary, url, content):
