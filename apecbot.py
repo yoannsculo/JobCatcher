@@ -178,6 +178,6 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if options.blocklist:
-        blocklist_load();
+        utilities.blocklist_load();
         sys.exit(0)
 
