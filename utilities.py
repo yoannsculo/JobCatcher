@@ -7,7 +7,7 @@ from xml.dom import minidom
 import sqlite3 as lite
 import datetime
 
-from apecbot import Offer
+from jobcatcher import Offer
 
 def download_file(url, path="./"):
     filename = os.path.join(path, url.split('/')[-1])

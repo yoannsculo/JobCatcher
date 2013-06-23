@@ -10,7 +10,7 @@ import os
 import re
 import time
 
-from jobcatcher import ApecBot
+from jobcatcher import JobCatcher
 from jobcatcher import Jobboard
 from jobcatcher import Offer
 from jobcatcher import Location

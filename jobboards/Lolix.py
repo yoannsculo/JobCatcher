@@ -3,7 +3,7 @@
 
 import os
 
-from jobcatcher import ApecBot
+from jobcatcher import JobCatcher
 from jobcatcher import Jobboard
 from jobcatcher import Offer
 
