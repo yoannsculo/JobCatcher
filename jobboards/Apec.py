@@ -189,6 +189,7 @@ class ApecOffer(Offer):
                 self.salary = re.sub(ur'Selon expérience', "NA", self.salary)
                 self.salary = re.sub(ur'Selon expérince', "NA", self.salary)
                 self.salary = re.sub(ur'Selon Expérience', "NA", self.salary)
+                self.salary = re.sub(ur'Selon experience', "NA", self.salary)
                 self.salary = re.sub(ur'SELON EXPERIENCE', "NA", self.salary)
                 self.salary = re.sub(ur'Selon compétences', "NA", self.salary)
                 self.salary = re.sub(ur'Selon compétence', "NA", self.salary)
