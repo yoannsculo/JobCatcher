@@ -3,9 +3,9 @@
 
 import os
 
-from apecbot import ApecBot
-from apecbot import Jobboard
-from apecbot import Offer
+from jobcatcher import ApecBot
+from jobcatcher import Jobboard
+from jobcatcher import Offer
 
 class Lolix(Jobboard):
 

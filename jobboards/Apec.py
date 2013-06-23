@@ -10,10 +10,10 @@ import os
 import re
 import time
 
-from apecbot import ApecBot
-from apecbot import Jobboard
-from apecbot import Offer
-from apecbot import Location
+from jobcatcher import ApecBot
+from jobcatcher import Jobboard
+from jobcatcher import Offer
+from jobcatcher import Location
 
 from utilities import *
 
