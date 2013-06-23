@@ -94,7 +94,7 @@ class Offer():
     #    self.content = row[10].encode("utf-8")
 
 
-class ApecBot():
+class JobCatcher():
 
     jobBoardList = []
 
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args(args)
 
     if options.version:
-        print 'apecbot version %s - %s (%s)' % (__version__,
+        print 'jobcatcher version %s - %s (%s)' % (__version__,
                                                 __copyright__,
                                                 __license__)
         sys.exit(0)
@@ -172,7 +172,7 @@ if __name__ == '__main__':
 
     # TODO : change to "run"
     if options.start:
-        bot = ApecBot()
+        bot = JobCatcher()
         bot.load_jobBoards()
         bot.run()
         sys.exit(0)
