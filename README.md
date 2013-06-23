@@ -9,7 +9,8 @@ black or whitelists.
 
 Think of it as a RSS feed reader with filter feature.
 
-This software is under GPLv2 License.
+I would like this software to be under GPLv2 License. But I need to check if
+this is compatible with dependencies I've choosen.
 
 ## Work in Progress
 
