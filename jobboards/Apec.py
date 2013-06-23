@@ -67,12 +67,11 @@ class Apec(Jobboard):
                      'http://www.apec.fr/fluxRss/XML/OffresCadre_F101810.xml', # informatique industrielle
                      'http://www.apec.fr/fluxRss/XML/OffresCadre_F101813.xml'] # système, réseaux, donnée
 
-        for url in feed_list :
-            self.fetch_url(url)
-
         if (not os.path.isdir(self.processingDir)):
                 os.makedirs(self.processingDir)
 
+        for url in feed_list :
+            self.fetch_url(url)
 
         self.processOffers()
 
