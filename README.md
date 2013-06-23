@@ -18,10 +18,28 @@ It is developed in Python. This is my first time I use Python on a non-basic
 project. So I guess my code is not so pythonic ... yet. Feel free to help me or
 show me mistakes I could have made or improvements I could do.
 
+## Dependencies
+
+	python-html2text, python-requests, python-beautifulsoup
+
+## Usage
+
+	./jobcatcher.py -c # To create database
+	./jobcatcher.py -b # To load my blacklist into the DB
+	./jobcatcher.py -s # To fetch last offers
+	./jobcatcher.py -r # To generate reports
+
+Reports are generated into the local "www" directory.
+
+I start jobcatcher.py -s manually with crontab for now. But this should change
+soon.
+
 # List of supported Job Boards
 
 - Apec.fr (French)
 - Lolix.org (French) TODO
 - Linux.com (English) TODO
+- L'eXpress-Board (French) TODO
+- Remixjobs.com (French) TODO
 
 Help me to add new job boards to JobCatcher ! :)
