@@ -2,4 +2,5 @@
 *.swp
 tags
 dl
+jobs.db
 www/*.html
