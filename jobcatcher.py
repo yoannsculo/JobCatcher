@@ -167,7 +167,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if options.create:
-        db_create()
+        utilities.db_create()
         sys.exit(0)
 
     # TODO : change to "run"
