@@ -174,6 +174,7 @@ class ApecOffer(Offer):
                 self.salary = re.sub(ur'selon profil et exp', "NA", self.salary)
                 self.salary = re.sub(ur'selon profil et avantages', "NA", self.salary)
                 self.salary = re.sub(ur'selon votre profil', "NA", self.salary)
+                self.salary = re.sub(ur'Selon votre profil', "NA", self.salary)
                 self.salary = re.sub(ur'selon le profil', "NA", self.salary)
                 self.salary = re.sub(ur'Selon le profil', "NA", self.salary)
                 self.salary = re.sub(ur'Selon profils', "NA", self.salary)
