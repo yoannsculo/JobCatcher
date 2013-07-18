@@ -125,6 +125,7 @@ def report_generate(filtered=True):
     report.write("<body><table class=\"table table-bordered\">")
 
     report.write("<p>There are <b>%s</b> offers</p>" %(len(data)))
+    report.write("<p><a href=\"report_filtered.html\">Filtered Offers</a> - <a href=\"report_full.html\">All offers</a></p>")
 
     report.write("<thead>")
     report.write("<tr>")
