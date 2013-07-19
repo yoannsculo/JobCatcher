@@ -37,10 +37,17 @@ soon.
 
 # List of supported Job Boards
 
-- Apec.fr (French)
-- Lolix.org (French) TODO
-- Linux.com (English) TODO
-- L'eXpress-Board (French) TODO
-- Remixjobs.com (French) TODO
+- Apec.fr (France)
+- Progressive Recruitment (France)
+- RegionsJob - RegionCentre (France)
+- RegionsJob - RegionOuest (France)
+- RegionsJob - RegionSudOuest (France)
+
+### TODO
+
+- Lolix.org (France)
+- Linux.com (Int.)
+- L'eXpress-Board (France)
+- Remixjobs.com (France)
 
 Help me to add new job boards to JobCatcher ! :)
