@@ -72,7 +72,7 @@ class Progressive(Jobboard):
             offer.date_pub = datetime.datetime.strptime(pubDate, "%d/%m/%Y %H:%M:%S").strftime('%s')
             offer.content = elt.getElementsByTagName('description')[0].firstChild.data
             offer.content = offer.content.encode( 'iso-8859-1' )
-            offer.company = 'progressive recruitment'
+            offer.company = 'Progressive Recruitment'
             offer.location = elt.getElementsByTagName('location')[0].firstChild.data
             offer.location = offer.location.encode( 'iso-8859-1' )
             offer.location = re.sub(ur'IDF', "Île-de-France", offer.location)
