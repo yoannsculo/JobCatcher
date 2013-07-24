@@ -133,7 +133,9 @@ def report_generate(filtered=True):
     report.write("<th>Source</th>")
     report.write("<th>Title</th>")
     report.write("<th>Location</th>")
+    report.write("<th>Type</th>")
     report.write("<th>Company</th>")
+    report.write("<th>Contract</th>")
     report.write("<th>Salary</th>")
     report.write("</tr>")
     report.write("</thead>")
@@ -146,7 +148,17 @@ def report_generate(filtered=True):
         report.write('<td>' + offer.src + '</td>')
         report.write('<td><a href="'+offer.url+'">' + offer.title + '</a></td>')
         report.write('<td>' + offer.location + '</td>')
+        #report.write('<td><span class="label label-important">SSII</span></td>')
+        report.write('<td><span class="label label-success">noSSII</span></td>')
         report.write('<td>' + offer.company + '</td>')
+
+        if (offer.contract == ur'CDI' or offer.contract == ur'CDI (Cab/recrut)'):
+            report.write('<td><span class="label label-success">'+ offer.contract +'</span></td>')
+        elif (offer.contract == ur'CDD'):
+            report.write('<td><span class="label label-warning">'+ offer.contract +'</span></td>')
+        else:
+            report.write('<td><span class="label">'+ offer.contract +'</span></td>')
+
         report.write('<td>' + offer.salary + '</td>')
         report.write("</tr>")
     report.write("</table></body></html>")
