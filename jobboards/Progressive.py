@@ -73,16 +73,21 @@ class Progressive(Jobboard):
             offer.date_pub = datetime.datetime.strptime(pubDate, "%d/%m/%Y %H:%M:%S").strftime('%s')
             offer.content = elt.getElementsByTagName('description')[0].firstChild.data
             offer.content = offer.content.encode( 'iso-8859-1' )
+
             offer.company = 'Progressive Recruitment'
+
             offer.location = elt.getElementsByTagName('location')[0].firstChild.data
             offer.location = offer.location.encode( 'iso-8859-1' )
-            offer.location = re.sub(ur'IDF', "Île-de-France", offer.location)
+            offer.cleanLocation()
+
             offer.contract = elt.getElementsByTagName('job_type')[0].firstChild.data
-            offer.contract = re.sub(ur' Perm ','CDI', offer.contract)
+            offer.cleanContract()
+
             offer.salary = elt.getElementsByTagName('salary')[0].firstChild.data
             offer.salary = offer.salary.encode( 'iso-8859-1' )
             offer.cleanSalary()
-            offer.experience = 'experimenté'
+
+            offer.experience = 'NA'
             offer.add_db() 
 
 
@@ -106,6 +111,3 @@ class ProgressiveOffer(Offer):
     src     = 'PROGRESSIVE'
     license = ''
 
-    def cleanSalary(self):
-        self.salary = utilities.filter_salary_fr(self.salary)
-        return

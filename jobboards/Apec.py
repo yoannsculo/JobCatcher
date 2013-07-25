@@ -102,9 +102,6 @@ class ApecOffer(Offer):
     src     = 'APEC'
     license = ''
 
-    def cleanSalary(self):
-        self.salary = utilities.filter_salary_fr(self.salary)
-
     def loadFromHtml(self, filename):
         fd = open(filename, 'rb')
         html = fd.read()
@@ -149,14 +146,19 @@ class ApecOffer(Offer):
                 matchObj = re.match( ur'(.*)Voir plus d\'infos sur la société', self.company)
                 if matchObj:
                     self.company = matchObj.group(1)
+
             if (th.text == u'Type de contrat :'):
                 self.contract = HTMLParser().unescape(td.text)
+                self.cleanContract()
+
             if (th.text == u'Lieu :'):
                 self.location = HTMLParser().unescape(td.text)
-                self.location = re.sub(ur'IDF', "Île-de-France", self.location)
+                self.cleanLocation()
+
             if (th.text == u'Salaire :'):
                 self.salary = HTMLParser().unescape(td.text)
                 self.cleanSalary()
+
             if (th.text == u'Expérience :'):
                 self.experience = HTMLParser().unescape(td.text)
 

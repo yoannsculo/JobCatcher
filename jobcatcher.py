@@ -73,6 +73,18 @@ class Offer():
     def loadFromHtml(self, filename):
         ""
 
+    def cleanContract(self):
+        self.contract = utilities.filter_contract_fr(self.contract)
+        return
+
+    def cleanLocation(self):
+        self.location = utilities.filter_location_fr(self.location)
+        return
+
+    def cleanSalary(self):
+        self.salary = utilities.filter_salary_fr(self.salary)
+        return
+
     def add_db(self):
         return utilities.db_add_offer(self)
 

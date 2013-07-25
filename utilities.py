@@ -165,6 +165,16 @@ def report_generate(filtered=True):
     report.write("</table></body></html>")
     report.close()
 
+
+def filter_contract_fr(contract):
+    contract = re.sub(ur'Perm', "CDI", contract)
+    contract = re.sub(ur'CDI\n\s*\(Cab\/recrut\)', "CDI", contract)
+    return contract
+
+def filter_location_fr(location):
+    location = re.sub(ur'IDF', "Île-de-France", location)
+    return location
+
 def filter_salary_fr(salary):
     # TODO : use regexp once whe have a better view of possible combinations
     salary = re.sub(ur'Selon diplôme et expérience', "NA", salary)
