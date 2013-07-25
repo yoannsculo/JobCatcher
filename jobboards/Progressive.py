@@ -22,7 +22,6 @@ import utilities
 from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
 
-
 class Progressive(Jobboard):
 
     def __init__(self):

@@ -21,7 +21,6 @@ import utilities
 from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
 
-
 class RegionCentre(Jobboard):
 
     def __init__(self):
