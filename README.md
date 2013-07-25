@@ -42,6 +42,7 @@ soon.
 - RegionsJob - RegionCentre (France)
 - RegionsJob - RegionOuest (France)
 - RegionsJob - RegionSudOuest (France)
+- Cadreonline (France)
 
 ### TODO
 
