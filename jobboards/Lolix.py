@@ -7,6 +7,10 @@ from jobcatcher import JobCatcher
 from jobcatcher import Jobboard
 from jobcatcher import Offer
 
+from xml.dom import minidom
+import datetime
+import utilities
+
 class Lolix(Jobboard):
 
     def __init__(self):
@@ -32,6 +36,9 @@ class LolixOffer(Offer):
 
     src     = 'Lolix'
     license = ''
+
+    def cleanSalary(self):
+        self.salary = utilities.filter_salary_fr(self.salary)
 
     def loadFromHtml(self, filename):
         return 0

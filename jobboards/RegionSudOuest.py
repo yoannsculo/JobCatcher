@@ -14,7 +14,9 @@ from jobcatcher import Jobboard
 from jobcatcher import Offer
 from jobcatcher import Location
 
-from utilities import *
+from xml.dom import minidom
+import datetime
+import utilities
 
 from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
@@ -31,7 +33,7 @@ class RegionSudOuest(Jobboard):
 
     def fetch_url(self, url):
         filename = url.split('/')[-1]
-        download_file(url, self.processingDir)
+        utilities.download_file(url, self.processingDir)
 
         xmldoc = minidom.parse(os.path.join(self.processingDir, filename))
 
@@ -56,7 +58,7 @@ class RegionSudOuest(Jobboard):
 
             if (not os.path.isfile(os.path.join(self.processingDir, link.split('/')[-1]))):
                 print "Downloading %s" % (link)
-                download_file(link, self.processingDir)
+                utilities.download_file(link, self.processingDir)
 
 
     def fetch(self):
