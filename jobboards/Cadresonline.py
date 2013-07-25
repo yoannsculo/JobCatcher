@@ -25,10 +25,10 @@ from BeautifulSoup import BeautifulSoup
 class Cadreonline(Jobboard):
 
     def __init__(self):
-        self.name = "Cadreonline"
+        self.name = "Cadresonline"
         self.url = "http://www.cadresonline.com"
         self.lastFetch = ""
-        self.processingDir = self.dlDir + "/cadreonline"
+        self.processingDir = self.dlDir + "/cadresonline"
         self.lastFetchDate = 0
 
     def fetch_url(self, url):
@@ -86,7 +86,7 @@ class Cadreonline(Jobboard):
 
 class CadreonlineOffer(Offer):
 
-    src     = 'CADREONLINE'
+    src     = 'CADRESONLINE'
     license = ''
 
     def loadFromHtml(self, filename):
