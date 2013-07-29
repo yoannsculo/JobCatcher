@@ -22,7 +22,7 @@ import utilities
 from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
 
-class Cadreonline(Jobboard):
+class Cadresonline(Jobboard):
 
     def __init__(self):
         self.name = "Cadresonline"
