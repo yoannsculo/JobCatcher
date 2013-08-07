@@ -237,6 +237,8 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'À définir', "NA", salary)
     salary = re.sub(ur'A définir', "NA", salary)
     salary = re.sub(ur'A DEFINIR', "NA", salary)
+    salary = re.sub(ur'A DETERMINER', "NA", salary)
+    salary = re.sub(ur'à determiner', "NA", salary)
     salary = re.sub(ur'A definir', "NA", salary)
     salary = re.sub(ur'A défnir', "NA", salary)
     salary = re.sub(ur'A discuter', "NA", salary)
