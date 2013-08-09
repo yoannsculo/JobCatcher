@@ -126,6 +126,10 @@ class CentreOffer(Offer):
         res = soup.body.find('p', attrs={'class':'contrat_loc'})
         res = res.findAll("strong")
 
+        # Temporary fix to avoid empty company fields
+        if (res.__len__() < 3):
+            return -1
+
         self.company = HTMLParser().unescape(res[0].text).encode( 'iso-8859-1' )
         self.contract = HTMLParser().unescape(res[1].text)
         self.location = HTMLParser().unescape(res[2].text).encode( 'iso-8859-1' )
