@@ -108,16 +108,29 @@ def report_generate(filtered=True):
     conn = lite.connect("jobs.db")
     cursor = conn.cursor()
 
-    if (filtered):
-        sql = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
-        report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
-    else:
-        sql = "SELECT * FROM offers ORDER BY date_pub DESC"
-        report = open(os.path.join(html_dir, 'report_full.html'), 'w')
-    
+    sql_filtered = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
+    sql_full = "SELECT * FROM offers ORDER BY date_pub DESC"
+
+    cursor.execute(sql_filtered)
+    data_filtered = cursor.fetchall()
+    count_filtered = len(data_filtered)
+
+    cursor.execute(sql_full)
+    data_full = cursor.fetchall()
+    count_full = len(data_full)
+
     #sql = "SELECT * FROM offers WHERE company IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
-    cursor.execute(sql)
-    data = cursor.fetchall()
+
+    # sql = "SELECT count(*)FROM offers"
+    # cursor.execute(sql)
+    # count = cursor.fetchone()[0]
+
+    if (filtered):
+        report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
+        data = data_filtered
+    else:
+        report = open(os.path.join(html_dir, 'report_full.html'), 'w')
+        data = data_full
 
     report.write("<html><head>")
     report.write("<link href=\"./bootstrap.css\" rel=\"stylesheet\">")
@@ -125,8 +138,9 @@ def report_generate(filtered=True):
     report.write("<meta http-equiv=\"Content-type\" content=\"text/html\"; charset=\"utf-8\"></head>")
     report.write("<body><table class=\"table table-bordered\">")
 
-    report.write("<p>There are <b>%s</b> offers</p>" %(len(data)))
-    report.write("<p><a href=\"report_filtered.html\">Filtered Offers</a> - <a href=\"report_full.html\">All offers</a></p>")
+    report.write("<center><p><a href=\"report_filtered.html\">%s filtered offers (%.2f%%)</a>" %(count_filtered, 100*(float)(count_filtered)/count_full))
+    report.write(" - %s blacklisted offers (%.2f%%)" %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full) )
+    report.write(" - <a href=\"report_full.html\">All %s offers</a></p></center>" %(count_full) )
 
     report.write("<thead>")
     report.write("<tr>")
