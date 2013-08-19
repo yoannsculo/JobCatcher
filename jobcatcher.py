@@ -33,6 +33,10 @@ class Jobboard():
     def processOffers(self):
         ""
 
+    def processOffers(self):
+        for file in os.listdir(self.processingDir):
+            ret = self.processOffer(file)
+
 class Location():
 
     lon = "0"
@@ -153,6 +157,9 @@ if __name__ == '__main__':
     parser.add_option('-b', '--blocklist',
                           action = 'store_true', dest = 'blocklist',
                           help = 'update blocklist')
+    parser.add_option('-u', '--url',
+                          action = 'store_true', dest = 'url',
+                          help = 'analyse an url')
     parser.add_option('-f', '--flush',
                           action = 'store_true', dest = 'flush',
                           help = 'flush the blacklist and update it.')
@@ -189,6 +196,18 @@ if __name__ == '__main__':
         bot.run()
         utilities.report_generate(True)
         utilities.report_generate(False)
+        sys.exit(0)
+
+    if options.url:
+        if len(args) != 1:
+            print "error"
+        else:
+            import importlib
+            module = importlib.import_module('jobboards.Apec');
+            moduleClass = getattr(module, 'Apec')
+            instance = moduleClass()
+            filename = instance.fetch_offer(args[0])
+            instance.processOffer(filename)
         sys.exit(0)
 
     if options.create:

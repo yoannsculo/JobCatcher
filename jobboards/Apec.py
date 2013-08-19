@@ -33,6 +33,16 @@ class Apec(Jobboard):
         self.processingDir = self.dlDir + "/apec"
         self.lastFetchDate = 0
 
+    # fetch a specific  url
+    def fetch_offer(self, url):
+        if (not os.path.isfile(os.path.join(self.processingDir, url.split('/')[-1]))):
+            print "Downloading %s" % (url)
+            utilities.download_file(url, self.processingDir)
+        else:
+            print "Download failed. File already there."
+
+        return os.path.join("", url.split('/')[-1])
+
     def fetch_url(self, url):
         filename = url.split('/')[-1]
         utilities.download_file(url, self.processingDir)
@@ -76,23 +86,36 @@ class Apec(Jobboard):
 
         self.processOffers()
 
-    def processOffers(self):
-        for file in os.listdir(self.processingDir):
-            if (not file.lower().endswith('.html')):
-                    continue
+    def processOffer(self, file):
+        if (not file.lower().endswith('.html')):
+            return 1
 
-            print "Processing %s" % (file)
-            offer = ApecOffer()
-            res = offer.loadFromHtml(os.path.join(self.processingDir, file))
-            if (res != 0):
-                continue
-            offer.date_add = int(time.time())
-            loc = Location()
-            # loc.loadFromAddress(offer.location)
-            offer.lat = loc.lat
-            offer.lon = loc.lon
-            if (offer.add_db() == 0):
-                os.remove(os.path.join(self.processingDir,file))
+        print "Processing %s" % (file)
+        offer = ApecOffer()
+        res = offer.loadFromHtml(os.path.join(self.processingDir, file))
+        if (res != 0):
+            print "Couldn't add %s offer, html is bad formatted or has unknown pattern." % (file)
+            # os.remove(os.path.join(self.processingDir,file))
+            return 2
+
+        offer.date_add = int(time.time())
+
+        loc = Location()
+        # loc.loadFromAddress(offer.location)
+        offer.lat = loc.lat
+        offer.lon = loc.lon
+
+        # offer.printElt()
+        res = offer.add_db()
+        # If the offer is already there in database
+        # or successfully added.
+        if (res == 0 or res == 1):
+            ""
+            # os.remove(os.path.join(self.processingDir,file))
+        else:
+            print "Couldn't add %s offer, an error occured." % (file)
+
+        return 0
 
     def setup(self):
         print "setup " + self.name

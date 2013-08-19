@@ -30,6 +30,7 @@ show me mistakes I could have made or improvements I could do.
 	./jobcatcher.py -f # To flush and update the blacklist
 	./jobcatcher.py -s # To fetch last offers
 	./jobcatcher.py -r # To generate reports
+	./jobcatcher.py -u # To fetch an offer only with its url
 	./jobcatcher.py -a # Sync the blacklist, fetch the offers and generates reports.
 
 Reports are generated into the local "www" directory.
