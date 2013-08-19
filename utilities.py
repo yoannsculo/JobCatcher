@@ -157,9 +157,25 @@ def report_generate(filtered=True):
     report.write("</tr>")
     report.write("</thead>")
 
+    s_date = ''
+
     for row in data:
         offer = Offer()
         offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12])
+
+        if (s_date != offer.date_pub.strftime('%Y-%m-%d')):
+            s_date = offer.date_pub.strftime('%Y-%m-%d')
+            report.write('<tr class=\"error\">');
+            report.write('<td></td>');
+            report.write('<td></td>');
+            report.write('<td></td>');
+            report.write('<td></td>');
+            report.write('<td></td>');
+            report.write('<td></td>');
+            report.write('<td></td>');
+            report.write('<td></td>');
+            report.write('</tr>');
+
         report.write("<tr>")
         report.write('<td>' + offer.date_pub.strftime('%Y-%m-%d') + '</a></td>')
         report.write('<td><span class="label label-success">noSSII</span></td>')
