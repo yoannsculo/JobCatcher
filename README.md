@@ -29,6 +29,7 @@ show me mistakes I could have made or improvements I could do.
 	./jobcatcher.py -b # To load my blacklist into the DB
 	./jobcatcher.py -s # To fetch last offers
 	./jobcatcher.py -r # To generate reports
+	./jobcatcher.py -a # Sync the blacklist, fetch the offers and generates reports.
 
 Reports are generated into the local "www" directory.
 

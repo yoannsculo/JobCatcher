@@ -141,9 +141,9 @@ if __name__ == '__main__':
     parser.add_option('-r', '--report',
                           action = 'store_true', dest = 'report',
                           help = 'Generate a full report')
-    parser.add_option('-a', '--add',
-                          action = 'store_true', dest = 'add',
-                          help = 'add an offer')
+    parser.add_option('-a', '--all',
+                          action = 'store_true', dest = 'all',
+                          help = 'Sync the blacklist, fetch the offers and generates reports.')
     parser.add_option('-c', '--create',
                           action = 'store_true', dest = 'create',
                           help = 'create the databse')
@@ -169,20 +169,29 @@ if __name__ == '__main__':
         print "Done."
         sys.exit(0)
 
-    if options.add:
-        if len(args) == 11:
-            print "%s" % args[10]
-            offer = Offer()
-            offer.load(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10])
-            db_add_offer(offer)
+    # if options.add:
+    #     if len(args) == 11:
+    #         print "%s" % args[10]
+    #         offer = Offer()
+    #         offer.load(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10])
+    #         db_add_offer(offer)
 
+    #     sys.exit(0)
+
+    if options.all:
+        utilities.blacklist_flush()
+        utilities.blocklist_load()
+        bot = JobCatcher()
+        bot.load_jobBoards()
+        bot.run()
+        utilities.report_generate(True)
+        utilities.report_generate(False)
         sys.exit(0)
 
     if options.create:
         utilities.db_create()
         sys.exit(0)
 
-    # TODO : change to "run"
     if options.start:
         bot = JobCatcher()
         bot.load_jobBoards()

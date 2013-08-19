@@ -72,6 +72,14 @@ def db_add_offer(offer):
         if conn:
             conn.close()
 
+def blacklist_flush():
+    conn = lite.connect("jobs.db")
+    cursor = conn.cursor()
+    sql = "DELETE FROM blacklist"
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
+
 def blocklist_load():
     url = "http://raw.github.com/yoannsculo/emploi/master/ssii/ssii_extended.csv"
     filename = url.split('/')[-1]
