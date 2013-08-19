@@ -134,14 +134,16 @@ def report_generate(filtered=True):
 
     report.write("<html><head>")
     report.write("<link href=\"./bootstrap.css\" rel=\"stylesheet\">")
-    report.write("<style>table{border:1px solid black; font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>")
+    report.write("<link href=\"./bootstrap-responsive.css\" rel=\"stylesheet\">")
+    report.write("<style>table{font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>")
     report.write("<meta http-equiv=\"Content-type\" content=\"text/html\"; charset=\"utf-8\"></head>")
-    report.write("<body><table class=\"table table-bordered\">")
+    report.write("<body>")
 
     report.write("<center><p><a href=\"report_filtered.html\">%s filtered offers (%.2f%%)</a>" %(count_filtered, 100*(float)(count_filtered)/count_full))
     report.write(" - %s blacklisted offers (%.2f%%)" %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full) )
     report.write(" - <a href=\"report_full.html\">All %s offers</a></p></center>" %(count_full) )
 
+    report.write("<table class=\"table table-condensed\">")
     report.write("<thead>")
     report.write("<tr>")
     report.write("<th>Pubdate</th>")
