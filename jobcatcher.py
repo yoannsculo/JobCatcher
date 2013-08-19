@@ -153,6 +153,9 @@ if __name__ == '__main__':
     parser.add_option('-b', '--blocklist',
                           action = 'store_true', dest = 'blocklist',
                           help = 'update blocklist')
+    parser.add_option('-f', '--flush',
+                          action = 'store_true', dest = 'flush',
+                          help = 'flush the blacklist and update it.')
 
     (options, args) = parser.parse_args(args)
 
@@ -202,3 +205,7 @@ if __name__ == '__main__':
         utilities.blocklist_load();
         sys.exit(0)
 
+    if options.flush:
+        utilities.blacklist_flush()
+        utilities.blocklist_load()
+        sys.exit(0)

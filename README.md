@@ -23,10 +23,11 @@ show me mistakes I could have made or improvements I could do.
 
 	python-html2text, python-requests, python-beautifulsoup
 
-## Usage
+## Usage (mainly development options for now)
 
 	./jobcatcher.py -c # To create database
 	./jobcatcher.py -b # To load my blacklist into the DB
+	./jobcatcher.py -f # To flush and update the blacklist
 	./jobcatcher.py -s # To fetch last offers
 	./jobcatcher.py -r # To generate reports
 	./jobcatcher.py -a # Sync the blacklist, fetch the offers and generates reports.
