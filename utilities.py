@@ -217,6 +217,7 @@ def filter_location_fr(location):
 
 def filter_salary_fr(salary):
     # TODO : use regexp once whe have a better view of possible combinations
+    # TODO : use something similar as ^...$
     salary = re.sub(ur'Selon diplôme et expérience', "NA", salary)
     salary = re.sub(ur'fixe + variable selon profil', "NA", salary)
     salary = re.sub(ur'Fixe+Variable selon profil', "NA", salary)
@@ -240,6 +241,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'Selon profil et expériences', "NA", salary)
     salary = re.sub(ur'Selon profil et expérience', "NA", salary)
     salary = re.sub(ur'selon profil et expérience +', "NA", salary)
+    salary = re.sub(ur'selon niveau d\'expérience', "NA", salary)
     salary = re.sub(ur'selon profil et expérience', "NA", salary)
     salary = re.sub(ur'selon profil et exp', "NA", salary)
     salary = re.sub(ur'selon profil et avantages', "NA", salary)
@@ -253,6 +255,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'selon profil', "NA", salary)
     salary = re.sub(ur'selon Profil', "NA", salary)
     salary = re.sub(ur'Selon Profil', "NA", salary)
+    salary = re.sub(ur'SELON PROFILS', "NA", salary)
     salary = re.sub(ur'SELON PROFIL', "NA", salary)
     salary = re.sub(ur'selo profil', "NA", salary)
     salary = re.sub(ur'Suivant profil', "NA", salary)
@@ -269,13 +272,17 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'selon exp.', "NA", salary)
     salary = re.sub(ur'Selon exp.', "NA", salary)
     salary = re.sub(ur'selon exp', "NA", salary)
+    salary = re.sub(ur'selon grille', "NA", salary)
+    salary = re.sub(ur'selon grilles', "NA", salary)
     salary = re.sub(ur'cf. annonce', "NA", salary)
     salary = re.sub(ur'suivant profil', "NA", salary)
+    salary = re.sub(ur'fixe + variable', "NA", salary)
     salary = re.sub(ur'grille fonction publique', "NA", salary)
     salary = re.sub(ur'Contrat Apprentissage', "NA", salary)
     salary = re.sub(ur'Salaire Attractif', "NA", salary)
     salary = re.sub(ur'à déterminer', "NA", salary)
     salary = re.sub(ur'à convenir', "NA", salary)
+    salary = re.sub(ur'A convenir', "NA", salary)
     salary = re.sub(ur'à débattre', "NA", salary)
     salary = re.sub(ur'à négocier', "NA", salary)
     salary = re.sub(ur'a négocier', "NA", salary)
@@ -316,7 +323,14 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'NC K€ brut/an', "NA", salary)
     salary = re.sub(ur'xx K€ brut/an', "NA", salary)
     # salary = re.sub(ur'0K€ brut/an', "NA", salary)
+    salary = re.sub(ur'--K€ brut/an', "NA", salary)
+    salary = re.sub(ur'- K€ brut/an', "NA", salary)
     salary = re.sub(ur'-K€ brut/an', "NA", salary)
+    salary = re.sub(ur'XK€ brut/an', "NA", salary)
+    salary = re.sub(ur'N/C', "NA", salary)
+    salary = re.sub(ur'N.C', "NA", salary)
+    salary = re.sub(ur'NC', "NA", salary)
+    salary = re.sub(ur'nc', "NA", salary)
 
     return salary
 
