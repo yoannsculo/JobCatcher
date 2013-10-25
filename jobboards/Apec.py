@@ -170,7 +170,7 @@ class ApecOffer(Offer):
                 if matchObj:
                     self.company = matchObj.group(1)
 
-            if (th.text == u'Type de contrat :'):
+            if (th.text == u'Type de contrat :' or th.text == u'Nombre de postes :'):
                 self.contract = HTMLParser().unescape(td.text)
                 self.cleanContract()
 

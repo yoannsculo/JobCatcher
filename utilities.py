@@ -194,7 +194,7 @@ def report_generate(filtered=True):
 
         if (offer.contract == ur'CDI' or offer.contract == ur'CDI (Cab/recrut)'):
             report.write('<td><span class="label label-success">'+ offer.contract +'</span></td>')
-        elif (offer.contract == ur'CDD'):
+        elif (offer.contract[:3] == ur'CDD'):
             report.write('<td><span class="label label-warning">'+ offer.contract +'</span></td>')
         else:
             report.write('<td><span class="label">'+ offer.contract +'</span></td>')
@@ -208,7 +208,9 @@ def report_generate(filtered=True):
 
 def filter_contract_fr(contract):
     contract = re.sub(ur'Perm', "CDI", contract)
-    contract = re.sub(ur'CDI\n\s*\(Cab\/recrut\)', "CDI", contract)
+    contract = re.sub(ur'[0-9]+ en (.*)', "\\1", contract, flags=re.DOTALL)
+    contract = re.sub(ur'.*CDI.*', "CDI", contract, flags=re.DOTALL)
+    contract = re.sub(ur'.*CDD.*de (.*)', "CDD de \\1", contract, flags=re.DOTALL)
     return contract
 
 def filter_location_fr(location):
