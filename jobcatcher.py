@@ -132,7 +132,10 @@ class JobCatcher():
 
     def run(self):
         for item in self.jobBoardList:
-            item.fetch()
+            try:
+                item.fetch()
+            except:
+                print "Ignored (parsing error)."
 
 if __name__ == '__main__':
     parser = OptionParser(usage = 'syntax: %prog [options] <from> [to]')
