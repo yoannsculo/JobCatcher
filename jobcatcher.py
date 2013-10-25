@@ -16,12 +16,15 @@ import requests
 from optparse import OptionParser
 from xml.dom import minidom
 import utilities
+import sqlite3 as lite
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
 class Jobboard():
-
+    name = ''
+    url = ''
+    lastFetch = ''
     dlDir = "./dl"
 
     def load(self, file):
@@ -30,12 +33,26 @@ class Jobboard():
     def fetch(self):
         ""
 
-    def processOffers(self):
+    def fetch_offer(self, url):
+        ""
+
+    def fetch_url(self, url):
         ""
 
     def processOffers(self):
         for file in os.listdir(self.processingDir):
             ret = self.processOffer(file)
+
+    def processOffer(self, file):
+        ""
+
+    def fetchAllOffersFromDB(self):
+        conn = lite.connect("jobs.db")
+        cursor = conn.cursor()
+        sql = "SELECT * FROM offers WHERE source='%s' ORDER BY date_pub DESC" %(self.name)
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        return data
 
 class Location():
 
@@ -179,6 +196,7 @@ if __name__ == '__main__':
         print "Report generation..."
         utilities.report_generate(True)
         utilities.report_generate(False)
+        utilities.statistics_generate()
         print "Done."
         sys.exit(0)
 
@@ -199,6 +217,7 @@ if __name__ == '__main__':
         bot.run()
         utilities.report_generate(True)
         utilities.report_generate(False)
+        utilities.statistics_generate()
         sys.exit(0)
 
     if options.url:

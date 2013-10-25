@@ -9,6 +9,7 @@ import sqlite3 as lite
 import datetime
 
 from jobcatcher import Offer
+from jobcatcher import JobCatcher
 
 def download_file(url, path="./"):
     filename = os.path.join(path, url.split('/')[-1])
@@ -109,6 +110,45 @@ def blocklist_load():
         if conn:
             conn.close()
 
+def statistics_generate():
+    html_dir = "./www"
+
+    conn = lite.connect("jobs.db")
+    cursor = conn.cursor()
+
+    stat = open(os.path.join(html_dir, 'statistics.html'), 'w')
+    stat.write("<html><head>")
+    stat.write("<link href=\"./bootstrap.css\" rel=\"stylesheet\">")
+    stat.write("<link href=\"./bootstrap-responsive.css\" rel=\"stylesheet\">")
+    stat.write("<style>table{font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>")
+    stat.write("<meta http-equiv=\"Content-type\" content=\"text/html\"; charset=\"utf-8\"></head>")
+    stat.write("<body>")
+
+    stat.write("<table class=\"table table-condensed\">")
+    stat.write("<thead>")
+    stat.write("<tr>")
+    stat.write("<th>JobBoard</th>")
+    stat.write("<th>Total Offers</th>")
+    stat.write("<th>Offers not from blacklist</th>")
+    stat.write("<th>Offers from blacklist</th>")
+    stat.write("</tr>")
+    stat.write("</thead>")
+
+    jb = JobCatcher()
+    jb.load_jobBoards()
+    for item in jb.jobBoardList:
+        data = item.fetchAllOffersFromDB()
+        stat.write("<tr>")
+        stat.write("<td><a href=\"%s\">%s</a></td>" %(item.url, item.name))
+        stat.write("<td>%s</td>" %(len(data)))
+        stat.write("<td></td>")
+        stat.write("<td></td>")
+        stat.write("</tr>")
+
+    stat.write("</table>")
+    stat.write("</html>")
+    stat.close()
+
 def report_generate(filtered=True):
 
     html_dir = "./www"
@@ -149,7 +189,8 @@ def report_generate(filtered=True):
 
     report.write("<center><p><a href=\"report_filtered.html\">%s filtered offers (%.2f%%)</a>" %(count_filtered, 100*(float)(count_filtered)/count_full))
     report.write(" - %s blacklisted offers (%.2f%%)" %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full) )
-    report.write(" - <a href=\"report_full.html\">All %s offers</a></p></center>" %(count_full) )
+    report.write(" - <a href=\"report_full.html\">All %s offers</a>" %(count_full) )
+    report.write(" - <a href=\"statistics.html\">Statistics</a></p></center>" )
 
     report.write("<table class=\"table table-condensed\">")
     report.write("<thead>")
