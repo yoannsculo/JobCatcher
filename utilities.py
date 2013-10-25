@@ -9,6 +9,7 @@ import sqlite3 as lite
 import datetime
 
 from jobcatcher import Offer
+from jobcatcher import JobCatcher
 
 def download_file(url, path="./"):
     filename = os.path.join(path, url.split('/')[-1])
@@ -109,6 +110,45 @@ def blocklist_load():
         if conn:
             conn.close()
 
+def statistics_generate():
+    html_dir = "./www"
+
+    conn = lite.connect("jobs.db")
+    cursor = conn.cursor()
+
+    stat = open(os.path.join(html_dir, 'statistics.html'), 'w')
+    stat.write("<html><head>")
+    stat.write("<link href=\"./bootstrap.css\" rel=\"stylesheet\">")
+    stat.write("<link href=\"./bootstrap-responsive.css\" rel=\"stylesheet\">")
+    stat.write("<style>table{font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>")
+    stat.write("<meta http-equiv=\"Content-type\" content=\"text/html\"; charset=\"utf-8\"></head>")
+    stat.write("<body>")
+
+    stat.write("<table class=\"table table-condensed\">")
+    stat.write("<thead>")
+    stat.write("<tr>")
+    stat.write("<th>JobBoard</th>")
+    stat.write("<th>Total Offers</th>")
+    stat.write("<th>Offers not from blacklist</th>")
+    stat.write("<th>Offers from blacklist</th>")
+    stat.write("</tr>")
+    stat.write("</thead>")
+
+    jb = JobCatcher()
+    jb.load_jobBoards()
+    for item in jb.jobBoardList:
+        data = item.fetchAllOffersFromDB()
+        stat.write("<tr>")
+        stat.write("<td><a href=\"%s\">%s</a></td>" %(item.url, item.name))
+        stat.write("<td>%s</td>" %(len(data)))
+        stat.write("<td></td>")
+        stat.write("<td></td>")
+        stat.write("</tr>")
+
+    stat.write("</table>")
+    stat.write("</html>")
+    stat.close()
+
 def report_generate(filtered=True):
 
     html_dir = "./www"
@@ -149,7 +189,8 @@ def report_generate(filtered=True):
 
     report.write("<center><p><a href=\"report_filtered.html\">%s filtered offers (%.2f%%)</a>" %(count_filtered, 100*(float)(count_filtered)/count_full))
     report.write(" - %s blacklisted offers (%.2f%%)" %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full) )
-    report.write(" - <a href=\"report_full.html\">All %s offers</a></p></center>" %(count_full) )
+    report.write(" - <a href=\"report_full.html\">All %s offers</a>" %(count_full) )
+    report.write(" - <a href=\"statistics.html\">Statistics</a></p></center>" )
 
     report.write("<table class=\"table table-condensed\">")
     report.write("<thead>")
@@ -194,7 +235,7 @@ def report_generate(filtered=True):
 
         if (offer.contract == ur'CDI' or offer.contract == ur'CDI (Cab/recrut)'):
             report.write('<td><span class="label label-success">'+ offer.contract +'</span></td>')
-        elif (offer.contract == ur'CDD'):
+        elif (offer.contract[:3] == ur'CDD'):
             report.write('<td><span class="label label-warning">'+ offer.contract +'</span></td>')
         else:
             report.write('<td><span class="label">'+ offer.contract +'</span></td>')
@@ -208,7 +249,9 @@ def report_generate(filtered=True):
 
 def filter_contract_fr(contract):
     contract = re.sub(ur'Perm', "CDI", contract)
-    contract = re.sub(ur'CDI\n\s*\(Cab\/recrut\)', "CDI", contract)
+    contract = re.sub(ur'[0-9]+ en (.*)', "\\1", contract, flags=re.DOTALL)
+    contract = re.sub(ur'.*CDI.*', "CDI", contract, flags=re.DOTALL)
+    contract = re.sub(ur'.*CDD.*de (.*)', "CDD de \\1", contract, flags=re.DOTALL)
     return contract
 
 def filter_location_fr(location):
@@ -230,6 +273,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'A négocier selon profil', "NA", salary)
     salary = re.sub(ur'A NEGOCIER SELON PROFIL', "NA", salary)
     salary = re.sub(ur'à négocier selon profil', "NA", salary)
+    salary = re.sub(ur'à négocier selon le profil', "NA", salary)
     salary = re.sub(ur'à déterminer selon profil', "NA", salary)
     salary = re.sub(ur'A négocier selon expérience', "NA", salary)
     salary = re.sub(ur'à négocier selon expérience', "NA", salary)
@@ -237,6 +281,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'à negocier K€ brut/an', "NA", salary)
     salary = re.sub(ur'A voir selon profil', "NA", salary)
     salary = re.sub(ur'Attractive et selon profil', "NA", salary)
+    salary = re.sub(ur'De débutant à confirmé', "NA", salary)
     salary = re.sub(ur'En fonction du profil', "NA", salary)
     salary = re.sub(ur'en fonction du profil', "NA", salary)
     salary = re.sub(ur'En fonction de votre profil', "NA", salary)
@@ -255,6 +300,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'selon le profil', "NA", salary)
     salary = re.sub(ur'Selon le profil', "NA", salary)
     salary = re.sub(ur'Selon profils', "NA", salary)
+    salary = re.sub(ur'Selon profile', "NA", salary)
     salary = re.sub(ur'Selon profil', "NA", salary)
     salary = re.sub(ur'selon profil', "NA", salary)
     salary = re.sub(ur'selon Profil', "NA", salary)
@@ -284,6 +330,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'grille fonction publique', "NA", salary)
     salary = re.sub(ur'Contrat Apprentissage', "NA", salary)
     salary = re.sub(ur'Salaire Attractif', "NA", salary)
+    salary = re.sub(ur'Salaire à négocier', "NA", salary)
     salary = re.sub(ur'à déterminer', "NA", salary)
     salary = re.sub(ur'A déterminer', "NA", salary)
     salary = re.sub(ur'à convenir', "NA", salary)
@@ -297,6 +344,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'A NEGOCIER', "NA", salary)
     salary = re.sub(ur'A negocier', "NA", salary)
     salary = re.sub(ur'à définir', "NA", salary)
+    salary = re.sub(ur'à défiinir', "NA", salary)
     salary = re.sub(ur'À définir', "NA", salary)
     salary = re.sub(ur'A définir', "NA", salary)
     salary = re.sub(ur'A DEFINIR', "NA", salary)
@@ -308,6 +356,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'à préciser', "NA", salary)
     salary = re.sub(ur'en fonction exp.', "NA", salary)
     salary = re.sub(ur'Negotiable', "NA", salary)
+    salary = re.sub(ur'negotiable', "NA", salary)
     salary = re.sub(ur'Négociable', "NA", salary)
     salary = re.sub(ur'négociable', "NA", salary)
     salary = re.sub(ur'negociable', "NA", salary)
