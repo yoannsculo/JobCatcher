@@ -1,5 +1,7 @@
 # JobCatcher
 
+![JobCatcher Screenshot](https://raw.github.com/yoannsculo/JobCatcher/master/screenshots/jobcatcher.png)
+
 JobCatcher is a daemon that retrieves job offers from multiple job boards feeds
 and generates custom RSS feeds and HTML reports for you. This is a decentralized
 software meant to run of your own server.
