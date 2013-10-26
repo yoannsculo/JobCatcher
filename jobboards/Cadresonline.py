@@ -14,6 +14,7 @@ from jobcatcher import JobCatcher
 from jobcatcher import Jobboard
 from jobcatcher import Offer
 from jobcatcher import Location
+from config import configs
 
 from xml.dom import minidom
 import datetime
@@ -47,14 +48,14 @@ class Cadresonline(Jobboard):
             link = elt.getElementsByTagName('link')[0].firstChild.data.split("?")[0]
             pubDate = elt.getElementsByTagName('pubDate')[0].firstChild.data
 
-        if (not os.path.isfile(os.path.join(self.processingDir, link.split('/')[-1]))):
+            if (not os.path.isfile(os.path.join(self.processingDir, link.split('/')[-1]))):
                 print "Downloading %s" % (link)
                 utilities.download_file(link, self.processingDir)
 
     def fetch(self):
         print "Fetching " + self.name
 
-        feed_list = ['http://www.cadresonline.com/resultat-emploi/feed.rss?flux=1&kw=developpeur&kt=1&jc=5t.0.1.2.3.4.5.6.7-10t.0.1.2.3.4.5.6.7.8&ct=0&dt=1374746615'] # Développeur
+        feed_list = configs['cadresonline']['feeds']
         if (not os.path.isdir(self.processingDir)):
                 os.makedirs(self.processingDir)
 

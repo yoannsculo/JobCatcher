@@ -21,6 +21,9 @@ import sqlite3 as lite
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
+from config import configs
+
+
 class Jobboard():
     name = ''
     url = ''
@@ -149,14 +152,15 @@ class JobCatcher():
 
     def run(self):
         for item in self.jobBoardList:
-            try:
-                print ""
-                print "=================================="
-                print item.name
-                print "=================================="
-                item.fetch()
-            except:
-                print "Ignored (parsing error)."
+            if not item.name in configs['global']['ignorefeeds']:
+                try:
+                    print ""
+                    print "=================================="
+                    print item.name
+                    print "=================================="
+                    item.fetch()
+                except:
+                    print "Ignored (parsing error)."
 
 if __name__ == '__main__':
     parser = OptionParser(usage = 'syntax: %prog [options] <from> [to]')
