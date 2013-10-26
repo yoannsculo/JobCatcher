@@ -1,200 +1,498 @@
-2S2I Solutions & Services;2s2isolutions.com
-A2MP;www.a2mp.com
-Abase;www.abase.fr
-Abylsen;www.abylsen.com
-Accenture;www.accenture.com
-ACTECH INGENIERIE;www.actech-ingenierie.fr
-ACTHOM CONSEIL ET INGENIERIE ;www.acthom.fr
-ACTION_SSI;www.actionssi.fr
-Adeneo Embedded;www.adeneo-embedded.com
-Adentis;www.adentis.fr
-Adetel Group;www.adetelgroup.com
-AES Embedded Systems;www.aes-embedded.com
-AFD Technologies;www.afdtech.com
-Afersys;www.afersys.com
-AGH Consulting;agh-consulting.com
-Agilitech;www.agilitech.fr
-Agylis;www.agylis.com
-Ajilon IT Consulting;www.ajilon.fr
-Aketys;www.aketys.com
-Akka Technologies;www.akka.eu
-ALL4TEST;www.all4test.com
-Alpha Technologie;www.alphatechnologie.fr
-Altelios Techology;www.alteliostechnology.fr
-Altelog;www.altelog.com
-Alten;www.alten.fr
-ALTER DEFENSE;www.alter-defense.com
-ALTER FRAME;www.alter-frame.com
-ALTER SOLUTIONS;www.alter-solutions.com
-Altim;www.altim-consulting.fr
-Alti;www.alti.com
-Altran;www.altran.com
-Alyotech Technologies;www.alyotech.fr
-Amarexia;www.amarexia.com
-Amaris;www.amaris.com
-Amesys;www.amesys.fr
-Ametix;www.ametix.com
-Amundis;www.amundis.fr
-Ankaa Engineering;www.ankaa-engineering.com
-Antares IT;www.groupe-antares.fr
-Anthemis Technologies;www.anthemis-technologies.com
-Apside;www.apside.fr
-APX;www.apx.fr
-ARealTI;www.arealti.com
-Arketeam;www.arketeam.com
-Artemys;www.artemys.fr
-Asap Conseil;asapconseil.com
-Assystem;www.assystem.com
-Astek;www.groupeastek.com
-Atlantic Technologies;www.atlantictechnologies.fr
-Atos Origin;fr.atos.net
-Aubay;www.aubay.com
-Ausy;www.ausy.com
-Avassys;www.avassys.com
-Avisto;www.avisto.com
-Axileo;www.axileo.fr
-AXPE Consulting;www.axpe.com
-Axupteam;www.axupteam.fr
-Azeo;www.azeo.com
-Azuriel Technologies;www.azuriel.fr
-BeMore;www.bemore.ch
-Bluestone;www.bluestone.fr
-Business & Decision;www.businessdecision.fr
-Capgemini;www.capgemini.com
-Celad;celad.com
-CELLA Group;www.cella.fr
-CISIF;www.cisif.fr
-CGI;www.cgi.com
-ClearSy;www.clearsy.com
-Computacenter;www.computacenter.fr
-Conix;www.conix.fr
-Consept;www.consept.fr
-Conserto;www.conserto.pro
-Consort NT;www.consortnt.fr
-CREATIVE ATLANTIQUE;www.creative-ingenierie.fr
-CREATIVE INGENIERIE;www.creative-ingenierie.fr
-CS Communication & Systemes;www.c-s.fr
-CSC;www.csc.com
-CTS;cts-corporate.com
-Cyclad;www.cyclad.fr
-Datus Sud-Ouest;www.datus-sudouest.com
-Davidson Consulting;www.davidson.fr
-Devoteam;www.devoteam.fr
-Diginext;www.diginext.fr
-Dimension Data;www.dimensiondata.com
-Dunasys;www.dunasys.com
-Econocom;www.econocom.com
-EDSI Technologie;www.edsi.fr
-Ekium;www.ekium.eu
-Eliquans;www.eliquans.fr
-Elsys Design;www.elsys-design.com
-Elysis Consulting;www.elysis.fr
-Eolen;www.eolen.com
-ESR Groupe Osiatis;www.esr.fr
-E-Teeq;www.e-teeq.fr
-Euriware;euriware.areva.com
-Eurogiciel;www.eurogiciel.fr
-Extia;www.extia.fr
-FREE EXPERT;www.free-expert.com
-Geensyde;www.geensyde.fr
-Genymobile;www.genymobile.com
-GFI Informatique;www.gfi.fr
-Groupe AFG;www.groupeafg.com
-HR Team;www.hr-team.net
-Humanlog;www.humanlog.fr
-Ice Tech;www.ice-tech.fr
-IKOS Consulting;www.ikosconsulting.com
-InckA;www.incka.fr
-INFORMATIS-TS;informatis-ts.fr
-Infotel;www.infotel.com
-Innovateam;www.innovateam.fr
-Insyweb;www.insyweb.fr
-integrytis;www.integrytis.com
-Intitek;www.intitek.fr
-Ipsis;www.ipsis.com
-ITEME Technologies;www.ambitio.fr/expertises/iteme-technologies
-ITIL Consulting;www.itilconsulting.fr
-IT Link System;www.itlink.fr
-IT&L@bs;www.itlabs.fr.orange-business.com
-Key Consulting;www.keyconsulting.fr
-Keyrus;www.keyrus.fr
-LabSoft;www.labsoft.fr
-LGM Ingénierie;www.lgm-ing.fr
-Linagora;www.linagora.com
-Links Consultants;www.links-consultants.com
-Links IT Services;www.links-its.com
-Logica;www.logica.fr
-Maten;www.maten.fr
-MATIS Technologies;fr.techno.matis-group.com
-MAYA Technologies;www.maya-technologies.com
-MCA Ingénierie;www.mca-ingenierie.fr
-Médiane Système;www.medianesysteme.com
-Metanext;www.metanext.com
-Micropole;www.micropole.com
-Modis;www.modisfrance.fr
-Neo-Soft Services;www.neo-soft.fr
-Neos-SDI;www.neos-sdi.com
-Neurones;www.neurones.net
-Nexeya;www.nexeya.fr
-Novasys Ingénierie;www.novasys-ingenierie.com
-NTT CORPORATE;www.nttcorporate.com
-Open Wide;www.openwide.fr
-Open;www.open-groupe.com
-Orange Consulting;www.orange-business.com/fr/orange-consulting
-Orange Business Services;www.orange-business.com/fr
-Osiatis;www.osiatis.com
-Osirés;www.osires-groupe.fr
-Overlap Groupe;www.overlap.fr
-Pacte Novation;www.pactenovation.fr
-Palo IT;www.palo-it.com
-Panda Services;www.pandaservices.fr
-PCO Innovation;www.pco-innovation.com
-Peaks;peaks.fr
-Planet Consultant;www.planet-consultant.com
-Pleiades Technologies;www.pleiades-technologies.com
-Progelog;www.progelog.com
-Prosodie;www.prosodie.fr
-Protectic;protectic.fr
-Proxiad;www.proxiad.com
-Qualipse;www.qualipse.fr
-Quantic Groupe;www.quantic.fr
-QUARTZ INGENIERIE;www.quartz-ingenierie.fr
-Rétinium;www.retinium.fr
-Right Place;www.rightplace.fr
-R2E CONSEIL;www.r2econseil.fr
-Sapiens Group;www.sapiensgroup.fr
-Sapiens NTIC;www.sapiens-ntic.fr
-SCC;france.scc.com
-Selfing;selfing.fr
-SERMA INGENIERIE;www.serma-ingenierie.com
-SII;www.groupe-sii.com
-Skyconseil;www.skyconseil.fr
-Sogetek Informatique;www.sogetek.fr
-Sogeti High Tech;www.sogeti-hightech.fr
-Solucom;www.solucom.fr
-Solutec;www.solutec.fr
-Sophia Conseil;www.sophiaconseil.fr
-Sopra Group;www.sopragroup.fr
-SPC Consultants;www.spcconsultants.com
-SQLI;www.sqli.com
-Squad;www.squad.fr
-Steria;www.steria.com
-Strathom Telecommunications;www.strathom.com
-Sword;www.sword-group.com
-Synchrone Technologies;www.synchrone-technologies.fr
-Tata Technologies;www.tatatechnologies.com
-Teamsquare;www.teamsquare.fr
-Technology & Strategy;www.technologyandstrategy.com
-Tenesea;www.tenesea.fr
-Thalès Services;thalesgroup.com
-TRSB;www.trsb.net
-Umanis;www.umanis.com
-u-need;www.u-need.fr
-UP Ingenierie;up-ingenierie.com
-Up Technologies;www.uptechnologies.fr
-Viseo;www.viseo.net
-Viveris Technologies;viveris.fr
-Wemagine;www.wemagine.fr
-XOOL Technologies;www.xool.fr
-Yatic;www.yatic.fr
-YGL Consulting;ygl-consulting.com
+2S2I Solutions & Services
+2S2I SOLUTIONS & SERVICES
+A2MP
+Abase
+ABASE
+ABASE CONSEIL ET DEVELOPPEMENT
+Abylsen
+ABYLSEN
+ABYLSEN EST
+Accenture
+ACCENTURE
+ACTECH INGENIERIE
+ACTHOM CONSEIL ET INGENIERIE
+ACTION_SSI
+Adeneo Embedded
+ADENEO EMBEDDED
+Adentis
+ADENTIS
+Adetel Group
+ADETEL GROUP
+AES Embedded Systems
+AES EMBEDDED SYSTEMS
+AFD Technologies
+AFD TECHNOLOGIES
+afersys
+Afersys
+AFERSYS
+AGH Consulting
+AGH CONSULTING
+Agilitech
+AGILITECH
+Agylis
+AGYLIS
+Ajilon IT Consulting
+AJILON IT CONSULTING
+Aketys
+AKETYS
+AKKA
+AKKA INFORMATIQUE ET SYSTEMES
+AKKA I&S
+AKKA I&S;
+Akka Technologies
+AKKA TECHNOLOGIES
+AKKA INGENIERIE PRODUIT
+ALL4TEST
+Alpha Technologie
+ALPHA TECHNOLOGIE
+Altelios Techology
+ALTELIOS TECHOLOGY
+Altelog
+ALTELOG
+Alten
+ALTEN
+ALTEN ITC
+ALTEN OUEST
+ALTEN PROVENCE
+ALTEN SUD-OUEST
+ALTEN REGIONS
+ALTER DEFENSE
+ALTER FRAME
+ALTER SOLUTIONS
+Alti
+ALTI
+Altim
+ALTIM
+Altim France
+ALTIM FRANCE
+Altran
+ALTRAN
+ALTRAN (OFFRES)
+ALTRAN  (OFFRES)
+ALTRAN OUEST
+ALTRAN RHONE ALPES
+ALTRAN SUISSE
+Alyotech Consulting
+ALYOTECH CONSULTING
+Alyotech Technologies
+ALYOTECH TECHNOLOGIES
+ALYOTECH ENGINEERING
+ALYOTECH
+Amarexia
+AMAREXIA
+Amaris
+AMARIS
+Amesys
+AMESYS
+Amesys Conseil
+AMESYS CONSEIL
+Amesys Techno
+AMESYS TECHNO
+Ametix
+AMETIX
+Amundis
+AMUNDIS
+Ankaa Engineering
+ANKAA ENGINEERING
+Antares IT
+ANTARES IT
+Anthemis Technologies
+ANTHEMIS TECHNOLOGIES
+Apside
+APSIDE
+APSIDE TECHNOLOGIES
+APSIDE INFOGERANCE
+APX
+ARealTI
+AREALTI
+Arketeam
+ARKETEAM
+Artemys
+ARTEMYS
+Asap Conseil
+ASAP CONSEIL
+Assystem
+ASSYSTEM
+Astek
+ASTEK
+ASTEK SUD OUEST
+Atlantic
+ATLANTIC
+Atlantic Technologies
+ATLANTIC TECHNOLOGIES
+Atos
+ATOS
+Atos Origin
+ATOS ORIGIN
+ATOS INTEGRATION
+Aubay
+AUBAY
+Ausy
+AUSY
+AUSY NORD EST
+Avassys
+AVASSYS
+Avisto
+AVISTO
+Axileo
+AXILEO
+AXPE Consulting
+AXPE CONSULTING
+Axupteam
+AXUPTEAM
+Azeo
+AZEO
+Azuriel Technologies
+AZURIEL TECHNOLOGIES
+Bemore
+BeMore
+BEMORE
+Bluestone
+BLUESTONE
+Business & Decision
+BUSINESS & DECISION
+Capgemini
+CAPGEMINI
+CAPGEMINI FRANCE
+Celad
+CELAD
+CELAD SAS
+Cella
+CELLA
+CELLA Group
+CELLA GROUP
+CELLA INFORMATIQUE
+CELLA INFORMATIQUE SARL
+CGI
+CISIF
+ClearSy
+CLEARSY
+Computacenter
+COMPUTACENTER
+Conix
+CONIX
+Consept
+CONSEPT
+Conserto
+CONSERTO
+Consort NT
+CONSORT NT
+CREATIVE ATLANTIQUE
+CREATIVE INGENIERIE
+CSC
+CS Communication & Systemes
+CS COMMUNICATION & SYSTEMES
+CS COMMUNICATION ET SYSTEMES
+CS SYSTEMES D'INFORMATION
+CTS
+Cyclad
+CYCLAD
+CYCLAD FRANCE
+Datus Sud-Ouest
+DATUS SUD OUEST
+Davidson Consulting
+DAVIDSON CONSULTING
+Devoteam
+DEVOTEAM
+Diginext
+DIGINEXT
+Dimension Data
+DIMENSION DATA
+Dunasys
+DUNASYS
+Econocom
+ECONOCOM
+EDSI
+EDSI Technologie
+EDSI TECHNOLOGIE
+Ekium
+EKIUM
+Ekium Group
+EKIUM GROUP
+Eliquans
+ELIQUANS
+Elsys Design
+ELSYS DESIGN
+Elysis
+ELYSIS
+ELYSIS Consulting
+ELYSIS CONSULTING
+Eolen
+EOLEN
+ESR
+ESR-Osiatis
+ESR Groupe Osiatis
+E-Teeq
+E-TEEQ
+Euriware
+EURIWARE
+Eurogiciel
+EUROGICIEL
+EUROGICIEL GROUPE
+EUROGICIEL INGENIERIE
+Extia
+EXTIA
+FREE EXPERT
+Geensyde
+GEENSYDE
+Genymobile
+GENYMOBILE
+GFI Informatique
+GFI INFORMATIQUE
+Groupe AFG
+GROUPE AFG
+GROUPE AFG ILE DE FRANCE PARIS
+GROUPE AKKA I & S
+GROUPE ALTELIOS TECHNOLOGY
+GROUPE ANTARES
+GROUPE AUSY SUD OUEST
+Groupe Cella
+GROUPE CELLA
+Groupe CELLA Informatique
+GROUPE NEXEYA
+Groupe Nexeya
+GROUPE OPEN
+HR Team
+HR TEAM
+Humanlog
+HUMANLOG
+Ice Tech
+ICE TECH
+IKOS Consulting
+IKOS CONSULTING
+InckA
+INCKA
+INFORMATIS-TS
+INFORMATIS TECHNOLOGY SYSTEM
+Infotel
+INFOTEL
+Innovateam
+INNOVATEAM
+Insyweb
+INSYWEB
+Integrytis
+INTEGRYTIS
+Intitek
+INTITEK
+ITEME Technologies
+ITEME TECHNOLOGIES
+ITIL Consulting
+ITIL CONSULTING
+IT&L@bs
+IT&L@BS
+IT&L;@BS
+IT Link
+IT Link System
+IT LINK SYSTEM
+Key Consulting
+KEY CONSULTING
+Keyrus
+KEYRUS
+LabSoft
+LABSOFT
+LGM Ingénierie
+LGM INGÉNIERIE
+Linagora
+LINAGORA
+Links IT Services
+LINKS IT SERVICES
+Links Consultants
+LINKS CONSULTANTS
+Logica
+LOGICA
+Maten
+MATEN
+MATIS Technologies
+MATIS TECHNOLOGIES
+MATIS TECHNOLOGIES M T
+MATIS TECHNOLOGIES  M T
+MAYA Technologies
+MAYA TECHNOLOGIES
+MCA Ingénierie
+MCA INGÉNIERIE
+MCA INGENIERIE
+Médiane Système
+MÉDIANE SYSTÈME
+MEDIANE SYSTEME
+Metanext
+METANEXT
+Micropole
+MICROPOLE
+Modis
+MODIS
+Néo-Soft
+Neo-Soft Services
+NEO-SOFT SERVICES
+NEO SOFT SERVICES
+NEO-SOFT PARTICIPATIONS
+Neos-SDI
+NEOS-SDI
+NEOS SOFTWARE DEVELOPP INTEGRATION
+Neurones
+NEURONES
+Nexeya
+NEXEYA
+Novasys Ingénierie
+NOVASYS INGÉNIERIE
+NTT CORPORATE
+Open
+OPEN
+Open Wide
+OPEN WIDE
+Orange Consulting
+ORANGE CONSULTING
+Orange Business Services
+ORANGE BUSINESS SERVICES
+Osiatis
+OSIATIS
+OSIATIS FRANCE
+OSIATIS INGENIERIE
+Osires
+Osirés
+OSIRÉS
+OSIRES
+Overlap Groupe
+OVERLAP GROUPE
+Pacte Novation
+PACTE NOVATION
+Palo IT
+PALO IT
+Panda Services
+PANDA SERVICES
+PCO Innovation
+PCO INNOVATION
+Peaks
+PEAKS
+Planet Consultant
+PLANET CONSULTANT
+Pleiades Technologies
+PLEIADES TECHNOLOGIES
+Progelog
+PROGELOG
+Prosodie
+PROSODIE
+Protectic
+Proxiad
+PROXIAD
+PROXIAD Group
+PROTECTIC
+Qualipse
+QUALIPSE
+Quantic
+QUANTIC
+Quantic Conseil
+QUANTIC CONSEIL
+Quantic Etudes
+QUANTIC ETUDES
+Quantic Groupe
+QUANTIC GROUPE
+Quantic Ouest
+QUANTIC OUEST
+Quantic Solutions
+QUANTIC SOLUTIONS
+Quantic Sud-Est
+QUANTIC SUD-EST
+Quantic Support
+QUANTIC SUPPORT
+QUARTZ INGENIERIE
+QUARTZ-INGENIERIE
+Rétinium
+RÉTINIUM
+RETINIUM
+Right Place
+RIGHT PLACE
+RIGHTPLACE
+R2E CONSEIL
+sapiens consulting
+SAPIENS CONSULTING
+Sapiens Group
+SAPIENS GROUP
+Sapiens NTIC
+SAPIENS NTIC
+SARL ARealTI
+SARL AREALTI
+SAS TEAMSQUARE
+SCC
+Selfing
+SELFING
+SERMA INGENIERIE
+SII
+SII Bordeaux
+SII Ile de France
+SII Nantes
+SII Niort
+SII Rennes
+SII Toulouse
+Skyconseil
+SKYCONSEIL
+Société pour l'Informatique Industrielle
+SOCIÉTÉ POUR L'INFORMATIQUE INDUSTRIELLE
+SOCIETE POUR L'INFORMATIQUE INDUSTRIEL
+Sogetek Informatique
+SOGETEK INFORMATIQUE
+Sogeti High Tech
+SOGETI HIGH TECH
+SOGETI FRANCE
+Sogeti
+SOGETI
+solucom
+SOLUCOM
+Solutec
+SOLUTEC
+Sophia Conseil
+SOPHIA CONSEIL
+Sopra Group
+SOPRA GROUP
+SPC Consultants
+SPC CONSULTANTS
+SQLI
+Squad
+SQUAD
+Steria
+STERIA
+Strathom
+STRATHOM
+Strathom Telecommunications
+STRATHOM TELECOMMUNICATIONS
+Sword
+SWORD
+Sword Group
+SWORD GROUP
+Synchrone Technologies
+SYNCHRONE TECHNOLOGIES
+SYNCHRONE
+Tata Technologies
+TATA TECHNOLOGIES
+TATA TECHNOLOGIES EUROPE
+Teamsquare
+TEAMSQUARE
+Technology & Strategy
+TECHNOLOGY & STRATEGY
+Tenesea
+TENESEA
+THALES SERVICES
+Thalès Services
+THALÈS SERVICES
+THALES Services
+THALES SERVICES SAS
+TRSB
+u-need
+U-NEED
+Umanis
+UMANIS
+UP Ingenierie
+UP INGENIERIE
+Up Technologies
+UP TECHNOLOGIES
+Viseo
+VISEO
+Viveris Technologies
+VIVERIS TECHNOLOGIES
+Wemagine
+WEMAGINE
+XOOL Technologies
+XOOL TECHNOLOGIES
+Yatic
+YATIC
+YGL Consulting
+YGL CONSULTING
