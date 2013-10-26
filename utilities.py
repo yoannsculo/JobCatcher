@@ -82,19 +82,11 @@ def blacklist_flush():
     conn.close()
 
 def blocklist_load():
-    url = "http://raw.github.com/yoannsculo/emploi/master/ssii/ssii_extended.csv"
-    filename = url.split('/')[-1]
-    file = urllib.urlopen(url, filename);
+    fp = open('blacklist_company.txt','r') #iso-8859-1
     list = []
-    for line in file:
+    for line in fp:
         company = unicode(line.rstrip('\n'))
         list.append([company])
-
-    # fp = open('/home/yoann/dev/emploi/ssii/ssii_extended.csv','r') #iso-8859-1
-    # list = []
-    # for line in fp:
-    #     line = unicode(line.rstrip('\n'))
-    #     list.append([line])
 
     try:
         conn = lite.connect("jobs.db")
