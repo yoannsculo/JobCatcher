@@ -79,8 +79,19 @@ class Location():
         self.lat = res.getAttribute('lat')
         self.lon = res.getAttribute('lon')
 
+
 class Offer():
+    def __init__(self):
+        self.title = u""
+        self.company = u""
+        self.contract = u""
+        self.location = u""
+        self.salary = u""
+        self.url = u""
+        self.content = u""
+
     def load(self, src, ref, date_pub, date_add, title, company, contract, location, lat, lon, salary, url, content):
+
         self.src = src
         self.ref = ref
 
@@ -153,14 +164,18 @@ class JobCatcher():
     def run(self):
         for item in self.jobBoardList:
             if not item.name in configs['global']['ignorefeeds']:
-                try:
-                    print ""
-                    print "=================================="
-                    print item.name
-                    print "=================================="
+                print ""
+                print "=================================="
+                print item.name
+                print "=================================="
+
+                if configs['global']['debug']:
                     item.fetch()
-                except:
-                    print "Ignored (parsing error)."
+                else:
+                    try:
+                        item.fetch()
+                    except:
+                        print "Ignored (parsing error)."
 
 if __name__ == '__main__':
     parser = OptionParser(usage = 'syntax: %prog [options] <from> [to]')
