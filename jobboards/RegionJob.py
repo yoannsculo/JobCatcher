@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__authors__ = 'Guillaume DAVID'
+__authors__ = [
+    'Guillaume DAVID',
+    'Bruno Adelé <bruno@adele.im>',
+]
 __license__ = 'GPLv2'
 __version__ = '0.1'
 
@@ -13,6 +16,7 @@ from jobcatcher import JobCatcher
 from jobcatcher import Jobboard
 from jobcatcher import Offer
 from jobcatcher import Location
+from config import configs
 
 from xml.dom import minidom
 import datetime
@@ -21,13 +25,13 @@ import utilities
 from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
 
-class RegionOuest(Jobboard):
+class RegionJob(Jobboard):
 
     def __init__(self):
-        self.name = "OUESTJOB"
-        self.url = "http://www.ouestjob.com"
+        self.name = "REGIONJOB"
+        self.url = "http://www.regionjob.com"
         self.lastFetch = ""
-        self.processingDir = self.dlDir + "/ouestjob"
+        self.processingDir = self.dlDir + "/regionjob"
         self.lastFetchDate = 0
 
     def fetch_url(self, url):
@@ -37,7 +41,11 @@ class RegionOuest(Jobboard):
         xmldoc = minidom.parse(os.path.join(self.processingDir, filename))
 
         MainPubDate = xmldoc.getElementsByTagName('pubDate')[0].firstChild.data
-        epochPubDate = datetime.datetime.strptime(MainPubDate, "%a, %d %b %Y %H:%M:%S +0200").strftime('%s')
+        try:
+            epochPubDate = datetime.datetime.strptime(MainPubDate, "%a, %d %b %Y %H:%M:%S +0100").strftime('%s')
+        except:
+            epochPubDate = datetime.datetime.strptime(MainPubDate, "%a, %d %b %Y %H:%M:%S +0200").strftime('%s')
+
         print "main date " + MainPubDate
 
         # if (epochPubDate <= self.lastFetchDate):
@@ -63,7 +71,7 @@ class RegionOuest(Jobboard):
     def fetch(self):
         print "Fetching " + self.name
 
-        feed_list = ['http://www.ouestjob.com/fr/rss/flux.aspx?&fonction=22&qualification=2'] # devel hardware
+        feed_list = configs['regionjob']['feeds']
 
         if (not os.path.isdir(self.processingDir)):
                 os.makedirs(self.processingDir)
@@ -78,7 +86,7 @@ class RegionOuest(Jobboard):
             if (not file.lower().startswith('offre')):
                     continue
 
-            offer = OuestOffer()
+            offer = PacaOffer()
             offer.ref = file.split('=')[1]
             offer.ref = offer.ref.split('&')[0]
             print "Processing %s" % (offer.ref)
@@ -96,10 +104,14 @@ class RegionOuest(Jobboard):
     def setup(self):
         print "setup " + self.name
 
-class OuestOffer(Offer):
+class PacaOffer(Offer):
 
-    src     = 'OUESTJOB'
+    src     = 'REGIONJOB'
     license = ''
+
+    def __init__(self):
+        Offer.__init__(self)
+        self.currentsite = ""
 
     def loadFromHtml(self, filename):
         fd = open(filename, 'rb')
@@ -107,6 +119,18 @@ class OuestOffer(Offer):
         fd.close()
 
         soup = BeautifulSoup(html, fromEncoding="UTF-8")
+
+
+        # Search region
+        res = soup.body.find('div', attrs={'id':'header_interne'})
+        if not res:
+            return -1
+
+        res =  res.find('a', href = True)
+        if not res:
+            return -1
+
+        self.currentsite = res['href'][:-1]
 
         # Offer still available ?
         res = soup.body.find('div', attrs={'class':'boxSingleMain box'})
@@ -147,7 +171,10 @@ class OuestOffer(Offer):
 
 	self.salary = u'NA'
 
-        self.url = "http://www.ouestjob.com/clients/offres_chartees/" + os.path.basename(filename).split( '&' )[0]
+        self.url = "%s/clients/offres_chartees/%s" % (
+            self.currentsite,
+            os.path.basename(filename).split('&')[0],
+        )
 
         return 0
 
