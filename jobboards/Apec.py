@@ -13,6 +13,7 @@ from jobcatcher import JobCatcher
 from jobcatcher import Jobboard
 from jobcatcher import Offer
 from jobcatcher import Location
+from config import configs
 
 from xml.dom import minidom
 import datetime
@@ -74,9 +75,7 @@ class Apec(Jobboard):
     def fetch(self):
         print "Fetching " + self.name
 
-        feed_list = ['http://www.apec.fr/fluxRss/XML/OffresCadre_F101833.xml', # informatique
-                     'http://www.apec.fr/fluxRss/XML/OffresCadre_F101810.xml', # informatique industrielle
-                     'http://www.apec.fr/fluxRss/XML/OffresCadre_F101813.xml'] # système, réseaux, donnée
+        feed_list = configs['apec']['feeds']
 
         if (not os.path.isdir(self.processingDir)):
                 os.makedirs(self.processingDir)

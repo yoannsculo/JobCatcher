@@ -150,6 +150,10 @@ class JobCatcher():
     def run(self):
         for item in self.jobBoardList:
             try:
+                print ""
+                print "=================================="
+                print item.name
+                print "=================================="
                 item.fetch()
             except:
                 print "Ignored (parsing error)."
