@@ -36,12 +36,27 @@ def getNow():
     return time.time()
 
 
-def download_file(url, filename, encoding='iso-8859-1'):
-    f = urllib.urlopen(url, filename)
-    out = open(filename, 'wb')
-    # Let's force encoding
-    out.write(unicode(f.read(), encoding))
-    out.close()
+def download_file(url, filename, forcedownload=False,
+                  age=60 * 60, encoding='iso-8859-1'):  # TODO: manage enconding
+
+    # Check if i must download a file
+    destdir = os.path.dirname(filename)
+
+    now = getNow()
+    t = getModificationFile(filename)
+
+    # Download a file
+    if forcedownload or not t or t + (age * 60) < now:
+        if (not os.path.isdir(destdir)):
+            os.makedirs(destdir)
+
+        print "Download %s " % url
+        f = urllib.urlopen(url, filename)
+        out = open(filename, 'wb')
+        # Let's force encoding
+        out.write(unicode(f.read(), encoding))
+        out.close()
+
 
 def db_create():
     conn = None
