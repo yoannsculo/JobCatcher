@@ -1,26 +1,46 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# System
 import os
 import re
-import urllib2 as urllib
-from xml.dom import minidom
+import time
+import hashlib
 import sqlite3 as lite
-import datetime
+import urllib2 as urllib
 
+# Jobcatcher
 from jobcatcher import Offer
 from jobcatcher import JobCatcher
 
-def download_file(url, path="./"):
-    filename = os.path.join(path, url.split('/')[-1])
-    file = urllib.urlopen(url, filename);
-    out = open(filename,'wb') #iso-8859-1
-    #encoding=file.headers #['content-type'].split('charset=')[-1]
-    #print encoding
-    #ucontent = unicode(content, encoding)
-    # Python sees "Content-Type: text/html" for Apec pages, no charset information...
+
+def md5(datas):
+    """Calc md5sum string datas"""
+    return hashlib.md5(datas).hexdigest()
+
+
+def getModificationFile(filename):
+    """ Get a modification file (in timestamp)"""
+    t = None
+
+    try:
+        t = os.path.getmtime(filename)
+    except:
+        pass
+
+    return t
+
+
+def getNow():
+    """Get now timestamp"""
+    return time.time()
+
+
+def download_file(url, filename, encoding='iso-8859-1'):
+    f = urllib.urlopen(url, filename)
+    out = open(filename, 'wb')
     # Let's force encoding
-    out.write(unicode(file.read(), 'iso-8859-1'))
+    out.write(unicode(f.read(), encoding))
     out.close()
 
 def db_create():
