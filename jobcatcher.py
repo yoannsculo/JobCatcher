@@ -24,6 +24,68 @@ sys.setdefaultencoding("utf-8")
 from config import configs
 
 
+class FeedDownloader(object):
+    """A class for dowload a feed or a HTML page"""
+
+    def __init__(self, rootdir='/tmp', configs = [], interval = 20):
+        self._rootdir = rootdir
+        self._configs = configs
+        self._interval = interval * 60
+
+    @property
+    def rootdir(self):
+        return self._rootdir
+
+    @rootdir.setter  
+    def rootdir(self, value):
+        self._rootdir = value
+
+    @property
+    def interval(self):
+        return self._interval
+
+    @rootdir.setter  
+    def interval(self, value):
+        self._interval = value * 60
+
+    @property
+    def configs(self):
+        return self._configs
+
+    @rootdir.setter
+    def configs(self, value):
+        self._configs = value
+
+    def downloads(self, forcedownload=False):
+        """Download all feeds or HTMLs pages"""
+        for j in self._configs:
+            if j not in self._configs['global']['ignorejobboard']:
+                if 'feeds' in self._configs[j]:
+                    feeds = self._configs[j]['feeds']
+
+                    # Donwload all feeds for jobboard
+                    for url in feeds:
+                        self.downloadFeed(j, url, forcedownload)
+
+    def downloadFeed(self, jobboardname, url, forcedownload=False):
+        """Download a feed or a HTML page"""
+
+        destdir = "%s/%s" % (self.rootdir, jobboardname)
+        md5 = utilities.md5(url)
+        saveto = "%s/%s.feed" % (destdir, md5)
+
+        # Check if i must download a file
+        now = utilities.getNow()
+        t = utilities.getModificationFile(saveto)
+
+        # Download a file
+        if forcedownload or t + self._interval < now:
+            print "Download %s feed [%s] %s" % (jobboardname, md5, url)
+            if (not os.path.isdir(destdir)):
+                os.makedirs(destdir)
+                utilities.download_file(url, saveto)
+
+
 class Jobboard():
     name = ''
     url = ''
@@ -150,6 +212,11 @@ class JobCatcher():
         """
         import glob
         import importlib
+
+        fd = FeedDownloader('./dl')
+        fd.configs = configs
+        fd.downloads()
+        sys.exit()
 
         for file in glob.glob("./jobboards/*.py"):
             name = os.path.splitext(os.path.basename(file))[0]
