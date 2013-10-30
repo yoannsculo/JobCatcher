@@ -30,7 +30,7 @@ class FeedDownloader(object):
     def __init__(self, rootdir='/tmp', configs = [], interval = 20):
         self._rootdir = rootdir
         self._configs = configs
-        self._interval = interval * 60
+        self._interval = interval
 
     @property
     def rootdir(self):
@@ -42,11 +42,13 @@ class FeedDownloader(object):
 
     @property
     def interval(self):
+        """Get interval in minute"""
         return self._interval
 
     @rootdir.setter  
     def interval(self, value):
-        self._interval = value * 60
+        """Set interval in minute"""
+        self._interval = value
 
     @property
     def configs(self):
@@ -56,7 +58,7 @@ class FeedDownloader(object):
     def configs(self, value):
         self._configs = value
 
-    def downloads(self, forcedownload=False):
+    def downloadFeeds(self, forcedownload=False):
         """Download all feeds or HTMLs pages"""
         for j in self._configs:
             if j not in self._configs['global']['ignorejobboard']:
@@ -70,20 +72,21 @@ class FeedDownloader(object):
     def downloadFeed(self, jobboardname, url, forcedownload=False):
         """Download a feed or a HTML page"""
 
-        destdir = "%s/%s" % (self.rootdir, jobboardname)
+        destdir = "%s/%s/feeds" % (self.rootdir, jobboardname)
         md5 = utilities.md5(url)
         saveto = "%s/%s.feed" % (destdir, md5)
+        utilities.download_file(
+            url, saveto, forcedownload, self._interval * 60)
 
-        # Check if i must download a file
-        now = utilities.getNow()
-        t = utilities.getModificationFile(saveto)
+    def downloadPages(self, jobboardname, urls):
+        """Download all pages from urls list"""
+        destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
 
-        # Download a file
-        if forcedownload or t + self._interval < now:
-            print "Download %s feed [%s] %s" % (jobboardname, md5, url)
-            if (not os.path.isdir(destdir)):
-                os.makedirs(destdir)
-                utilities.download_file(url, saveto)
+        for u in urls:
+            md5 = utilities.md5(u)
+            saveto = "%s/%s.page" % (destdir, md5)
+            utilities.download_file(u, saveto, False, self._interval * 60)
+
 
 
 class Jobboard():
@@ -213,34 +216,45 @@ class JobCatcher():
         import glob
         import importlib
 
-        fd = FeedDownloader('./dl')
-        fd.configs = configs
-        fd.downloads()
-        sys.exit()
 
         for file in glob.glob("./jobboards/*.py"):
             name = os.path.splitext(os.path.basename(file))[0]
+            if name != "Eures":
+                continue
             if (name == '__init__'):
                 continue
 
             module = importlib.import_module('jobboards.'+name);
             moduleClass = getattr(module, name)
-            instance = moduleClass()
+            instance = moduleClass(configs)
             self.jobBoardList.append(instance)
 
     def run(self):
-        for item in self.jobBoardList:
-            if not item.name in configs['global']['ignorefeeds']:
+        # Download all feeds from configs file
+        fd = FeedDownloader(configs['global']['rootdir'])
+        fd.configs = configs
+        fd.downloadFeeds()
+
+        for jobboard in self.jobBoardList:
+            if jobboard.name not in configs['global']['ignorejobboard']:
                 print ""
                 print "=================================="
-                print item.name
+                print jobboard.name
                 print "=================================="
 
+
+                if jobboard.name != "Eures":
+                    continue
+
+                urls = jobboard.getUrls()
+                fd.downloadPages(jobboard.name, urls)
+                sys.exit()
+
                 if configs['global']['debug']:
-                    item.fetch()
+                    jobboard.fetch()
                 else:
                     try:
-                        item.fetch()
+                        jobboard.fetch()
                     except:
                         print "Ignored (parsing error)."
 
