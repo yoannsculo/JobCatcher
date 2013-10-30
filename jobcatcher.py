@@ -210,7 +210,7 @@ class JobCatcher():
 
     jobBoardList = []
 
-    def load_jobBoards(self):
+    def loadPlugins(self):
         """ load all jobboards from jobboards directory
         """
         import glob
@@ -230,10 +230,8 @@ class JobCatcher():
             self.jobBoardList.append(instance)
 
     def run(self):
-        # Download all feeds from configs file
         fd = FeedDownloader(configs['global']['rootdir'])
         fd.configs = configs
-        fd.downloadFeeds()
 
         for jobboard in self.jobBoardList:
             if jobboard.name not in configs['global']['ignorejobboard']:
@@ -278,6 +276,9 @@ if __name__ == '__main__':
     parser.add_option('-s', '--start',
                           action = 'store_true', dest = 'start',
                           help = 'start the fetch')
+    parser.add_option('-p', '--parse',
+                          action = 'store_true', dest = 'parse',
+                          help = 'Parse feeds content')
     parser.add_option('-b', '--blocklist',
                           action = 'store_true', dest = 'blocklist',
                           help = 'update blocklist')
@@ -341,8 +342,15 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if options.start:
+        print "Try to load a feed"
+        fd = FeedDownloader(configs['global']['rootdir'])
+        fd.configs = configs
+        fd.downloadFeeds()
+        print "Done."
+
+    if options.parse:
         bot = JobCatcher()
-        bot.load_jobBoards()
+        bot.loadPlugins()
         bot.run()
         sys.exit(0)
 
