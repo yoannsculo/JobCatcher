@@ -5,18 +5,29 @@ __authors__ = 'Bruno Adelé <bruno@adele.im>'
 __license__ = 'GPLv2'
 __version__ = '0.1'
 
+# TODO
+# https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?lg=FR&isco=%25&multipleCountries=FR-R281&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=99&page=1&country=FR&totalCount=781&multipleRegions=R281
+# http://www.jobijoba.com
+# http://candidat.pole-emploi.fr/candidat/rechercheoffres/resultatsrechercheparparametres?lieux=34D,91R&grandDomaine=K&offresPartenaires=true
+
 configs = {
     'global': {
-        'debug': False,
-        'ignorefeeds': [
-            # 'SUDOUESTJOB',
-            # 'OUESTJOB',
-            # 'CENTREJOB',
-            # 'PROGRESSIVE',
-            # 'Lolix',
+        'debug': True,
+        'rootdir': './dl',
+        'ignorejobboard': [
+            'apec',
+            'cadresonline',
+            'regionjob',
 
-            # 'APEC',
-            # 'Cadresonline',
+            'SUDOUESTJOB',
+            'OUESTJOB',
+            'CENTREJOB',
+            'PROGRESSIVE',
+            'Lolix',
+
+            'APEC',
+            'Cadresonline',
+            'REGIONJOB',
         ]
     },
     'apec': {
@@ -38,6 +49,12 @@ configs = {
     'regionjob': {
         'feeds': [
             'http://www.pacajob.com/fr/rss/flux.aspx?&fonction=22&qualification=2',
+            # 'http://www.pacajob.com/fr/rss/flux.aspx?ville=9&fonction=19'
+        ]
+    },
+    'Eures': {
+        'feeds': [
+            'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?lg=FR&isco=%25&multipleCountries=FR-R281&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=99&page=1&country=FR&totalCount=781&multipleRegions=R281',
             # 'http://www.pacajob.com/fr/rss/flux.aspx?ville=9&fonction=19'
         ]
     }
