@@ -8,10 +8,13 @@ __version__ = '1.0'
 
 import os
 import sys
+import glob
 import datetime
 import codecs
 import html2text
 import requests
+import importlib
+
 
 from optparse import OptionParser
 from xml.dom import minidom
@@ -27,7 +30,7 @@ from config import configs
 class FeedDownloader(object):
     """A class for dowload a feed or a HTML page"""
 
-    def __init__(self, rootdir='/tmp', configs = [], interval = 1200):
+    def __init__(self, rootdir='/tmp', configs=[], interval=1200):
         self._rootdir = rootdir
         self._configs = configs
         self._interval = interval
@@ -60,14 +63,14 @@ class FeedDownloader(object):
 
     def downloadFeeds(self, forcedownload=False):
         """Download all feeds or HTMLs pages"""
-        for j in self._configs:
-            if j not in self._configs['global']['ignorejobboard']:
-                if 'feeds' in self._configs[j]:
-                    feeds = self._configs[j]['feeds']
+        for jobboardname in self._configs:
+            if jobboardname not in self._configs['global']['ignorejobboard']:
+                if 'feeds' in self._configs[jobboardname]:
+                    feeds = self._configs[jobboardname]['feeds']
 
                     # Donwload all feeds for jobboard
                     for url in feeds:
-                        self.downloadFeed(j, url, forcedownload)
+                        self.downloadFeed(jobboardname, url, forcedownload)
 
     def downloadFeed(self, jobboardname, url, forcedownload=False):
         """Download a feed or a HTML page"""
@@ -87,7 +90,20 @@ class FeedDownloader(object):
             saveto = "%s/%s.page" % (destdir, md5)
             utilities.downloadFile(u, saveto, self._interval)
 
+    def analyzesPages(self):
+        """Analyze downloaded pages"""
+        for jobboardname in self._configs:
+            if jobboardname not in self._configs['global']['ignorejobboard']:
+                if 'feeds' in self._configs[jobboardname]:
+                    module = importlib.import_module(
+                        'jobboards.%s' % jobboardname
+                    )
+                    moduleClass = getattr(module, jobboardname)
+                    plugin = moduleClass(configs)
 
+                    destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
+                    for p in glob.glob("%s/*.page" % destdir):
+                        print p
 
 class Jobboard():
     name = ''
@@ -213,9 +229,6 @@ class JobCatcher():
     def loadPlugins(self):
         """ load all jobboards from jobboards directory
         """
-        import glob
-        import importlib
-
 
         for file in glob.glob("./jobboards/*.py"):
             name = os.path.splitext(os.path.basename(file))[0]
@@ -266,10 +279,17 @@ def feeddownload():
     fd.configs = configs
     fd.downloadFeeds()
 
+
 def pagesdownload():
     bot = JobCatcher()
     bot.loadPlugins()
     bot.run()
+
+
+def pagesinsert():
+    fd = FeedDownloader(configs['global']['rootdir'])
+    fd.configs = configs
+    fd.analyzesPages()
 
 
 if __name__ == '__main__':
@@ -295,6 +315,9 @@ if __name__ == '__main__':
     parser.add_option('-p', '--pages',
                           action = 'store_true', dest = 'pages',
                           help = 'Pages download')
+    parser.add_option('-i', '--insert',
+                          action = 'store_true', dest = 'insert',
+                          help = 'Insert pages')
     # parser.add_option('-b', '--blocklist',
     #                       action = 'store_true', dest = 'blocklist',
     #                       help = 'update blocklist')
@@ -363,6 +386,10 @@ if __name__ == '__main__':
 
     if options.pages:
         pagesdownload()
+        sys.exit(0)
+
+    if options.insert:
+        pagesinsert()
         sys.exit(0)
 
     if options.blocklist:
