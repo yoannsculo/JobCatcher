@@ -256,6 +256,23 @@ class JobCatcher():
                     except:
                         print "Ignored (parsing error)."
 
+
+def initblacklist():
+    utilities.blacklist_flush()
+    utilities.blocklist_load()
+
+
+def feeddownload():
+    fd = FeedDownloader(configs['global']['rootdir'])
+    fd.configs = configs
+    fd.downloadFeeds()
+
+def pagesdownload():
+    bot = JobCatcher()
+    bot.loadPlugins()
+    bot.run()
+
+
 if __name__ == '__main__':
     parser = OptionParser(usage = 'syntax: %prog [options] <from> [to]')
     args = sys.argv[1:]
@@ -276,12 +293,12 @@ if __name__ == '__main__':
     parser.add_option('-s', '--start',
                           action = 'store_true', dest = 'start',
                           help = 'start the fetch')
-    parser.add_option('-p', '--parse',
-                          action = 'store_true', dest = 'parse',
-                          help = 'Parse feeds content')
-    parser.add_option('-b', '--blocklist',
-                          action = 'store_true', dest = 'blocklist',
-                          help = 'update blocklist')
+    parser.add_option('-p', '--pages',
+                          action = 'store_true', dest = 'pages',
+                          help = 'Pages download')
+    # parser.add_option('-b', '--blocklist',
+    #                       action = 'store_true', dest = 'blocklist',
+    #                       help = 'update blocklist')
     parser.add_option('-u', '--url',
                           action = 'store_true', dest = 'url',
                           help = 'analyse an url')
@@ -315,11 +332,9 @@ if __name__ == '__main__':
     #     sys.exit(0)
 
     if options.all:
-        utilities.blacklist_flush()
-        utilities.blocklist_load()
-        bot = JobCatcher()
-        bot.load_jobBoards()
-        bot.run()
+        initblacklist()
+        feeddownload()
+        pagesdownload()
         utilities.report_generate(True)
         utilities.report_generate(False)
         utilities.statistics_generate()
@@ -343,15 +358,12 @@ if __name__ == '__main__':
 
     if options.start:
         print "Try to load a feed"
-        fd = FeedDownloader(configs['global']['rootdir'])
-        fd.configs = configs
-        fd.downloadFeeds()
+        feeddownload()
         print "Done."
+        sys.exit(0)
 
-    if options.parse:
-        bot = JobCatcher()
-        bot.loadPlugins()
-        bot.run()
+    if options.pages:
+        pagesdownload()
         sys.exit(0)
 
     if options.blocklist:
@@ -359,6 +371,5 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if options.flush:
-        utilities.blacklist_flush()
-        utilities.blocklist_load()
+        initblacklist()
         sys.exit(0)
