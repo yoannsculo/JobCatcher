@@ -36,8 +36,8 @@ def getNow():
     return time.time()
 
 
-def download_file(url, filename, forcedownload=False,
-                  age=60 * 60, encoding='iso-8859-1'):  # TODO: manage enconding
+def downloadFile(url, filename, age=60,
+                 forcedownload=False, encoding='iso-8859-1'):  # TODO: manage enconding
 
     # Check if i must download a file
     destdir = os.path.dirname(filename)
@@ -46,7 +46,7 @@ def download_file(url, filename, forcedownload=False,
     t = getModificationFile(filename)
 
     # Download a file
-    if forcedownload or not t or t + (age * 60) < now:
+    if forcedownload or not t or t + (age) < now:
         if (not os.path.isdir(destdir)):
             os.makedirs(destdir)
 

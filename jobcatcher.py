@@ -27,7 +27,7 @@ from config import configs
 class FeedDownloader(object):
     """A class for dowload a feed or a HTML page"""
 
-    def __init__(self, rootdir='/tmp', configs = [], interval = 20):
+    def __init__(self, rootdir='/tmp', configs = [], interval = 1200):
         self._rootdir = rootdir
         self._configs = configs
         self._interval = interval
@@ -75,8 +75,8 @@ class FeedDownloader(object):
         destdir = "%s/%s/feeds" % (self.rootdir, jobboardname)
         md5 = utilities.md5(url)
         saveto = "%s/%s.feed" % (destdir, md5)
-        utilities.download_file(
-            url, saveto, forcedownload, self._interval * 60)
+        utilities.downloadFile(
+            url, saveto, self._interval)
 
     def downloadPages(self, jobboardname, urls):
         """Download all pages from urls list"""
@@ -85,7 +85,7 @@ class FeedDownloader(object):
         for u in urls:
             md5 = utilities.md5(u)
             saveto = "%s/%s.page" % (destdir, md5)
-            utilities.download_file(u, saveto, False, self._interval * 60)
+            utilities.downloadFile(u, saveto, self._interval)
 
 
 
@@ -235,14 +235,13 @@ class JobCatcher():
 
         for jobboard in self.jobBoardList:
             if jobboard.name not in configs['global']['ignorejobboard']:
+                if jobboard.name != "Eures":
+                    continue
+
                 print ""
                 print "=================================="
                 print jobboard.name
                 print "=================================="
-
-
-                if jobboard.name != "Eures":
-                    continue
 
                 urls = jobboard.getUrls()
                 fd.downloadPages(jobboard.name, urls)
