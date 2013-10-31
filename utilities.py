@@ -7,6 +7,7 @@ import urllib2 as urllib
 from xml.dom import minidom
 import sqlite3 as lite
 import datetime
+import StringIO
 
 from jobcatcher import Offer
 from jobcatcher import JobCatcher
@@ -150,7 +151,6 @@ def statistics_generate():
     stat.close()
 
 def report_generate(filtered=True):
-
     html_dir = "./www"
 
     conn = lite.connect("jobs.db")
@@ -180,31 +180,56 @@ def report_generate(filtered=True):
         report = open(os.path.join(html_dir, 'report_full.html'), 'w')
         data = data_full
 
-    report.write("<html><head>")
-    report.write("<link href=\"./bootstrap.css\" rel=\"stylesheet\">")
-    report.write("<link href=\"./bootstrap-responsive.css\" rel=\"stylesheet\">")
-    report.write("<style>table{font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>")
-    report.write("<meta http-equiv=\"Content-type\" content=\"text/html\"; charset=\"utf-8\"></head>")
-    report.write("<body>")
-
-    report.write("<center><p><a href=\"report_filtered.html\">%s filtered offers (%.2f%%)</a>" %(count_filtered, 100*(float)(count_filtered)/count_full))
-    report.write(" - %s blacklisted offers (%.2f%%)" %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full) )
-    report.write(" - <a href=\"report_full.html\">All %s offers</a>" %(count_full) )
-    report.write(" - <a href=\"statistics.html\">Statistics</a></p></center>" )
-
-    report.write("<table class=\"table table-condensed\">")
-    report.write("<thead>")
-    report.write("<tr>")
-    report.write("<th>Pubdate</th>")
-    report.write("<th>Type</th>")
-    report.write("<th>Title</th>")
-    report.write("<th>Company</th>")
-    report.write("<th>Location</th>")
-    report.write("<th>Contract</th>")
-    report.write("<th>Salary</th>")
-    report.write("<th>Source</th>")
-    report.write("</tr>")
-    report.write("</thead>")
+    report.write('<!doctype html>\n')
+    report.write('<html>\n')
+    # html header
+    report.write('<head>\n')
+    report.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
+    report.write('\t<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">\n')
+    report.write('\t<link href="css/dynamic.css" rel="stylesheet" />\n')
+    report.write('\t<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>\n')
+    report.write('\t<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>\n')
+    report.write('\t<script type="text/javascript" src="js/jquery.tablesorter.js"></script>\n')
+    report.write('\t<script type="text/javascript" src="js/persist.js"></script>\n')
+    report.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
+    report.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
+    report.write('</head>\n')
+    # html body
+    report.write('<body>\n')
+    # page header
+    report.write('\t<p id="header">\n')
+    report.write('\t\t<a href=\"report_filtered.html\">%s filtered offers (%.2f%%)</a></li>\n' %(count_filtered, 100*(float)(count_filtered)/count_full))
+    report.write('\t\t- %s blacklisted offers (%.2f%%)</li>\n' %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full))
+    report.write('\t\t- <a href=\"report_full.html\">All %s offers</a></li>\n' %(count_full))
+    report.write('\t\t- <a href=\"statistics.html\">Statistics</a></li>\n')
+    report.write('\t</p>\n')
+    # page body
+    report.write('\t<table id="offers">\n')
+    # table header
+    report.write('\t\t<thead>\n')
+    report.write('\t\t\t<tr id="lineHeaders">\n')
+    report.write('\t\t\t\t<th>Pubdate</th>\n')
+    report.write('\t\t\t\t<th>Type</th>\n')
+    report.write('\t\t\t\t<th>Title</th>\n')
+    report.write('\t\t\t\t<th>Company</th>\n')
+    report.write('\t\t\t\t<th>Location</th>\n')
+    report.write('\t\t\t\t<th>Contract</th>\n')
+    report.write('\t\t\t\t<th>Salary</th>\n')
+    report.write('\t\t\t\t<th>Source</th>\n')
+    report.write('\t\t\t</tr>\n')
+    report.write('\t\t\t<tr id="lineFilters">\n')
+    report.write('\t\t\t\t<td class="pubdate"></td>\n')
+    report.write('\t\t\t\t<td class="type"></td>\n')
+    report.write('\t\t\t\t<td class="title"></td>\n')
+    report.write('\t\t\t\t<td class="company"></td>\n')
+    report.write('\t\t\t\t<td class="location"></td>\n')
+    report.write('\t\t\t\t<td class="contract"></td>\n')
+    report.write('\t\t\t\t<td class="salary"></td>\n')
+    report.write('\t\t\t\t<td class="source"></td>\n')
+    report.write('\t\t\t</tr>\n')
+    report.write('\t\t</thead>\n')
+    # table body
+    report.write('\t\t<tbody>\n')
 
     s_date = ''
 
@@ -214,36 +239,22 @@ def report_generate(filtered=True):
 
         if (s_date != offer.date_pub.strftime('%Y-%m-%d')):
             s_date = offer.date_pub.strftime('%Y-%m-%d')
-            report.write('<tr class=\"error\">');
-            report.write('<td></td>');
-            report.write('<td></td>');
-            report.write('<td></td>');
-            report.write('<td></td>');
-            report.write('<td></td>');
-            report.write('<td></td>');
-            report.write('<td></td>');
-            report.write('<td></td>');
-            report.write('</tr>');
 
-        report.write("<tr>")
-        report.write('<td>' + offer.date_pub.strftime('%Y-%m-%d') + '</a></td>')
-        report.write('<td><span class="label label-success">noSSII</span></td>')
-        report.write('<td><a href="'+offer.url+'">' + offer.title + '</a></td>')
-        report.write('<td>' + offer.company + '</td>')
-        report.write('<td>' + offer.location + '</td>')
-        #report.write('<td><span class="label label-important">SSII</span></td>')
+        report.write('\t\t\t<tr>\n')
+        report.write('\t\t\t\t<td class="pubdate">' + offer.date_pub.strftime('%Y-%m-%d') + '</td>\n')
+        report.write('\t\t\t\t<td class="type">noSSII</td>\n')
+        report.write('\t\t\t\t<td class="title"><a href="'+offer.url+'">' + offer.title + '</a></td>\n')
+        report.write('\t\t\t\t<td class="company">' + offer.company + '</td>\n')
+        report.write('\t\t\t\t<td class="location">' + offer.location + '</td>\n')
+        report.write('\t\t\t\t<td class="contract">' + offer.contract +'</td>\n')
+        report.write('\t\t\t\t<td class="salary">' + offer.salary + '</td>\n')
+        report.write('\t\t\t\t<td class="source">' + offer.src + '</td>\n')
+        report.write("\t\t\t</tr>")
 
-        if (offer.contract == ur'CDI' or offer.contract == ur'CDI (Cab/recrut)'):
-            report.write('<td><span class="label label-success">'+ offer.contract +'</span></td>')
-        elif (offer.contract[:3] == ur'CDD'):
-            report.write('<td><span class="label label-warning">'+ offer.contract +'</span></td>')
-        else:
-            report.write('<td><span class="label">'+ offer.contract +'</span></td>')
-
-        report.write('<td>' + offer.salary + '</td>')
-        report.write('<td>' + offer.src + '</td>')
-        report.write("</tr>")
-    report.write("</table></body></html>")
+    # closure
+    report.write('\t</table>\n')
+    report.write('</body>\n')
+    report.write('</html>\n')
     report.close()
 
 
