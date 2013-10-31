@@ -7,7 +7,6 @@ import urllib2 as urllib
 from xml.dom import minidom
 import sqlite3 as lite
 import datetime
-import StringIO
 
 from jobcatcher import Offer
 from jobcatcher import JobCatcher
