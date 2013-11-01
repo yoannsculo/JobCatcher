@@ -780,7 +780,6 @@ var SourceFilter = AbstractFilter.extend({
 });
 
 
-
 /**
  * \class LocationFilter
  * \brief Filter on the offers location.
@@ -899,21 +898,39 @@ var LocationFilter = AbstractFilter.extend({
         var $filter_location_slider = $("<div>", {id: "filter_location_slider"})
             .appendTo($filter_location_slider_box);
 
-        var slide_callback = function(event, ui) {
-            var distance = $filter_location_slider.slider("value");
-            $filter_location_feedback.html("Max : <b>" + distance/1000 + "</b>&nbsp;km");
+        var slider_on_change = function(distance)
+        {
+            slider_on_slide(distance);
+            Config.set("filter_salary_range", distance);
             self.apply();
-        };
+        }
+        var slider_on_slide = function(distance)
+        {
+            $filter_location_feedback.html("Max : <b>" + distance/1000 + "</b>&nbsp;km");
+        }
+        
         $filter_location_slider.slider({
             animate: "fast",
+            /* all in meters */
             max: 250000,
             min: 5000,
             step: 500,
             value: 30000,
-            create: slide_callback,
-            change: slide_callback
+            create: function(event, ui) {
+                Config.get("filter_salary_range", function(value) {
+                    $filter_location_slider.slider("value", value);
+                }, function() {
+                    slider_on_slide($slider.slider("value"));
+                });
+            },
+            change: function(event, ui) {
+                slider_on_change($(this).slider("value"));
+            },
+            slide: function(event, ui) {
+                slider_on_slide($(this).slider("value"));
+            }
         });
-    // FIXME trailing white spaces
+
         priv_elements = [
             $filter_location_slider_box,
             $filter_location_text,
@@ -975,6 +992,45 @@ var LocationFilter = AbstractFilter.extend({
     }
 });
 
+
+/**
+ * \class Config
+ * \brief an API to save parameter accross uses.
+ */
+var Config = {
+	/**
+	 * \property priv_store
+	 * \brief Storage API.
+	 */
+	priv_store: new Persist.Store("config"),
+	/**
+	 * \fn priv_encode(name)
+	 * \brief Internal encoding of a configuration name.
+	 */
+	priv_encode: function(name) {
+	    return escape(name);
+    },
+    
+	/**
+	 * \fn get(name, success, failure = null)
+	 * \brief Read the configuration parameter \a name.
+	 * \param[in] name (\c string) The parameter name
+	 * \param[in] success (\c {function(value)}) The success callback
+	 * \param[in] failure (\c {function()}) The failure callback
+	 */
+	get: function(name, success, failure = null) {
+	    this.priv_store.get(this.priv_encode(name), function(status, value) {
+            if (!status || null == value) {
+                if (null != failure)
+                    failure();
+            } else
+                success(value);
+        });
+    },
+    set: function(name, value) {
+	    this.priv_store.set(this.priv_encode(name), value);
+    }
+};
 
 /*
  * ENTRY POINT
