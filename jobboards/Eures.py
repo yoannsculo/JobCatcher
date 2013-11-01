@@ -97,8 +97,11 @@ class Eures(Jobboard):
         offer.title = self._extractItem("Titre", html)
         offer.title = self._extractItem("Titre", html)
         offer.location = self._extractItem("Région", html)
-        offer.contract = self._extractItem("Type de contrat", html)
         offer.company = self._extractItem("Nom", html)
+
+        # contract
+        offer.contract = self._extractItem("Type de contrat", html)
+        self.filterContract(offer)
 
         # Salaries
         offer.salary = "%s - %s" % (
@@ -107,11 +110,11 @@ class Eures(Jobboard):
         )
 
         if offer.company:
-            print offer.date_pub
-            print offer.ref
-            print offer.title
-            print offer.company
-            print offer.location
-            print offer.salary
-            print offer.contract
             offer.add_db()
+
+    def filterContract(self, offer):
+        if 'PERMANENT' in offer.contract:
+            offer.contract = 'CDI'
+
+        if 'TEMPORAIRE' in offer.contract:
+            offer.contract = 'CDD'
