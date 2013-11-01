@@ -191,7 +191,7 @@ var PubdateFilter = AbstractFilter.extend({
      * \property classname()
      * \see \ref AbstractFilter.classname()
      */
-    classname: function() { return this._super();},
+    classname: function() { return this._super(); },
     /**
      * \fn attach($parent)
      * \brief Attaches the DOM elements the given \a $parent.
@@ -201,19 +201,19 @@ var PubdateFilter = AbstractFilter.extend({
         $.each(priv_elements, function(key, val) {
             $parent.append(val);
         });
-        priv_elements[0].change(function(){
+        priv_elements[0].change(function() {
             filter.apply();
         });
         $("#filter_pubdate_root").datepicker({
-                autoSize: true,
-                buttonText: "Calendar",
-                buttonImage: "img/calendar-16.png",
-                dateFormat: "yy-mm-dd",
-                defaultDate: 0,
-                showOn: "button",
-                onSelect: function(date_text, sender) {
-                    filter.apply();
-                }
+	    autoSize: true,
+	    buttonText: "Calendar",
+	    buttonImage: "img/calendar-16.png",
+	    dateFormat: "yy-mm-dd",
+	    defaultDate: 0,
+	    showOn: "button",
+	    onSelect: function(date_text, sender) {
+	        filter.apply();
+	    }
         });
         return true;
     },
@@ -291,7 +291,7 @@ var TypeFilter = AbstractFilter.extend({
      * \property classname()
      * \see \ref AbstractFilter.classname()
      */
-    classname: function() { return this._super();},
+    classname: function() { return this._super(); },
     /**
      * \fn attach($parent)
      * \brief Attaches the DOM elements the given \a $parent.
@@ -301,7 +301,7 @@ var TypeFilter = AbstractFilter.extend({
         $.each(priv_elements, function(key, val) {
             $parent.append(val);
         });
-        priv_elements[0].change(function(){filter.apply();});
+        priv_elements[0].change(function() {filter.apply();});
         return true;
     },
     /**
@@ -386,7 +386,7 @@ var TitleFilter = AbstractFilter.extend({
      * \property classname()
      * \see \ref AbstractFilter.classname()
      */
-    classname: function() { return this._super();},
+    classname: function() { return this._super(); },
     /**
      * \fn attach($parent)
      * \brief Attaches the DOM elements the given \a $parent.
@@ -452,7 +452,7 @@ var CompanyFilter = AbstractFilter.extend({
         this._super(classname, master_filter);
         var self = this;
         var companies = [];
-        $("#offers > tbody > tr > td." + self.classname()).each(function(){
+        $("#offers > tbody > tr > td." + self.classname()).each(function() {
             var company = $(this).text();
             if (-1 == $.inArray(company, companies))
                 companies.push(company);
@@ -476,7 +476,7 @@ var CompanyFilter = AbstractFilter.extend({
      * \property classname()
      * \see \ref AbstractFilter.classname()
      */
-    classname: function() { return this._super();},
+    classname: function() { return this._super(); },
     /**
      * \fn attach($parent)
      * \brief Attaches the DOM elements the given \a $parent.
@@ -484,7 +484,7 @@ var CompanyFilter = AbstractFilter.extend({
     attach: function($parent) {
         var self = this;
         $parent.append(priv_elements[0]);
-        priv_elements[0].change(function(){self.apply();});
+        priv_elements[0].change(function() {self.apply();});
         return true;
     },
     /**
@@ -545,7 +545,7 @@ var ContractFilter = AbstractFilter.extend({
      * \property classname()
      * \see \ref AbstractFilter.classname()
      */
-    classname: function() { return this._super();},
+    classname: function() { return this._super(); },
     /**
      * \fn attach($parent)
      * \brief Attaches the DOM elements the given \a $parent.
@@ -553,7 +553,7 @@ var ContractFilter = AbstractFilter.extend({
     attach: function($parent) {
         var self = this;
         $parent.append(priv_elements[0]);
-        priv_elements[0].change(function(){self.apply();});
+        priv_elements[0].change(function() {self.apply();});
         return true;
     },
     /**
@@ -632,10 +632,9 @@ var SalaryFilter = AbstractFilter.extend({
         var self = this;
         var max = 0;
         var min = 0;
-        $("#offers > tbody > tr > td." + classname).each(function(){
+        $("#offers > tbody > tr > td." + classname).each(function() {
             var range = self.priv_range_from_string($(this).text());
-            if (2 == range.length)
-            {
+            if (2 == range.length) {
                 min = 0 == min ? range[0] : Math.min(min, range[0]);
                 max = Math.max(max, range[1]);
             }
@@ -644,13 +643,12 @@ var SalaryFilter = AbstractFilter.extend({
         var $filter_salary_root = $("<div>", {id: "filter_salary_root"});
         var $filter_salary_feedback = $("<div>", {id: "filter_salary_feedback"});
 
-        function slide_callback(event, ui)
-        {
+        var slide_callback = function(event, ui) {
             var min = $filter_salary_root.slider("values")[0];
             var max = $filter_salary_root.slider("values")[1];
             $filter_salary_feedback.html("De <b>" + min + "</b>k€ à <b>" + max + "</b>k€");
             self.apply();
-        }
+        };
         $filter_salary_root.slider({
             animate: "fast",
             max: max,
@@ -674,7 +672,7 @@ var SalaryFilter = AbstractFilter.extend({
      * \property classname()
      * \see \ref AbstractFilter.classname()
      */
-    classname: function() { return this._super();},
+    classname: function() { return this._super(); },
     /**
      * \fn attach($parent)
      * \brief Attaches the DOM elements the given \a $parent.
@@ -735,7 +733,7 @@ var SourceFilter = AbstractFilter.extend({
         this._super(classname, master_filter);
         var self = this;
         var sources = [];
-        $("#offers > tbody > tr > td." + self.classname()).each(function(){
+        $("#offers > tbody > tr > td." + self.classname()).each(function() {
             var source = $(this).text();
             if (-1 == $.inArray(source, sources))
                 sources.push(source);
@@ -759,7 +757,7 @@ var SourceFilter = AbstractFilter.extend({
      * \property classname()
      * \see \ref AbstractFilter.classname()
      */
-    classname: function() { return this._super();},
+    classname: function() { return this._super(); },
     /**
      * \fn attach($parent)
      * \brief Attaches the DOM elements the given \a $parent.
@@ -767,7 +765,7 @@ var SourceFilter = AbstractFilter.extend({
     attach: function($parent) {
         var self = this;
         $parent.append(priv_elements[0]);
-        priv_elements[0].change(function(){self.apply();});
+        priv_elements[0].change(function() { self.apply(); });
         return true;
     },
     /**
@@ -824,8 +822,7 @@ var LocationFilter = AbstractFilter.extend({
         $.getJSON(url)
         .done(function(data) {
                 var result = data.rows[0].elements[0].distance.value;
-                if (null == result)
-                {
+                if (null == result) {
                     var error = data.error_message;
                     failure(error);
                 }
@@ -844,9 +841,8 @@ var LocationFilter = AbstractFilter.extend({
         var loc2id = escape(loc2);
         var distid = loc1id + '-' + loc2id;
         this.priv_store.get(distid, function(status, distance) {
-            /* Case #1: distance not yes in cache */
-            if (!status || null == distance)
-            {
+	/* Case #1: distance not yes in cache */
+            if (!status || null == distance) {
                 self.priv_query_googlemap_api(loc1, loc2, function(distance) {
                     self.priv_store.set(distid, distance);
                     callback(distance);
@@ -857,9 +853,8 @@ var LocationFilter = AbstractFilter.extend({
                     );
                     callback(null);
                 });
-            }
-            /* Case #2: distance in cache */
-            else
+        /* Case #2: distance in cache */
+            } else
                 callback(distance);
         });
     },
@@ -904,12 +899,11 @@ var LocationFilter = AbstractFilter.extend({
         var $filter_location_slider = $("<div>", {id: "filter_location_slider"})
             .appendTo($filter_location_slider_box);
 
-        function slide_callback(event, ui)
-        {
+        var slide_callback = function(event, ui) {
             var distance = $filter_location_slider.slider("value");
             $filter_location_feedback.html("Max : <b>" + distance/1000 + "</b>&nbsp;km");
             self.apply();
-        }
+        };
         $filter_location_slider.slider({
             animate: "fast",
             max: 250000,
@@ -938,7 +932,7 @@ var LocationFilter = AbstractFilter.extend({
      * \property classname()
      * \see \ref AbstractFilter.classname()
      */
-    classname: function() { return this._super();},
+    classname: function() { return this._super(); },
     /**
      * \fn attach($parent)
      * \brief Attaches the DOM elements the given \a $parent.
