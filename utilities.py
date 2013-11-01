@@ -163,7 +163,7 @@ def statistics_generate():
     stat.write("</thead>")
 
     jb = JobCatcher()
-    jb.load_jobBoards()
+    jb.loadPlugins()
     for item in jb.jobBoardList:
         data = item.fetchAllOffersFromDB()
         stat.write("<tr>")

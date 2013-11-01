@@ -103,7 +103,13 @@ class FeedDownloader(object):
 
                     destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
                     for p in glob.glob("%s/*.page" % destdir):
+                        # Load the HTML feed
                         print p
+                        fd = open(p, 'rb')
+                        html = fd.read()
+                        fd.close()
+
+                        plugin.analyzePage(html)
 
 class Jobboard():
     name = ''
@@ -163,6 +169,7 @@ class Location():
 
 class Offer():
     def __init__(self):
+        self.ref = u""
         self.title = u""
         self.company = u""
         self.contract = u""
@@ -170,21 +177,28 @@ class Offer():
         self.salary = u""
         self.url = u""
         self.content = u""
+        self.date_add = u""
+        self.date_pub = u""
+        self.lat = u""
+        self.lon = u""
 
-    def load(self, src, ref, date_pub, date_add, title, company, contract, location, lat, lon, salary, url, content):
+    def load(
+            self, src, ref, date_pub, date_add, title, company,
+            contract, location, lat, lon, salary, url, content
+    ):
 
         self.src = src
         self.ref = ref
 
         self.date_pub = datetime.datetime.fromtimestamp(int(date_pub))
         self.date_add = datetime.datetime.fromtimestamp(int(date_add))
-        self.title = title.encode("utf-8")
-        self.company = company.encode("utf-8")
-        self.contract = contract.encode("utf-8")
-        self.location = location.encode("utf-8")
-        self.salary = salary.encode("utf-8")
-        self.url = url.encode("utf-8")
-        self.content = content.encode("utf-8")
+        self.title = title
+        self.company = company
+        self.contract = contract
+        self.location = location
+        self.salary = salary
+        self.url = url
+        self.content = content
 
     def loadFromHtml(self, filename):
         ""
