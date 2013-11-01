@@ -104,7 +104,6 @@ class FeedDownloader(object):
                     destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
                     for p in glob.glob("%s/*.page" % destdir):
                         # Load the HTML feed
-                        print p
                         fd = open(p, 'rb')
                         html = fd.read()
                         fd.close()
