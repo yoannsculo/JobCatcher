@@ -51,10 +51,11 @@ def downloadFile(url, filename, age=60,
             os.makedirs(destdir)
 
         print "Download %s " % url
-        f = urllib.urlopen(url, filename)
         out = open(filename, 'wb')
-        # Let's force encoding
-        out.write(unicode(f.read(), encoding))
+        datas = urllib.urlopen(url, filename)
+        for line in datas:
+            decoded = line.decode('utf-8')
+            out.write(decoded)
         out.close()
 
 
