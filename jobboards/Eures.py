@@ -116,18 +116,6 @@ class JBEures(JobBoard):
 
 
 
-    def filterContract(self, offer):
-        if 'PERMANENT' in offer.contract:
-            offer.contract = 'CDI'
-
-        if 'TEMPORAIRE' in offer.contract:
-            offer.contract = 'CDD'
-
-    def filterCompany(self, offer):
-        if offer.company:
-            m = re.search(r'([A-Z ]+)', offer.company, flags=re.MULTILINE | re.DOTALL)
-            if m:
-                offer.company = m.group(1)
 
     def createTable(self,):
         if self.isTableCreated():
@@ -186,6 +174,9 @@ class JBEures(JobBoard):
 
     def createOffer(self, data):
         """Create a offer object with jobboard data"""
+        data = dict(data)
+        self.filterAllFields(data)
+
         o = Offer()
         o.src = self.name
         o.ref = data['ref']
@@ -193,8 +184,58 @@ class JBEures(JobBoard):
         o.company = data['company']
         o.contract = data['contract']
         o.location = data['location']
-        o.salary = '%s - %s' % (data['salary_min'], data['salary_max'])
+        o.salary = data['salary']
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
 
-        return o
+        if o.ref and o.company:
+            return o
+
+        return None
+
+    def filterAllFields(self, data):
+        self.filterContract(data)
+        self.filterCompany(data)
+        self.filterSalaries(data)
+
+
+    def filterSalaries(self, data):
+        data['salary'] = ""
+
+        # Min
+        if data['salary_min']:
+            data['salary_min'] = re.sub(r',', '', data['salary_min'])
+            data['salary_min'] = re.sub(r'(\.[0-9]+)', r'\1 €', data['salary_min'])
+        else:
+            data['salary_min'] = ""
+
+        # Max
+        if data['salary_max']:
+            data['salary_max'] = re.sub(r',', '', data['salary_max'])
+            data['salary_max'] = re.sub(r'(\.[0-9]+)', r'\1 €', data['salary_max'])
+        else:
+            data['salary_max'] = ""
+
+        if data['salary_min'] and data['salary_max']:
+            data['salary'] = '%s - %s' % (data['salary_min'], data['salary_max'])
+        else:
+            if data['salary_min']:
+                data['salary'] = data['salary_min']
+            else:
+                data['salary'] = data['salary_max']
+
+    def filterContract(self, data):
+        if data['contract']:
+            # CDI, CDD
+            data['contract'] = re.sub(r'PERMANENT \+ ', 'CDI', data['contract'])
+            data['contract'] = re.sub(r'TEMPORAIRE \+ ', 'CDD', data['contract'])
+
+            #Mi-temps,
+            data['contract'] = re.sub(r'TEMPS PARTIEL', ', TEMPS PARTIEL', data['contract'])
+            data['contract'] = re.sub(r'TEMPS PLEIN', '', data['contract'])
+
+
+    def filterCompany(self, data):
+        if data['company']:
+            data['company'] = re.sub(r'M\. .*', '', data['company'])
+            data['company'] = re.sub(r'Mme .*', '', data['company'])

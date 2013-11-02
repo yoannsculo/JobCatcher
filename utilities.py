@@ -184,7 +184,7 @@ def statistics_generate():
     for item in jb.jobBoardList:
         data = item.fetchAllOffersFromDB()
         stat.write("<tr>")
-        stat.write("<td><a href=\"%s\">%s</a></td>" %(item.url, item.name))
+        stat.write("<td><a href=\"%s\">%s</a></td>" %("item.url", "item.name"))  # TODO: use the URL and name
         stat.write("<td>%s</td>" %(len(data)))
         stat.write("<td></td>")
         stat.write("<td></td>")

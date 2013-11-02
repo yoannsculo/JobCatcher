@@ -33,6 +33,7 @@ from config import configs
 # jobcatcher -p
 # jobcatcher -i
 # jobcatcher -m
+# rm jobs.db; python jobcatcher.py -c ; python jobcatcher.py -i ; python jobcatcher.py -m ; python jobcatcher.py -r
 
 class JobBoards(object):
     """A class for dowload a feed or a HTML page"""
@@ -196,7 +197,8 @@ class JobBoard(object):
         datas = self.getAllJBDatas()
         for d in datas:
             o = self.createOffer(d)
-            utilities.db_add_offer(o)
+            if o:
+                utilities.db_add_offer(o)
 
     def createTable(self,):
         """Create Jobboard table"""
@@ -223,6 +225,13 @@ class JobBoard(object):
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
         raise NotImplementedError(mess)
 
+    def fetchAllOffersFromDB(self):
+        conn = lite.connect("jobs.db")
+        cursor = conn.cursor()
+        sql = "SELECT * FROM offers WHERE source='%s' ORDER BY date_pub DESC" %(self.name)
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        return data
 
 class Location():
 
