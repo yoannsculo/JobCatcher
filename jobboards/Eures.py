@@ -43,27 +43,6 @@ class JBEures(JobBoard):
         self.name = "Eures"
         super(JBEures, self).__init__(rootdir, configs, interval)
 
-    def createTable(self,):
-        if self.isTableCreated():
-           return
-
-        conn = None
-        conn = lite.connect("jobs.db")
-        cursor = conn.cursor()
-
-        # create a table
-        cursor.execute("""CREATE TABLE jb_%s( \
-                       pageid TEXT, \
-                       ref TEXT, \
-                       date_pub INTEGER, \
-                       date_add INTEGER, \
-                       title TEXT, \
-                       company TEXT, \
-                       contract TEXT, \
-                       location TEXT, \
-                       salary_min TEXT, \
-                       salary_max TEXT, \
-                       PRIMARY KEY(ref))""" % self.name)
 
 
     def getUrls(self):
@@ -106,36 +85,36 @@ class JBEures(JobBoard):
 
     def analyzePage(self, html):
         """Analyze page and extract datas"""
-        # Extract datas
-        offer = Offer()
-        offer.src = self.name
+        # Refs
+        self.datas['pageid'] = ""
+        self.datas['ref'] = self._extractItem("Référence nationale", html)
+        self.datas['nace'] = self._extractItem("Code Nace", html)
 
         # Dates
-        offer.date_add = int(time.time())
-        offer.date_pub = datetime.strptime(
+        self.datas['date_add'] = int(time.time()) 
+        self.datas['date_pub'] = datetime.strptime(
             self._extractItem("Date de publication", html),
             "%d/%m/%Y").strftime('%s')
 
         # Job informations
-        offer.ref = self._extractItem("Référence nationale", html)
-        offer.title = self._extractItem("Titre", html)
-        offer.title = self._extractItem("Titre", html)
-        offer.location = self._extractItem("Région", html)
-        offer.company = self._extractItem("Nom", html)
-        offer.contract = self._extractItem("Type de contrat", html)
+        self.datas['title'] = self._extractItem("Titre", html)
+        self.datas['location'] = self._extractItem("Région", html)
+        self.datas['company'] = self._extractItem("Nom", html)
+        self.datas['contract'] = self._extractItem("Type de contrat", html)
+        # Salary
+        self.datas['salary_min'] = self._extractItem("Salaire minimum", html)
+        self.datas['salary_max'] = self._extractItem("Salaire maximum", html)
+        self.datas['salary_period'] = self._extractItem("Période de rémunération", html)
+        self.datas['nb_hours'] = self._extractItem("Horaire hebdomadaire", html)
+        # Experiences
+        self.datas['qualification'] = self._extractItem("Qualifications en formation exigées", html)
+        self.datas['experience'] = self._extractItem("Expérience requise", html)
 
-        # Salaries
-        offer.salary = "%s - %s" % (
-            self._extractItem("Salaire minimum", html),
-            self._extractItem("Salaire maximum", html)
-        )
+        # Insert to jobboard table
+        self.insertToJBTable()
+        #offer.add_db()
 
-        #Filter
-        self.filterContract(offer)
-        #self.filterCompany(offer)
 
-        if offer.company:
-            offer.add_db()
 
     def filterContract(self, offer):
         if 'PERMANENT' in offer.contract:
@@ -149,3 +128,59 @@ class JBEures(JobBoard):
             m = re.search(r'([A-Z ]+)', offer.company, flags=re.MULTILINE | re.DOTALL)
             if m:
                 offer.company = m.group(1)
+
+    def createTable(self,):
+        if self.isTableCreated():
+            return
+
+        conn = None
+        conn = lite.connect("jobs.db")
+        cursor = conn.cursor()
+
+        # create a table
+        cursor.execute("""CREATE TABLE jb_%s( \
+                       ref TEXT, \
+                       nace TEXT, \
+                       pageid TEXT, \
+                       date_pub INTEGER, \
+                       date_add INTEGER, \
+                       title TEXT, \
+                       company TEXT, \
+                       contract TEXT, \
+                       location TEXT, \
+                       salary_min TEXT, \
+                       salary_max TEXT, \
+                       salary_period TEXT, \
+                       nb_hours TEXT, \
+                       qualification TEXT, \
+                       experience TEXT, \
+                       PRIMARY KEY(ref))""" % self.name)
+
+
+    def insertToJBTable(self):
+        conn = lite.connect("jobs.db")
+        conn.text_factory = str
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
+                       self.name, (
+                           self.datas['ref'],
+                           self.datas['nace'],
+                           self.datas['pageid'],
+                           self.datas['date_pub'],
+                           self.datas['date_add'],
+                           self.datas['title'],
+                           self.datas['company'],
+                           self.datas['contract'],
+                           self.datas['location'],
+                           self.datas['salary_min'],
+                           self.datas['salary_max'],
+                           self.datas['salary_period'],
+                           self.datas['nb_hours'],
+                           self.datas['qualification'],
+                           self.datas['experience'],
+                       )
+                   )
+        conn.commit()
+        if conn:
+            conn.close()
+        return 0

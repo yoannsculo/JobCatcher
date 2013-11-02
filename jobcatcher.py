@@ -88,11 +88,15 @@ class JobBoard(object):
         self._rootdir = rootdir
         self._configs = configs
         self._interval = interval
-        self._offer = Offer()
+        self._datas = {}
         self._processingDir = "%s/%s" % (
             self.configs['global']['rootdir'],
             self.name
         )
+
+        #Check and create Jobboard table
+        if not self.isTableCreated():
+            self.createTable()
 
     @property
     def name(self):
@@ -102,6 +106,15 @@ class JobBoard(object):
     @name.setter
     def name(self, value):
         self._name = value
+
+    @property
+    def datas(self):
+        """JobBoard datas"""
+        return self._datas
+
+    @datas.setter
+    def datas(self, value):
+        self._datas = value
 
     @property
     def rootdir(self):
@@ -171,8 +184,13 @@ class JobBoard(object):
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
         raise NotImplementedError(mess)
 
-    def insertOffer(self):
-        """Insert offer into table"""
+    def insertToJBTable(self):
+        """Insert to jobboard offer into table"""
+        mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
+        raise NotImplementedError(mess)
+
+    def moveToOffer(self):
+        """Move data to offer table"""
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
         raise NotImplementedError(mess)
 
