@@ -156,7 +156,6 @@ class JBEures(JobBoard):
                        experience TEXT, \
                        PRIMARY KEY(ref))""" % self.name)
 
-
     def insertToJBTable(self):
         conn = lite.connect("jobs.db")
         conn.text_factory = str
@@ -184,3 +183,18 @@ class JBEures(JobBoard):
         if conn:
             conn.close()
         return 0
+
+    def createOffer(self, data):
+        """Create a offer object with jobboard data"""
+        o = Offer()
+        o.src = self.name
+        o.ref = data['ref']
+        o.title = data['title']
+        o.company = data['company']
+        o.contract = data['contract']
+        o.location = data['location']
+        o.salary = '%s - %s' % (data['salary_min'], data['salary_max'])
+        o.date_pub = data['date_pub']
+        o.date_add = data['date_add']
+
+        return o

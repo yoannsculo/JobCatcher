@@ -28,6 +28,11 @@ sys.setdefaultencoding("utf-8")
 
 from config import configs
 
+# Traitement process
+# jobcatcher -s
+# jobcatcher -p
+# jobcatcher -i
+# jobcatcher -m
 
 class JobBoards(object):
     """A class for dowload a feed or a HTML page"""
@@ -65,7 +70,6 @@ class JobBoards(object):
                     for url in feeds:
                         plugin.downloadFeed(url, forcedownload)
 
-
     def analyzesPages(self):
         """Analyze downloaded pages"""
         for jobboardname in self._configs:
@@ -81,6 +85,13 @@ class JobBoards(object):
 
                         plugin.analyzePage(html)
 
+    def moveToOffers(self):
+        """Move jobboards datas to offer"""
+        for jobboardname in self._configs:
+            if jobboardname not in self._configs['global']['ignorejobboard']:
+                if 'feeds' in self._configs[jobboardname]:
+                    plugin = utilities.loadJobBoard(jobboardname, configs)
+                    plugin.moveToOffers()
 
 class JobBoard(object):
     """Generic Class forcreate new jobboard"""
@@ -168,6 +179,24 @@ class JobBoard(object):
             saveto = "%s/%s.page" % (destdir, md5)
             utilities.downloadFile(u, saveto, self._interval)
 
+    def getAllJBDatas(self):
+        """Get all jobboard datas"""
+        conn = lite.connect("jobs.db")
+        conn.row_factory = lite.Row
+        cursor = conn.cursor()
+
+        sql = "SELECT * FROM jb_%s" % self.name
+
+        cursor.execute(sql)
+        datas = cursor.fetchall()
+
+        return datas
+
+    def moveToOffers(self):
+        datas = self.getAllJBDatas()
+        for d in datas:
+            o = self.createOffer(d)
+            utilities.db_add_offer(o)
 
     def createTable(self,):
         """Create Jobboard table"""
@@ -189,8 +218,8 @@ class JobBoard(object):
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
         raise NotImplementedError(mess)
 
-    def moveToOffer(self):
-        """Move data to offer table"""
+    def createOffer(self, data):
+        """Create Offer object with jobboard data"""
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
         raise NotImplementedError(mess)
 
@@ -353,6 +382,11 @@ def pagesinsert():
     fd.analyzesPages()
 
 
+def pagesmove():
+    fd = JobBoards(configs['global']['rootdir'])
+    fd.configs = configs
+    fd.moveToOffers()
+
 if __name__ == '__main__':
     parser = OptionParser(usage = 'syntax: %prog [options] <from> [to]')
     args = sys.argv[1:]
@@ -379,6 +413,9 @@ if __name__ == '__main__':
     parser.add_option('-i', '--insert',
                           action = 'store_true', dest = 'insert',
                           help = 'Insert pages')
+    parser.add_option('-m', '--move',
+                          action = 'store_true', dest = 'move',
+                          help = 'Move datas to offer')
     # parser.add_option('-b', '--blocklist',
     #                       action = 'store_true', dest = 'blocklist',
     #                       help = 'update blocklist')
@@ -451,6 +488,10 @@ if __name__ == '__main__':
 
     if options.insert:
         pagesinsert()
+        sys.exit(0)
+
+    if options.move:
+        pagesmove()
         sys.exit(0)
 
     if options.blocklist:
