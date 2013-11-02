@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__authors__ = 'Yoann Sculo <yoann.sculo@gmail.com>'
+__authors__ = [
+    'Yoann Sculo <yoann.sculo@gmail.com>',
+    'Bruno Adelé <bruno@adele.im>',
+]
 __copyright__ = 'Copyright (C) 2013 Yoann Sculo'
 __license__ = 'GPLv2'
 __version__ = '1.0'
@@ -13,7 +16,6 @@ import datetime
 import codecs
 import html2text
 import requests
-import importlib
 
 
 from optparse import OptionParser
@@ -27,13 +29,12 @@ sys.setdefaultencoding("utf-8")
 from config import configs
 
 
-class FeedDownloader(object):
+class JobBoards(object):
     """A class for dowload a feed or a HTML page"""
 
-    def __init__(self, rootdir='/tmp', configs=[], interval=1200):
+    def __init__(self, rootdir='/tmp', configs=[]):
         self._rootdir = rootdir
         self._configs = configs
-        self._interval = interval
 
     @property
     def rootdir(self):
@@ -43,15 +44,6 @@ class FeedDownloader(object):
     def rootdir(self, value):
         self._rootdir = value
 
-    @property
-    def interval(self):
-        """Get interval in minute"""
-        return self._interval
-
-    @rootdir.setter  
-    def interval(self, value):
-        """Set interval in minute"""
-        self._interval = value
 
     @property
     def configs(self):
@@ -69,17 +61,90 @@ class FeedDownloader(object):
                     feeds = self._configs[jobboardname]['feeds']
 
                     # Donwload all feeds for jobboard
+                    plugin = utilities.loadJobBoard(jobboardname, configs)
                     for url in feeds:
-                        self.downloadFeed(jobboardname, url, forcedownload)
+                        plugin.downloadFeed(url, forcedownload)
 
-    def downloadFeed(self, jobboardname, url, forcedownload=False):
+
+    def analyzesPages(self):
+        """Analyze downloaded pages"""
+        for jobboardname in self._configs:
+            if jobboardname not in self._configs['global']['ignorejobboard']:
+                if 'feeds' in self._configs[jobboardname]:
+                    destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
+                    plugin = utilities.loadJobBoard(jobboardname, configs)
+                    for p in glob.glob("%s/*.page" % destdir):
+                        # Load the HTML feed
+                        fd = open(p, 'rb')
+                        html = fd.read()
+                        fd.close()
+
+                        plugin.analyzePage(html)
+
+
+class JobBoard(object):
+    """Generic Class forcreate new jobboard"""
+    def __init__(self, rootdir='/tmp', configs=[], interval=1200):
+        self._rootdir = rootdir
+        self._configs = configs
+        self._interval = interval
+        self._offer = Offer()
+        self._processingDir = "%s/%s" % (
+            self.configs['global']['rootdir'],
+            self.name
+        )
+
+    @property
+    def name(self):
+        """Get JobBoard name"""
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @property
+    def rootdir(self):
+        return self._rootdir
+
+    @rootdir.setter  
+    def rootdir(self, value):
+        self._rootdir = value
+
+    @property
+    def configs(self):
+        return self._configs
+
+    @rootdir.setter
+    def configs(self, value):
+        self._configs = value
+
+    @property
+    def interval(self):
+        """Get interval in minute"""
+        return self._interval
+
+    @rootdir.setter  
+    def interval(self, value):
+        """Set interval in minute"""
+        self._interval = value
+
+    def isTableCreated(self):
+        """Check if the table for jobboard exist"""
+        conn = lite.connect("jobs.db")
+        cursor = conn.cursor()
+        sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='jb_%s';" % self.name
+        cursor.execute(sql)
+        return len(cursor.fetchall()) == 1
+
+    def downloadFeed(self, url, interval=1200, forcedownload=False):
         """Download a feed or a HTML page"""
 
-        destdir = "%s/%s/feeds" % (self.rootdir, jobboardname)
+        destdir = "%s/%s/feeds" % (self.rootdir, self.name)
         md5 = utilities.md5(url)
         saveto = "%s/%s.feed" % (destdir, md5)
         utilities.downloadFile(
-            url, saveto, self._interval)
+            url, saveto, interval)
 
     def downloadPages(self, jobboardname, urls):
         """Download all pages from urls list"""
@@ -90,58 +155,27 @@ class FeedDownloader(object):
             saveto = "%s/%s.page" % (destdir, md5)
             utilities.downloadFile(u, saveto, self._interval)
 
-    def analyzesPages(self):
-        """Analyze downloaded pages"""
-        for jobboardname in self._configs:
-            if jobboardname not in self._configs['global']['ignorejobboard']:
-                if 'feeds' in self._configs[jobboardname]:
-                    module = importlib.import_module(
-                        'jobboards.%s' % jobboardname
-                    )
-                    moduleClass = getattr(module, jobboardname)
-                    plugin = moduleClass(configs)
 
-                    destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
-                    for p in glob.glob("%s/*.page" % destdir):
-                        # Load the HTML feed
-                        fd = open(p, 'rb')
-                        html = fd.read()
-                        fd.close()
+    def createTable(self,):
+        """Create Jobboard table"""
+        mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
+        raise NotImplementedError(mess)
 
-                        plugin.analyzePage(html)
+    def getUrls(self):
+        """Get Urls offers from feed"""
+        mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
+        raise NotImplementedError(mess)
 
-class Jobboard():
-    name = ''
-    url = ''
-    lastFetch = ''
-    dlDir = "./dl"
+    def analyzePage(self, html):
+        """Analyze page and extract datas"""
+        mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
+        raise NotImplementedError(mess)
 
-    def load(self, file):
-        ""
+    def insertOffer(self):
+        """Insert offer into table"""
+        mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
+        raise NotImplementedError(mess)
 
-    def fetch(self):
-        ""
-
-    def fetch_offer(self, url):
-        ""
-
-    def fetch_url(self, url):
-        ""
-
-    def processOffers(self):
-        for file in os.listdir(self.processingDir):
-            ret = self.processOffer(file)
-
-    def processOffer(self, file):
-        ""
-
-    def fetchAllOffersFromDB(self):
-        conn = lite.connect("jobs.db")
-        cursor = conn.cursor()
-        sql = "SELECT * FROM offers WHERE source='%s' ORDER BY date_pub DESC" %(self.name)
-        cursor.execute(sql)
-        data = cursor.fetchall()
-        return data
 
 class Location():
 
@@ -250,15 +284,10 @@ class JobCatcher():
             if (name == '__init__'):
                 continue
 
-            module = importlib.import_module('jobboards.'+name);
-            moduleClass = getattr(module, name)
-            instance = moduleClass(configs)
-            self.jobBoardList.append(instance)
+            plugin = utilities.loadJobBoard(name, configs)
+            self.jobBoardList.append(plugin)
 
     def run(self):
-        fd = FeedDownloader(configs['global']['rootdir'])
-        fd.configs = configs
-
         for jobboard in self.jobBoardList:
             if jobboard.name not in configs['global']['ignorejobboard']:
                 if jobboard.name != "Eures":
@@ -269,8 +298,9 @@ class JobCatcher():
                 print jobboard.name
                 print "=================================="
 
-                urls = jobboard.getUrls()
-                fd.downloadPages(jobboard.name, urls)
+                jb = utilities.loadJobBoard(jobboard.name, configs)
+                urls = jb.getUrls()
+                jb.downloadPages(jobboard.name, urls)
                 sys.exit()
 
                 if configs['global']['debug']:
@@ -288,7 +318,7 @@ def initblacklist():
 
 
 def feeddownload():
-    fd = FeedDownloader(configs['global']['rootdir'])
+    fd = JobBoards(configs['global']['rootdir'])
     fd.configs = configs
     fd.downloadFeeds()
 
@@ -300,7 +330,7 @@ def pagesdownload():
 
 
 def pagesinsert():
-    fd = FeedDownloader(configs['global']['rootdir'])
+    fd = JobBoards(configs['global']['rootdir'])
     fd.configs = configs
     fd.analyzesPages()
 

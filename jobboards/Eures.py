@@ -7,13 +7,18 @@ __authors__ = [
 __license__ = 'GPLv2'
 __version__ = '0.1'
 
+# System
 import os
 import re
 import time
 import glob
 
+# Third party
+import sqlite3 as lite
+
+
 from jobcatcher import JobCatcher
-from jobcatcher import Jobboard
+from jobcatcher import JobBoard
 from jobcatcher import Offer
 from jobcatcher import Location
 from config import configs
@@ -32,15 +37,34 @@ from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
 
 
-class Eures(Jobboard):
+class JBEures(JobBoard):
 
-    def __init__(self, configs=[]):
+    def __init__(self, rootdir='/tmp', configs=[], interval=1200):
         self.name = "Eures"
-        self._configs = configs
-        self._processingDir = "%s/%s" % (
-            self._configs['global']['rootdir'],
-            self.name
-        )
+        super(JBEures, self).__init__(rootdir, configs, interval)
+
+    def createTable(self,):
+        if self.isTableCreated():
+           return
+
+        conn = None
+        conn = lite.connect("jobs.db")
+        cursor = conn.cursor()
+
+        # create a table
+        cursor.execute("""CREATE TABLE jb_%s( \
+                       pageid TEXT, \
+                       ref TEXT, \
+                       date_pub INTEGER, \
+                       date_add INTEGER, \
+                       title TEXT, \
+                       company TEXT, \
+                       contract TEXT, \
+                       location TEXT, \
+                       salary_min TEXT, \
+                       salary_max TEXT, \
+                       PRIMARY KEY(ref))""" % self.name)
+
 
     def getUrls(self):
         """Get Urls offers from feed"""

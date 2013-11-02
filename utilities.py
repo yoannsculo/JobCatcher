@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__authors__ = [
+    'Yoann Sculo <yoann.sculo@gmail.com>',
+    'Bruno Adelé <bruno@adele.im>',
+]
+__copyright__ = 'Copyright (C) 2013 Yoann Sculo'
+__license__ = 'GPLv2'
+__version__ = '1.0'
+
 # System
 import os
 import re
 import time
 import hashlib
+import importlib
 import sqlite3 as lite
 import urllib2 as urllib
 
@@ -58,6 +67,14 @@ def downloadFile(url, filename, age=60,
             out.write(decoded)
         out.close()
 
+
+def loadJobBoard(jobboardname, configs):
+    """Load Jobboard plugin"""
+    module = importlib.import_module(
+        'jobboards.%s' % jobboardname
+    )
+    moduleClass = getattr(module, "JB%s" % jobboardname)
+    return moduleClass(configs)
 
 def db_create():
     conn = None
