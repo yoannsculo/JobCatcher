@@ -12,6 +12,7 @@ __version__ = '1.0'
 import os
 import sys
 import glob
+import base64
 import datetime
 import codecs
 import html2text
@@ -38,9 +39,9 @@ from config import configs
 class JobBoards(object):
     """A class for dowload a feed or a HTML page"""
 
-    def __init__(self, rootdir='/tmp', configs=[]):
-        self._rootdir = rootdir
+    def __init__(self, configs=[]):
         self._configs = configs
+        self._rootdir = configs['global']['rootdir']
 
     @property
     def rootdir(self):
@@ -69,7 +70,7 @@ class JobBoards(object):
                     # Donwload all feeds for jobboard
                     plugin = utilities.loadJobBoard(jobboardname, configs)
                     for url in feeds:
-                        plugin.downloadFeed(url, forcedownload)
+                        plugin.downloadFeed(url)
 
     def analyzesPages(self):
         """Analyze downloaded pages"""
@@ -96,13 +97,13 @@ class JobBoards(object):
 
 class JobBoard(object):
     """Generic Class forcreate new jobboard"""
-    def __init__(self, rootdir='/tmp', configs=[], interval=1200):
-        self._rootdir = rootdir
+    def __init__(self, configs=[], interval=1200):
+        self._rootdir = configs['global']['rootdir']
         self._configs = configs
         self._interval = interval
         self._datas = {}
         self._processingDir = "%s/%s" % (
-            self.configs['global']['rootdir'],
+            self.rootdir,
             self.name
         )
 
@@ -165,11 +166,10 @@ class JobBoard(object):
     def downloadFeed(self, url, interval=1200, forcedownload=False):
         """Download a feed or a HTML page"""
 
-        destdir = "%s/%s/feeds" % (self.rootdir, self.name)
-        md5 = utilities.md5(url)
-        saveto = "%s/%s.feed" % (destdir, md5)
-        utilities.downloadFile(
-            url, saveto, interval)
+        feeddir = "%s/feeds" % self._processingDir
+        urlid = utilities.md5(url)
+        saveto = "%s/%s.feed" % (feeddir, urlid)
+        utilities.downloadFile(url, saveto, interval)
 
     def downloadPages(self, jobboardname, urls):
         """Download all pages from urls list"""
@@ -374,8 +374,7 @@ def initblacklist():
 
 
 def feeddownload():
-    fd = JobBoards(configs['global']['rootdir'])
-    fd.configs = configs
+    fd = JobBoards(configs)
     fd.downloadFeeds()
 
 
@@ -386,14 +385,12 @@ def pagesdownload():
 
 
 def pagesinsert():
-    fd = JobBoards(configs['global']['rootdir'])
-    fd.configs = configs
+    fd = JobBoards(configs)
     fd.analyzesPages()
 
 
 def pagesmove():
-    fd = JobBoards(configs['global']['rootdir'])
-    fd.configs = configs
+    fd = JobBoards(configs)
     fd.moveToOffers()
 
 if __name__ == '__main__':

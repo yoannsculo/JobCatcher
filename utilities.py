@@ -45,8 +45,7 @@ def getNow():
     return time.time()
 
 
-def downloadFile(url, filename, age=60,
-                 forcedownload=False, encoding='iso-8859-1'):  # TODO: manage enconding
+def downloadFile(url, filename, age=60, forcedownload=False):
 
     # Check if i must download a file
     destdir = os.path.dirname(filename)

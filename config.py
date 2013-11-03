@@ -58,5 +58,4 @@ configs = {
             # 'http://www.pacajob.com/fr/rss/flux.aspx?ville=9&fonction=19'
         ]
     }
-
 }

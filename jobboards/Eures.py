@@ -39,9 +39,9 @@ from BeautifulSoup import BeautifulSoup
 
 class JBEures(JobBoard):
 
-    def __init__(self, rootdir='/tmp', configs=[], interval=1200):
+    def __init__(self, configs=[], interval=1200):
         self.name = "Eures"
-        super(JBEures, self).__init__(rootdir, configs, interval)
+        super(JBEures, self).__init__(configs, interval)
 
 
 
