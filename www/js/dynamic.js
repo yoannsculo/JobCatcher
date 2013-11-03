@@ -57,25 +57,52 @@ var MasterFilter = Class.extend({
     add_filter: function(filter) {
         this.filters = this.filters.concat(filter);
     },
-    /**
-     * \fn apply()
-     * \brief Applies the filters' selections and filters the table.
-     */
-    apply: function() {
+    priv_set_visibility: function(row, show) {
+        if (show) {
+            $(row).show();
+        } else {
+            $(row).hide();
+        }
+    },
+    priv_get_visibility: function(row) {
+        return "none" != $(row).css("display");
+    },
+    priv_apply_on_row: function(row, source = null) {
         var self = this;
-        var $row = $("#offers > tbody > tr")
-        $row.each(function(key, val) {
-            var accepted = true;
+        var accepted = true;
+        var test_value = function(filter, td) {
+            var classname = filter.classname();
+            var value = $(td).find("." + classname).text();
+            return filter.test(value);
+        };
+        if (null == source) {
             $.each(self.filters, function(key, filter) {
-                var classname = filter.classname();
-                var value = $(val).find("." + classname).text();
-                if (! filter.test(value))
+                if (! test_value(filter, row)) {
                     accepted = false;
+                    return false;
+                }
             });
-            if (accepted)
-                $(val).show();
-            else
-                $(val).hide();
+        } else {
+            accepted = test_value(source, row);
+            var cur_visibility = this.priv_get_visibility(row);
+            if (cur_visibility ^ accepted) {
+                return this.priv_apply_on_row(row);
+            }
+        }
+        this.priv_set_visibility(row, accepted);
+    },
+    /**
+     * \fn apply(source = null)
+     * \brief Applies the filters' selections and filters the table.
+     * \param[in] source The filter to update or \c null to apply all filters.
+     */
+    apply: function(source = null) {
+        var self = this;
+        if (null == source)
+            console.debug("MasterFilter.apply(null): long filtering.");
+        var $rows = $("#offers > tbody > tr")
+        $rows.each(function(key, row) {
+            self.priv_apply_on_row(row, source);
         });
     }
 });
@@ -114,12 +141,13 @@ var AbstractFilter = Class.extend({
         this.priv_master_filter.add_filter(this);
     },
     /**
-     * \fn apply()
+     * \fn apply(source = null)
      * \brief Applies the filters, calling \ref MasterFilter.apply().
+     * \param[in] source The filter to update or \c null to apply all filters.
      */
-    apply: function() {
+    apply: function(source = null) {
         if (null != this.priv_master_filter)
-            this.priv_master_filter.apply();
+            this.priv_master_filter.apply(source);
     },
     /**
      * \property classname()
@@ -185,7 +213,7 @@ var PubdateFilter = AbstractFilter.extend({
      * \brief Applies the filters, calling \ref MasterFilter.apply().
      */
     apply: function() {
-        this._super();
+        this._super(this);
     },
     /**
      * \property classname()
@@ -285,7 +313,7 @@ var TypeFilter = AbstractFilter.extend({
      * \brief Applies the filters, calling \ref MasterFilter.apply().
      */
     apply: function() {
-        this._super();
+        this._super(this);
     },
     /**
      * \property classname()
@@ -378,7 +406,7 @@ var TitleFilter = AbstractFilter.extend({
      * \brief Applies the filters, calling \ref MasterFilter.apply().
      */
     apply: function() {
-        this._super();
+        this._super(this);
     },
     /**
      * \property classname()
@@ -468,7 +496,7 @@ var CompanyFilter = AbstractFilter.extend({
      * \brief Applies the filters, calling \ref MasterFilter.apply().
      */
     apply: function() {
-        this._super();
+        this._super(this);
     },
     /**
      * \property classname()
@@ -537,7 +565,7 @@ var ContractFilter = AbstractFilter.extend({
      * \brief Applies the filters, calling \ref MasterFilter.apply().
      */
     apply: function() {
-        this._super();
+        this._super(this);
     },
     /**
      * \property classname()
@@ -691,7 +719,7 @@ var SalaryFilter = AbstractFilter.extend({
      * \brief Applies the filters, calling \ref MasterFilter.apply().
      */
     apply: function() {
-        this._super();
+        this._super(this);
     },
     /**
      * \property classname()
@@ -780,7 +808,7 @@ var SourceFilter = AbstractFilter.extend({
      * \brief Applies the filters, calling \ref MasterFilter.apply().
      */
     apply: function() {
-        this._super();
+        this._super(this);
     },
     /**
      * \property classname()
@@ -970,7 +998,7 @@ var LocationFilter = AbstractFilter.extend({
      * \brief Applies the filters, calling \ref MasterFilter.apply().
      */
     apply: function() {
-        this._super();
+        this._super(this);
     },
     /**
      * \property classname()
