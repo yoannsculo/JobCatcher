@@ -359,8 +359,6 @@ var TitleFilter = AbstractFilter.extend({
         var $filter_title_text = $("<input>", {
             id: "filter_title_text",
             type: "text",
-            size: 64, // FIXME jQuery bug #12429 <http://bugs.jquery.com/ticket/12429>
-            width: "75%",
         });
         var $filter_title_reset = $("<input>", {
             type: "button",
@@ -889,8 +887,6 @@ var LocationFilter = AbstractFilter.extend({
         var $filter_location_text = $("<input>", {
             id: "filter_location_text",
             type: "text",
-            size: 64, // FIXME jQuery bug #12429 <http://bugs.jquery.com/ticket/12429>
-            width: "65%",
         }).keypress(function(event) {
             if (13 == event.which)
                 self.apply();
