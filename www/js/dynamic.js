@@ -601,7 +601,7 @@ var SalaryFilter = AbstractFilter.extend({
     priv_range_from_string: function(salary_description)
     {
         var values = salary_description
-            .replace(/ ?000/g, "")
+            .replace(/[ ,.]?[0-9]{3}(\.00)?/g, "")
             .replace(/([0-9]+) ?k€?/ig, "$1")
             .match(/[0-9]+/g);
         if (null == values)
