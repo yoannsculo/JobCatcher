@@ -640,16 +640,33 @@ var SalaryFilter = AbstractFilter.extend({
             }
         });
 
-        var $filter_salary_root = $("<div>", {id: "filter_salary_root"});
-        var $filter_salary_feedback = $("<div>", {id: "filter_salary_feedback"});
+        var $filter_salary_slider = $("<div>", {id: "filter_salary_root"});
+        var $filter_salary_feedback = $("<span>", {id: "filter_salary_feedback"});
+        var $filter_salary_na = $("<span>");
+        var $filter_salary_na_label = $("<label>")
+            .attr("for", "filter_salary_na_checkbox")
+            .text("NA")
+            .appendTo($filter_salary_na);
+        var $filter_salary_na_checkbox = $("<input>", {
+            id: "filter_salary_na_checkbox",
+            type: "checkbox",
+            checked: "checked",
+            change: function() {
+                Config.set("filter_salary_na_checkbox", $(this).is(":checked"));
+                self.apply();
+            }
+        }).appendTo($filter_salary_na);
+        Config.get("filter_salary_na_checkbox", function(value) {
+            $filter_salary_na_checkbox.attr("checked", "true" == value);
+        });
 
         var slide_callback = function(event, ui) {
-            var min = $filter_salary_root.slider("values")[0];
-            var max = $filter_salary_root.slider("values")[1];
+            var min = $filter_salary_slider.slider("values")[0];
+            var max = $filter_salary_slider.slider("values")[1];
             $filter_salary_feedback.html("De <b>" + min + "</b>k€ à <b>" + max + "</b>k€");
             self.apply();
         };
-        $filter_salary_root.slider({
+        $filter_salary_slider.slider({
             animate: "fast",
             max: max,
             min: min,
@@ -659,7 +676,7 @@ var SalaryFilter = AbstractFilter.extend({
             change: slide_callback,
             slide: slide_callback
         });
-        priv_elements = [$filter_salary_feedback, $filter_salary_root];
+        priv_elements = [$filter_salary_feedback, $filter_salary_na, $filter_salary_slider];
     },
     /**
      * \fn apply()
@@ -692,6 +709,10 @@ var SalaryFilter = AbstractFilter.extend({
         var min = 0, max = 1;
         var range_slider = $("#filter_salary_root").slider("values");
         var range_row = this.priv_range_from_string(value);
+        // NA
+        if (0 == range_row.length)
+            return $("#filter_salary_na_checkbox").is(":checked");
+        // Values
         return (
             0 == range_row.length
             || null == range_slider[0]
