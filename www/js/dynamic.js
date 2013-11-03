@@ -920,7 +920,7 @@ var LocationFilter = AbstractFilter.extend({
                 Config.get("filter_salary_range", function(value) {
                     $filter_location_slider.slider("value", value);
                 }, function() {
-                    slider_on_slide($slider.slider("value"));
+                    slider_on_slide($filter_location_slider.slider("value"));
                 });
             },
             change: function(event, ui) {
