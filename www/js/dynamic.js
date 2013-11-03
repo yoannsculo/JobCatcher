@@ -581,6 +581,7 @@ var SalaryFilter = AbstractFilter.extend({
      * \brief Array for internal use.
      */
     priv_elements: [],
+    priv_salary_hashmap: [],
     /**
      * \fn priv_select_from_array(id, options)
      * \brief Creates detached <select> elements from the \a options array.
@@ -594,32 +595,38 @@ var SalaryFilter = AbstractFilter.extend({
      * \brief Extracts a salary range from a job description.
      *
      * \returns [\a min, \a max] : a two element array; \a min being the lowest salary
-     * in kileeuros (k€) and \a max the highest.
+     * in kiloeuros (k€) and \a max the highest.
      */
     priv_range_from_string: function(salary_description)
     {
-        var values = salary_description
-            .replace(/[ ,.]?[0-9]{3}(\.00)?/g, "")
-            .replace(/([0-9]+) ?k€?/ig, "$1")
-            .match(/[0-9]+/g);
-        if (null == values)
-            return [];
-        switch (values.length)
-        {
-        case 0:
-            return [];
-        case 1:
-            return [values[0], values[0]];
-        case 2:
-            if (values[0] > values[1])
-                return [values[1], values[0]];
-            return values;
-        default:
-            return [
-                Math.min.apply(null, values),
-                Math.max.apply(null, values)
-            ];
+        var get_range = function(str) {
+            var values = salary_description
+                .replace(/[ ,.]?[0-9]{3}(\.00)?/g, "")
+                .replace(/([0-9]+) ?k€?/ig, "$1")
+                .match(/[0-9]+/g);
+            if (null == values)
+                return [];
+            switch (values.length)
+            {
+            case 0:
+                return [];
+            case 1:
+                return [values[0], values[0]];
+            case 2:
+                if (values[0] > values[1])
+                    return [values[1], values[0]];
+                return values;
+            default:
+                return [
+                    Math.min.apply(null, values),
+                    Math.max.apply(null, values)
+                ];
+            }
+        };
+        if (null == this.priv_salary_hashmap[salary_description]) {
+            this.priv_salary_hashmap[salary_description] = get_range(salary_description);
         }
+        return this.priv_salary_hashmap[salary_description];
     },
     /**
      * \fn init(classname, master_filter)
@@ -662,6 +669,9 @@ var SalaryFilter = AbstractFilter.extend({
             var min = $filter_salary_slider.slider("values")[0];
             var max = $filter_salary_slider.slider("values")[1];
             $filter_salary_feedback.html("De <b>" + min + "</b>k€ à <b>" + max + "</b>k€");
+        };
+        var change_callback = function(event, ui) {
+            slide_callback(event, ui);
             self.apply();
         };
         $filter_salary_slider.slider({
@@ -670,8 +680,8 @@ var SalaryFilter = AbstractFilter.extend({
             min: min,
             range: true,
             values: [min, max],
-            create: slide_callback,
-            change: slide_callback,
+            create: change_callback,
+            change: change_callback,
             slide: slide_callback
         });
         priv_elements = [$filter_salary_feedback, $filter_salary_na, $filter_salary_slider];
