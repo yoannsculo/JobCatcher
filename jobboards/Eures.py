@@ -83,10 +83,10 @@ class JBEures(JobBoard):
 
         return res
 
-    def analyzePage(self, html):
+    def analyzePage(self, url, html):
         """Analyze page and extract datas"""
         # Refs
-        self.datas['pageid'] = ""
+        self.datas['url'] = url
         self.datas['ref'] = self._extractItem("Référence nationale", html)
         self.datas['nace'] = self._extractItem("Code Nace", html)
 
@@ -129,7 +129,7 @@ class JBEures(JobBoard):
         cursor.execute("""CREATE TABLE jb_%s( \
                        ref TEXT, \
                        nace TEXT, \
-                       pageid TEXT, \
+                       url TEXT, \
                        date_pub INTEGER, \
                        date_add INTEGER, \
                        title TEXT, \
@@ -152,7 +152,7 @@ class JBEures(JobBoard):
                        self.name, (
                            self.datas['ref'],
                            self.datas['nace'],
-                           self.datas['pageid'],
+                           self.datas['url'],
                            self.datas['date_pub'],
                            self.datas['date_add'],
                            self.datas['title'],
@@ -179,6 +179,7 @@ class JBEures(JobBoard):
 
         o = Offer()
         o.src = self.name
+        o.url = data['url']
         o.ref = data['ref']
         o.title = data['title']
         o.company = data['company']

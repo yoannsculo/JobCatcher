@@ -12,7 +12,7 @@ __version__ = '1.0'
 import os
 import sys
 import glob
-import base64
+import cPickle
 import datetime
 import codecs
 import html2text
@@ -82,10 +82,10 @@ class JobBoards(object):
                     for p in glob.glob("%s/*.page" % destdir):
                         # Load the HTML feed
                         fd = open(p, 'rb')
-                        html = fd.read()
+                        content = cPickle.load(fd)
                         fd.close()
 
-                        plugin.analyzePage(html)
+                        plugin.analyzePage(content['url'], content['data'])
 
     def moveToOffers(self):
         """Move jobboards datas to offer"""
@@ -210,7 +210,7 @@ class JobBoard(object):
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
         raise NotImplementedError(mess)
 
-    def analyzePage(self, html):
+    def analyzePage(self, url, html):
         """Analyze page and extract datas"""
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
         raise NotImplementedError(mess)

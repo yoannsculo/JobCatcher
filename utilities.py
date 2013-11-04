@@ -13,6 +13,7 @@ __version__ = '1.0'
 import os
 import re
 import time
+import cPickle
 import hashlib
 import importlib
 import sqlite3 as lite
@@ -48,6 +49,7 @@ def getNow():
 def downloadFile(url, filename, age=60, forcedownload=False):
 
     # Check if i must download a file
+    content = {'url': '', 'data': ''}
     destdir = os.path.dirname(filename)
 
     now = getNow()
@@ -61,9 +63,12 @@ def downloadFile(url, filename, age=60, forcedownload=False):
         print "Download %s " % url
         out = open(filename, 'wb')
         datas = urllib.urlopen(url, filename)
+
+        content['url'] = url
         for line in datas:
-            decoded = line.decode('utf-8')
-            out.write(decoded)
+            content['data'] += line.decode('utf-8')
+
+        cPickle.dump(content, out)
         out.close()
 
 
