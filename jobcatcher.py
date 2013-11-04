@@ -288,7 +288,7 @@ class ReportGenerator(object):
         for item in jb.jobBoardList:
             data = item.fetchAllOffersFromDB()
             stat.write("<tr>")
-            stat.write("<td><a href=\"%s\">%s</a></td>" %("item.url", "item.name"))  # TODO: use the URL and name
+            stat.write("<td>%s</td>" %(item.name))
             stat.write("<td>%s</td>" %(len(data)))
             stat.write("<td></td>")
             stat.write("<td></td>")
@@ -297,7 +297,6 @@ class ReportGenerator(object):
         stat.write("</table>")
         stat.write("</html>")
         stat.close()
-
 
     def generateReport(self, filtered=True):
 
@@ -316,12 +315,6 @@ class ReportGenerator(object):
         cursor.execute(sql_full)
         data_full = cursor.fetchall()
         count_full = len(data_full)
-
-        #sql = "SELECT * FROM offers WHERE company IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
-
-        # sql = "SELECT count(*)FROM offers"
-        # cursor.execute(sql)
-        # count = cursor.fetchone()[0]
 
         if (filtered):
             report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')

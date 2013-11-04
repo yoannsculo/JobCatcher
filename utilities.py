@@ -72,7 +72,7 @@ def downloadFile(url, filename, age=60, forcedownload=False):
         print "Download %s " % url
         out = open(filename, 'wb')
 
-        out.write(url)
+        out.write("%s\n" % url)
         datas = urllib.urlopen(url, filename)
         for line in datas:
             decoded = line.decode('utf-8')
