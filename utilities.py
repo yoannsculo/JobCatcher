@@ -126,6 +126,7 @@ def db_add_offer(offer):
         return 0
 
     except lite.Error, e:
+        raise lite.Error(e)
         """ TODO : Waiting for this ... http://bugs.python.org/issue16379
                 lite.errorcode.get(e.sqlite_errorcode)
             USE pip
