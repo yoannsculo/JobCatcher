@@ -14,6 +14,7 @@ configs = {
     'global': {
         'debug': True,
         'rootdir': './dl',
+        'wwwdir': './www',
         'ignorejobboard': [
             'apec',
             'cadresonline',
