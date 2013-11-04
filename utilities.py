@@ -12,17 +12,18 @@ __version__ = '1.0'
 # System
 import os
 import re
+import sys
 import time
-import cPickle
 import hashlib
 import importlib
 import sqlite3 as lite
 import urllib2 as urllib
-
 # Jobcatcher
 from jobcatcher import Offer
 from jobcatcher import JobCatcher
 
+from collections import namedtuple
+PageResult = namedtuple('PageResult', ['url', 'page'])
 
 def md5(datas):
     """Calc md5sum string datas"""
@@ -46,10 +47,18 @@ def getNow():
     return time.time()
 
 
+def openPage(filename):
+    fd = open(filename, 'rb')
+    url = fd.readline()
+    html = fd.read()
+    fd.close()
+
+    return PageResult(url=url, page=html)
+
+
 def downloadFile(url, filename, age=60, forcedownload=False):
 
     # Check if i must download a file
-    content = {'url': '', 'data': ''}
     destdir = os.path.dirname(filename)
 
     now = getNow()
@@ -62,14 +71,15 @@ def downloadFile(url, filename, age=60, forcedownload=False):
 
         print "Download %s " % url
         out = open(filename, 'wb')
+
+        out.write(url)
         datas = urllib.urlopen(url, filename)
-
-        content['url'] = url
         for line in datas:
-            content['data'] += line.decode('utf-8')
-
-        cPickle.dump(content, out)
+            decoded = line.decode('utf-8')
+            out.write(decoded)
         out.close()
+
+
 
 
 def loadJobBoard(jobboardname, configs):

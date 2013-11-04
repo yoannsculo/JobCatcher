@@ -12,7 +12,6 @@ __version__ = '1.0'
 import os
 import sys
 import glob
-import cPickle
 import datetime
 import codecs
 import html2text
@@ -81,11 +80,8 @@ class JobBoards(object):
                     plugin = utilities.loadJobBoard(jobboardname, configs)
                     for p in glob.glob("%s/*.page" % destdir):
                         # Load the HTML feed
-                        fd = open(p, 'rb')
-                        content = cPickle.load(fd)
-                        fd.close()
-
-                        plugin.analyzePage(content['url'], content['data'])
+                        content = utilities.openPage(p)
+                        plugin.analyzePage(content.url, content.page)
 
     def moveToOffers(self):
         """Move jobboards datas to offer"""
