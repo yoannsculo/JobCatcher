@@ -27,10 +27,12 @@ show me mistakes I could have made or improvements I could do.
 
 ## Usage (mainly development options for now)
 
-	./jobcatcher.py -c # To create database
 	./jobcatcher.py -b # To load my blacklist into the DB
 	./jobcatcher.py -f # To flush and update the blacklist
 	./jobcatcher.py -s # To fetch last offers
+	./jobcatcher.py -p # To download a related page
+	./jobcatcher.py -i # Insert data to jobboard table
+	./jobcatcher.py -m # Move jobboard datas to offers table
 	./jobcatcher.py -r # To generate reports
 	./jobcatcher.py -u # To fetch an offer only with its url
 	./jobcatcher.py -a # Sync the blacklist, fetch the offers and generates reports.
@@ -44,10 +46,12 @@ soon.
 
 - Apec.fr (France)
 - Progressive Recruitment (France)
-- RegionsJob - RegionCentre (France)
-- RegionsJob - RegionOuest (France)
-- RegionsJob - RegionSudOuest (France)
+- RegionsJob
+ - RegionCentre (France)
+ - RegionOuest (France)
+ - RegionSudOuest (France)
 - Cadreonline (France)
+- Eures (Europe)
 
 ### TODO
 
@@ -84,6 +88,8 @@ soon.
     pip install -r requirements.txt
 
 ## Utilisation
+
+Modify the config.py and execute
 
     workon jobcatcher
     python jobcatcher.py -a
