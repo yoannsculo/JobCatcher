@@ -11,11 +11,104 @@
  * \brief Filters the table using \ref AbstractFilters.
  */
 var MasterFilter = Class.extend({
+    priv_initialized: false,
+    priv_rows_per_page: 10,
     /**
      * \property filters
      * \brief Filters to use.
      */
-    filters: null,
+    priv_filters: null,
+    priv_get_next_rows: function() {
+        var first = this.priv_next_row;
+        this.priv_next_row += this.priv_rows_per_page;
+        if (0 == first)
+            return $("#offers > tbody > tr:lt(" + this.priv_rows_per_page + ")");
+        return $("#offers > tbody > tr:gt(" + first + "):lt(" + this.priv_rows_per_page + ")");
+    },
+    priv_set_visibility: function(row, show) {
+        if (show) {
+            $(row).show();
+        } else {
+            $(row).hide();
+        }
+    },
+    priv_get_visibility: function(row) {
+        return "none" != $(row).css("display");
+    },
+    priv_apply_on_row: function(row, source = null) {
+        var self = this;
+        var accepted = true;
+        var test_value = function(filter, row) {
+            var classname = filter.classname();
+            var value = $(row).find("." + classname).text();
+            return filter.test(value);
+        };
+        if (null == source) {
+            $.each(self.filters, function(key, filter) {
+                if (! test_value(filter, row)) {
+                    accepted = false;
+                    return false;
+                }
+            });
+        } else {
+            accepted = test_value(source, row);
+            var cur_visibility = this.priv_get_visibility(row);
+            if (cur_visibility ^ accepted) {
+                return this.priv_apply_on_row(row);
+            }
+        }
+        this.priv_set_visibility(row, accepted);
+        return accepted;
+    },
+    priv_page_first_indexes: new Array(),
+    priv_next_row: 0,
+    priv_navbar: null,
+    priv_show_page: function(page, source = null) {
+        var self = this;
+
+        // pagination initialization
+        if (0 == page  || undefined === this.priv_page_first_indexes[page]) {
+            this.priv_page_first_indexes = new Array();
+            this.priv_page_first_indexes[0] = 0;
+            this.priv_next_row = 0;
+            this.priv_navbar.set_page_count(1);
+        }
+
+        // Get page's first row index
+        this.priv_next_row = this.priv_page_first_indexes[page];        
+
+        // Test rows from page's first until page full or no more rows
+        var rows_cnt = 0;
+        $("#offers > tbody > tr:visible").each(function(key, row) {
+            self.priv_set_visibility(row, false);
+        });
+        do {
+            var $rows = this.priv_get_next_rows();
+            if (0 == $rows.length) {
+                this.priv_navbar.set_page_count(page+1);
+                break;
+            }
+            $rows.each(function(key, row) {
+                if (rows_cnt < self.priv_rows_per_page) {
+                    if (self.priv_apply_on_row(row, source)) {
+                        rows_cnt++;
+                    }
+                } else {
+                    self.priv_next_row -= self.priv_rows_per_page - key;
+                    return false;
+                }
+            });
+        } while (rows_cnt < this.priv_rows_per_page);
+
+        // Save next page's first row
+        if (this.priv_next_row >= this.priv_page_first_indexes[page])
+            this.priv_page_first_indexes[page+1] = this.priv_next_row;
+        else
+            rows_cnt = -1;
+
+        if (rows_cnt == this.priv_rows_per_page)
+            this.priv_navbar.acknoledge_page(page+1);
+    },
     /**
      * \fn init()
      * \brief Constructor.
@@ -24,6 +117,7 @@ var MasterFilter = Class.extend({
      * Creates and inserts DOM elements providing a filter on the table.
      */
     init: function() {
+        var self = this;
         this.filters = new Array();
         new PubdateFilter("pubdate", this).attach(
             $("#lineFilters > .pubdate")
@@ -43,12 +137,22 @@ var MasterFilter = Class.extend({
         new ContractFilter("contract", this).attach(
             $("#lineFilters > .contract")
         );
-        new SalaryFilter("salary", this).attach(
+        /*new SalaryFilter("salary", this).attach(
             $("#lineFilters > .salary")
-        );
+        );*/
         new SourceFilter("source", this).attach(
             $("#lineFilters > .source")
         );
+        this.priv_navbar = new NavigationBar({
+            change: function(page) {
+                self.priv_show_page(page);
+            }
+        });
+        this.priv_navbar.attach(
+            $("<p>").appendTo("body")
+        );
+        this.priv_initialized = true;
+        this.apply();
     },
     /**
      * \fn add_filter(filter)
@@ -57,53 +161,47 @@ var MasterFilter = Class.extend({
     add_filter: function(filter) {
         this.filters = this.filters.concat(filter);
     },
-    priv_set_visibility: function(row, show) {
-        if (show) {
-            $(row).show();
-        } else {
-            $(row).hide();
-        }
-    },
-    priv_get_visibility: function(row) {
-        return "none" != $(row).css("display");
-    },
-    priv_apply_on_row: function(row, source = null) {
-        var self = this;
-        var accepted = true;
-        var test_value = function(filter, td) {
-            var classname = filter.classname();
-            var value = $(td).find("." + classname).text();
-            return filter.test(value);
-        };
-        if (null == source) {
-            $.each(self.filters, function(key, filter) {
-                if (! test_value(filter, row)) {
-                    accepted = false;
-                    return false;
-                }
-            });
-        } else {
-            accepted = test_value(source, row);
-            var cur_visibility = this.priv_get_visibility(row);
-            if (cur_visibility ^ accepted) {
-                return this.priv_apply_on_row(row);
-            }
-        }
-        this.priv_set_visibility(row, accepted);
-    },
     /**
      * \fn apply(source = null)
      * \brief Applies the filters' selections and filters the table.
      * \param[in] source The filter to update or \c null to apply all filters.
      */
     apply: function(source = null) {
+        // source no more used.
+        if (!this.priv_initialized)
+            return;
+        this.priv_navbar.set_page(0);
+    }
+});
+
+var NavigationBar = Class.extend({
+    priv_current_page: 0,
+    priv_bar: null,
+    init: function(options = null) {
         var self = this;
-        if (null == source)
-            console.debug("MasterFilter.apply(null): long filtering.");
-        var $rows = $("#offers > tbody > tr")
-        $rows.each(function(key, row) {
-            self.priv_apply_on_row(row, source);
+        this.priv_bar = $("<p>");
+        this.priv_bar.pagination({
+            pages: 1,
+            displayedPages: 3,
+            edges: 0,
+            onPageClick: function(page) {
+                options.change(page-1);
+            }
         });
+    },
+    attach: function(parent) {
+        this.priv_bar.appendTo(parent);
+    },
+    set_page_count: function(page_count) {
+        this.priv_bar.pagination("setPagesCount", page_count);
+    },
+    acknoledge_page: function(page_number) {
+        var page_count = this.priv_bar.pagination("getPagesCount", page_count);
+        if (page_number >= page_count)
+            this.set_page_count(page_count+1);
+    },
+    set_page: function(page_number, silent = false) {
+        this.priv_bar.pagination("selectPage", page_number+1, silent);
     }
 });
 
@@ -251,6 +349,8 @@ var PubdateFilter = AbstractFilter.extend({
      * \returns Either \c true of \c false.
      */
     test: function(value)  {
+        if ("" == $("#filter_pubdate_root").val())
+            return true;
         var date_format = $("#filter_pubdate_root").datepicker("option", "dateFormat");
         var row_date = $.datepicker.parseDate(date_format, value);
         var pivot_date = $("#filter_pubdate_root").datepicker("getDate");
@@ -897,7 +997,7 @@ var LocationFilter = AbstractFilter.extend({
         var loc2id = escape(loc2);
         var distid = loc1id + '-' + loc2id;
         this.priv_store.get(distid, function(status, distance) {
-	/* Case #1: distance not yes in cache */
+        /* Case #1: distance not yes in cache */
             if (!status || null == distance) {
                 self.priv_query_googlemap_api(loc1, loc2, function(distance) {
                     self.priv_store.set(distid, distance);
@@ -1029,7 +1129,7 @@ var LocationFilter = AbstractFilter.extend({
      * returns \c true. Though, when a job offer is considered too far, this
      * function manually hide the row.
      */
-    test: function(value)  {
+    test: function(value)  { // FIXME: precalcul all distances on refresh click
         var self = this;
         var max_distance = 35000;
         var location = $("#filter_location_text").val();
