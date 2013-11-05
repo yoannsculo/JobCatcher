@@ -56,4 +56,37 @@ soon.
 - L'eXpress-Board (France)
 - Remixjobs.com (France)
 
+## Installation
+
+### Debian
+
+    # Install a packages
+    apt-get update
+    apt-get install python-pip git virtualenv virtualenvwrapper
+
+
+    # Configure virtualenvwrapper
+    cat << EOF >> ~/.bashrc
+    export WORKON_HOME=$HOME/.virtualenvs
+    export PROJECT_HOME=$HOME/Devel
+    source /usr/local/bin/virtualenvwrapper.sh
+    EOF
+    source ~/.bashrc
+    
+    # Prepare jobcatcher environment
+    mkvirtualenv --no-site-packages -p /usr/bin/python2.7 jobcatcher
+    add2virtualenv /opt/JobCatcher
+
+    # Install jobcatcher project
+    cd opt
+    git clone -b unstable https://github.com/badele/JobCatcher.git
+    cd JobCatcher
+    pip install -r requirements.txt
+
+## Utilisation
+
+    workon jobcatcher
+    python jobcatcher.py -a
+
+
 Help me to add new job boards to JobCatcher ! :)
