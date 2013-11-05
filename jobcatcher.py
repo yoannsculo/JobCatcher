@@ -153,11 +153,7 @@ class JobBoard(object):
 
     def isTableCreated(self):
         """Check if the table for jobboard exist"""
-        conn = lite.connect("jobs.db")
-        cursor = conn.cursor()
-        sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='jb_%s';" % self.name
-        cursor.execute(sql)
-        return len(cursor.fetchall()) == 1
+        return utilities.db_iscreated("jb_%s" % self.name)
 
     def downloadFeed(self, url, interval=1200, forcedownload=False):
         """Download a feed or a HTML page"""

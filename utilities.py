@@ -80,8 +80,6 @@ def downloadFile(url, filename, age=60, forcedownload=False):
         out.close()
 
 
-
-
 def loadJobBoard(jobboardname, configs):
     """Load Jobboard plugin"""
     module = importlib.import_module(
@@ -89,6 +87,16 @@ def loadJobBoard(jobboardname, configs):
     )
     moduleClass = getattr(module, "JB%s" % jobboardname)
     return moduleClass(configs)
+
+
+def db_iscreated(tablename):
+    """Check if tablename exist"""
+    conn = lite.connect("jobs.db")
+    cursor = conn.cursor()
+    sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='%s';" % tablename
+    cursor.execute(sql)
+    return len(cursor.fetchall()) == 1
+
 
 def db_create():
     conn = None
