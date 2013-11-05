@@ -153,7 +153,7 @@ class JobBoard(object):
 
     def isTableCreated(self):
         """Check if the table for jobboard exist"""
-        return utilities.db_iscreated("jb_%s" % self.name)
+        return utilities.db_istableexists("jb_%s" % self.name)
 
     def downloadFeed(self, url, interval=1200, forcedownload=False):
         """Download a feed or a HTML page"""
@@ -527,6 +527,7 @@ def generatereport():
 
 
 def initblacklist():
+    utilities.db_checkandcreate()
     utilities.blacklist_flush()
     utilities.blocklist_load()
 
@@ -543,11 +544,13 @@ def pagesdownload():
 
 
 def pagesinsert():
+    utilities.db_checkandcreate()
     fd = JobBoards(configs)
     fd.analyzesPages()
 
 
 def pagesmove():
+    utilities.db_checkandcreate()
     fd = JobBoards(configs)
     fd.moveToOffers()
 
@@ -630,10 +633,6 @@ if __name__ == '__main__':
             instance = moduleClass()
             filename = instance.fetch_offer(args[0])
             instance.processOffer(filename)
-        sys.exit(0)
-
-    if options.create:
-        utilities.db_create()
         sys.exit(0)
 
     if options.start:

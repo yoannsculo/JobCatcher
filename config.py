@@ -55,7 +55,7 @@ configs = {
     },
     'Eures': {
         'feeds': [
-            'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?lg=FR&isco=%25&multipleCountries=FR-R281&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=10&page=1&country=FR&totalCount=781&multipleRegions=R281',
+            'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?lg=FR&isco=%25&multipleCountries=FR-R281&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=99&page=1&country=FR&totalCount=781&multipleRegions=R281',
             # 'http://www.pacajob.com/fr/rss/flux.aspx?ville=9&fonction=19'
         ]
     }

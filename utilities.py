@@ -89,7 +89,13 @@ def loadJobBoard(jobboardname, configs):
     return moduleClass(configs)
 
 
-def db_iscreated(tablename):
+def db_checkandcreate():
+    """Check and create offers table"""
+    if not db_istableexists('offers'):
+        db_create()
+
+
+def db_istableexists(tablename):
     """Check if tablename exist"""
     conn = lite.connect("jobs.db")
     cursor = conn.cursor()
@@ -99,6 +105,7 @@ def db_iscreated(tablename):
 
 
 def db_create():
+    """Create the offers table"""
     conn = None
     conn = lite.connect("jobs.db")
     cursor = conn.cursor()
