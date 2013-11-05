@@ -25,7 +25,6 @@ from config import configs
 from html2text import html2text
 
 
-from lxml import etree
 from StringIO import StringIO
 import sys
 
