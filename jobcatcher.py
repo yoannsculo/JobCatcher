@@ -621,6 +621,8 @@ if __name__ == '__main__':
         initblacklist()
         feeddownload()
         pagesdownload()
+        pagesinsert()
+        pagesmove()
         generatereport()
         sys.exit(0)
 
