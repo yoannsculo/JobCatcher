@@ -28,12 +28,8 @@ sys.setdefaultencoding("utf-8")
 
 from config import configs
 
-# Traitement process
-# jobcatcher -s
-# jobcatcher -p
-# jobcatcher -i
-# jobcatcher -m
-# rm jobs.db; python jobcatcher.py -c ; python jobcatcher.py -i ; python jobcatcher.py -m ; python jobcatcher.py -r
+# For testing
+# rm jobs.db; python jobcatcher.py -a
 
 class JobBoards(object):
     """A class for dowload a feed or a HTML page"""
@@ -510,15 +506,6 @@ class JobCatcher():
                 jb = utilities.loadJobBoard(jobboard.name, configs)
                 urls = jb.getUrls()
                 jb.downloadPages(jobboard.name, urls)
-                sys.exit()
-
-                if configs['global']['debug']:
-                    jobboard.fetch()
-                else:
-                    try:
-                        jobboard.fetch()
-                    except:
-                        print "Ignored (parsing error)."
 
 
 def generatereport():
@@ -606,15 +593,6 @@ if __name__ == '__main__':
         generatereport()
         print "Done."
         sys.exit(0)
-
-    # if options.add:
-    #     if len(args) == 11:
-    #         print "%s" % args[10]
-    #         offer = Offer()
-    #         offer.load(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10])
-    #         db_add_offer(offer)
-
-    #     sys.exit(0)
 
     if options.all:
         initblacklist()
