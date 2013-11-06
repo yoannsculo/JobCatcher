@@ -62,11 +62,12 @@ soon.
 
 ## Installation
 
-### Debian
+### Debian, Ubuntu
 
     # Install a packages
     apt-get update
-    apt-get install python-pip git virtualenv virtualenvwrapper
+    apt-get install sqlite3 python-pip git 
+    pip install virtualenv virtualenvwrapper
 
 
     # Configure virtualenvwrapper
