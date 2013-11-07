@@ -159,6 +159,8 @@ class JobBoard(object):
         saveto = "%s/%s.feed" % (feeddir, urlid)
         utilities.downloadFile(url, saveto, interval)
 
+        return saveto
+
     def downloadPages(self, jobboardname, urls):
         """Download all pages from urls list"""
         destdir = "%s/%s/pages" % (self.rootdir, jobboardname)

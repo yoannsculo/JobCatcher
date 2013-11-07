@@ -1,0 +1,10 @@
+# Language à parser
+language: python
+
+# Version de python à tester
+python:
+- "2.7"
+- "3.2"
+
+# script du test unitaire à executer
+script: ./test.py
