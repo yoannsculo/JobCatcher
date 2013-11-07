@@ -9,31 +9,28 @@ __copyright__ = 'Copyright (C) 2013 Yoann Sculo'
 __license__ = 'GPLv2'
 __version__ = '1.0'
 
-import os
-import sys
-import glob
-import datetime
-import codecs
-import html2text
-import requests
 import unittest
-
-from optparse import OptionParser
-from xml.dom import minidom
 import utilities
-import sqlite3 as lite
-
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
 from config import configstest as configs
-import jobcatcher
+
 
 class TestPackages(unittest.TestCase):
 
     def setUp(self):
         """Before unittest"""
         pass
+
+    def test_checkdatabase(self):
+        """Check sqlite3 database"""
+
+        # Check if database not exist
+        exists = utilities.db_istableexists('offers')
+        self.assertEqual(exists, False)
+
+        # Create database & check
+        utilities.db_create()
+        exists = utilities.db_istableexists('offers')
+        self.assertEqual(exists, True)
 
     def test_JBEures(self):
         """ Test Eures jobboard"""
