@@ -89,25 +89,25 @@ def loadJobBoard(jobboardname, configs):
     return moduleClass(configs)
 
 
-def db_checkandcreate():
+def db_checkandcreate(configs):
     """Check and create offers table"""
-    if not db_istableexists('offers'):
-        db_create()
+    if not db_istableexists(configs, 'offers'):
+        db_create(configs)
 
 
-def db_istableexists(tablename):
+def db_istableexists(configs, tablename):
     """Check if tablename exist"""
-    conn = lite.connect("jobs.db")
+    conn = lite.connect(configs['global']['database'])
     cursor = conn.cursor()
     sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='%s';" % tablename
     cursor.execute(sql)
     return len(cursor.fetchall()) == 1
 
 
-def db_create():
+def db_create(configs):
     """Create the offers table"""
     conn = None
-    conn = lite.connect("jobs.db")
+    conn = lite.connect(configs['global']['database'])
     cursor = conn.cursor()
 
     # create a table
@@ -128,8 +128,8 @@ def db_create():
                         PRIMARY KEY(source, ref))""")
     cursor.execute("""CREATE TABLE blacklist(company TEXT, PRIMARY KEY(company))""")
 
-def db_add_offer(offer):
-    conn = lite.connect("jobs.db")
+def db_add_offer(configs, offer):
+    conn = lite.connect(configs['global']['database'])
     try:
         conn.text_factory = str
         cursor = conn.cursor()
@@ -156,14 +156,14 @@ def db_add_offer(offer):
             conn.close()
 
 def blacklist_flush():
-    conn = lite.connect("jobs.db")
+    conn = lite.connect(configs['global']['database'])
     cursor = conn.cursor()
     sql = "DELETE FROM blacklist"
     cursor.execute(sql)
     conn.commit()
     conn.close()
 
-def blocklist_load():
+def blocklist_load(configs):
     fp = open('blacklist_company.txt','r') #iso-8859-1
     list = []
     for line in fp:
@@ -171,7 +171,7 @@ def blocklist_load():
         list.append([company])
 
     try:
-        conn = lite.connect("jobs.db")
+        conn = lite.connect(configs['global']['database'])
         conn.text_factory = str
         cursor = conn.cursor()
         res = cursor.executemany("INSERT INTO blacklist VALUES(?)", list)

@@ -9,6 +9,8 @@ __copyright__ = 'Copyright (C) 2013 Yoann Sculo'
 __license__ = 'GPLv2'
 __version__ = '1.0'
 
+import os
+import sys
 import unittest
 import utilities
 from config import configstest as configs
@@ -17,19 +19,17 @@ from config import configstest as configs
 class TestPackages(unittest.TestCase):
 
     def setUp(self):
-        """Before unittest"""
-        pass
-
-    def test_checkdatabase(self):
-        """Check sqlite3 database"""
+        """Test & Create database"""
+        # Remove exist database
+        os.remove(configs['global']['database'])
 
         # Check if database not exist
-        exists = utilities.db_istableexists('offers')
+        exists = utilities.db_istableexists(configs, 'offers')
         self.assertEqual(exists, False)
 
         # Create database & check
-        utilities.db_create()
-        exists = utilities.db_istableexists('offers')
+        utilities.db_create(configs)
+        exists = utilities.db_istableexists(configs, 'offers')
         self.assertEqual(exists, True)
 
     def test_JBEures(self):

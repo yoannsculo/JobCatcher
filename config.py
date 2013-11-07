@@ -15,6 +15,7 @@ configs = {
         'debug': True,
         'rootdir': './dl',
         'wwwdir': './www',
+        'database': 'jobs.db',
         'ignorejobboard': [
             'apec',
             'cadresonline',
@@ -66,6 +67,7 @@ configstest = {
         'debug': True,
         'rootdir': '/tmp/dl',
         'wwwdir': '/tmp/www',
+        'database': '/tmp/jobs.db',
         'ignorejobboard': [
             'apec',
             'cadresonline',

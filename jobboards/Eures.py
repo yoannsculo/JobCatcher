@@ -121,7 +121,7 @@ class JBEures(JobBoard):
             return
 
         conn = None
-        conn = lite.connect("jobs.db")
+        conn = lite.connect(self.configs['global']['database'])
         cursor = conn.cursor()
 
         # create a table
@@ -144,7 +144,7 @@ class JBEures(JobBoard):
                        PRIMARY KEY(ref))""" % self.name)
 
     def insertToJBTable(self):
-        conn = lite.connect("jobs.db")
+        conn = lite.connect(self.configs['global']['database'])
         conn.text_factory = str
         cursor = conn.cursor()
         cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 

@@ -149,7 +149,7 @@ class JobBoard(object):
 
     def isTableCreated(self):
         """Check if the table for jobboard exist"""
-        return utilities.db_istableexists("jb_%s" % self.name)
+        return utilities.db_istableexists(self.configs, "jb_%s" % self.name)
 
     def downloadFeed(self, url, interval=1200, forcedownload=False):
         """Download a feed or a HTML page"""
@@ -172,7 +172,7 @@ class JobBoard(object):
 
     def getAllJBDatas(self):
         """Get all jobboard datas"""
-        conn = lite.connect("jobs.db")
+        conn = lite.connect(self.configs['global']['database'])
         conn.row_factory = lite.Row
         cursor = conn.cursor()
 
@@ -188,7 +188,7 @@ class JobBoard(object):
         for d in datas:
             o = self.createOffer(d)
             if o:
-                utilities.db_add_offer(o)
+                utilities.db_add_offer(configs, o)
 
     def createTable(self,):
         """Create Jobboard table"""
@@ -216,7 +216,7 @@ class JobBoard(object):
         raise NotImplementedError(mess)
 
     def fetchAllOffersFromDB(self):
-        conn = lite.connect("jobs.db")
+        conn = lite.connect(self.configs['global']['database'])
         cursor = conn.cursor()
         sql = "SELECT * FROM offers WHERE source='%s' ORDER BY date_pub DESC" %(self.name)
         cursor.execute(sql)
@@ -256,7 +256,7 @@ class ReportGenerator(object):
     def generateStatistics(self):
         html_dir = self.wwwdir
 
-        conn = lite.connect("jobs.db")
+        conn = lite.connect(self.configs['global']['database'])
         cursor = conn.cursor()
 
         stat = open(os.path.join(html_dir, 'statistics.html'), 'w')
@@ -296,7 +296,7 @@ class ReportGenerator(object):
 
         html_dir = self.wwwdir
 
-        conn = lite.connect("jobs.db")
+        conn = lite.connect(self.configs['global']['database'])
         cursor = conn.cursor()
 
         sql_filtered = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
@@ -516,9 +516,9 @@ def generatereport():
 
 
 def initblacklist():
-    utilities.db_checkandcreate()
-    utilities.blacklist_flush()
-    utilities.blocklist_load()
+    utilities.db_checkandcreate(configs)
+    utilities.blacklist_flush(configs)
+    utilities.blocklist_load(configs)
 
 
 def downloadfeeds():
