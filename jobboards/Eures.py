@@ -8,32 +8,17 @@ __license__ = 'GPLv2'
 __version__ = '0.1'
 
 # System
-import os
 import re
 import time
 import glob
+from datetime import datetime
 
 # Third party
 import sqlite3 as lite
 
-
-from jobcatcher import JobCatcher
+# Jobcatcher
 from jobcatcher import JobBoard
 from jobcatcher import Offer
-from jobcatcher import Location
-from config import configs
-from html2text import html2text
-
-
-from StringIO import StringIO
-import sys
-
-from xml.dom import minidom
-from datetime import datetime
-import utilities
-
-from HTMLParser import HTMLParser
-from BeautifulSoup import BeautifulSoup
 
 
 class JBEures(JobBoard):
@@ -41,8 +26,6 @@ class JBEures(JobBoard):
     def __init__(self, configs=[], interval=1200):
         self.name = "Eures"
         super(JBEures, self).__init__(configs, interval)
-
-
 
     def getUrls(self):
         """Get Urls offers from feed"""
@@ -90,7 +73,7 @@ class JBEures(JobBoard):
         self.datas['nace'] = self._extractItem("Code Nace", html)
 
         # Dates
-        self.datas['date_add'] = int(time.time()) 
+        self.datas['date_add'] = int(time.time())
         self.datas['date_pub'] = datetime.strptime(
             self._extractItem("Date de publication", html),
             "%d/%m/%Y").strftime('%s')
@@ -111,10 +94,6 @@ class JBEures(JobBoard):
 
         # Insert to jobboard table
         self.insertToJBTable()
-        #offer.add_db()
-
-
-
 
     def createTable(self,):
         if self.isTableCreated():
@@ -198,7 +177,6 @@ class JBEures(JobBoard):
         self.filterCompany(data)
         self.filterSalaries(data)
 
-
     def filterSalaries(self, data):
         data['salary'] = ""
 
@@ -233,7 +211,6 @@ class JBEures(JobBoard):
             #Mi-temps,
             data['contract'] = re.sub(r'TEMPS PARTIEL', ', TEMPS PARTIEL', data['contract'])
             data['contract'] = re.sub(r'TEMPS PLEIN', '', data['contract'])
-
 
     def filterCompany(self, data):
         if data['company']:
