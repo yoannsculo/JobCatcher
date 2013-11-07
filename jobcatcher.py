@@ -519,7 +519,7 @@ def initblacklist():
     utilities.blocklist_load()
 
 
-def feeddownload():
+def downloadfeeds():
     fd = JobBoards(configs)
     fd.downloadFeeds()
 
@@ -596,7 +596,7 @@ if __name__ == '__main__':
 
     if options.all:
         initblacklist()
-        feeddownload()
+        downloadfeeds()
         pagesdownload()
         pagesinsert()
         pagesmove()
@@ -617,7 +617,7 @@ if __name__ == '__main__':
 
     if options.start:
         print "Try to load a feed"
-        feeddownload()
+        downloadfeeds()
         print "Done."
         sys.exit(0)
 
