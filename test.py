@@ -38,16 +38,20 @@ class TestPackages(unittest.TestCase):
     def test_JBEures(self):
         """ Test Eures jobboard"""
 
+        # Jobboardname
+        jobboard = 'Eures'
+
         # Get feed content
-        plugin = utilities.loadJobBoard('Eures', configs)
-        url = configs['Eures']['feeds'][0]
+        plugin = utilities.loadJobBoard(jobboard, configs)
+        url = configs[jobboard]['feeds'][0]
         filename = plugin.downloadFeed(url)
         self.assertEqual(filename, '/tmp/dl/Eures/feeds/0855c939d3b5b5cd1fffeb1665dcecfc.feed')
 
-        # Check if URL is parsed
-        urls = plugin.getUrls()
+        # Dowload page
+        jb = utilities.loadJobBoard(jobboard, configs)
+        urls = jb.getUrls()
         self.assertEqual(len(urls), 5)
-
+        jb.downloadPages(jobboard, urls)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
