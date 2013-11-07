@@ -1,3 +1,6 @@
+![Unit test result](https://api.travis-ci.org/badele/JobCatcher.png)
+
+
 # JobCatcher
 
 ![JobCatcher Screenshot](https://raw.github.com/yoannsculo/JobCatcher/master/screenshots/jobcatcher.png)
@@ -43,6 +46,8 @@ I start jobcatcher.py -s manually with crontab for now. But this should change
 soon.
 
 # List of supported Job Boards
+
+![Unit test result](https://api.travis-ci.org/badele/JobCatcher.png)
 
 - Apec.fr (France)
 - Progressive Recruitment (France)
