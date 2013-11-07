@@ -185,10 +185,12 @@ def report_generate(filtered=True):
     report.write('<head>\n')
     report.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
     report.write('\t<link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css">\n')
+    report.write('\t<link rel="stylesheet" href="css/simplePagination.css">\n')
     report.write('\t<link rel="stylesheet" href="css/dynamic.css" />\n')
     report.write('\t<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>\n')
     report.write('\t<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>\n')
     report.write('\t<script type="text/javascript" src="js/jquery.tablesorter.js"></script>\n')
+    report.write('\t<script type="text/javascript" src="js/jquery.simplePagination.js"></script>\n')
     report.write('\t<script type="text/javascript" src="js/persist-min.js"></script>\n')
     report.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
     report.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
@@ -248,7 +250,7 @@ def report_generate(filtered=True):
         report.write('\t\t\t\t<td class="contract">' + offer.contract +'</td>\n')
         report.write('\t\t\t\t<td class="salary">' + offer.salary + '</td>\n')
         report.write('\t\t\t\t<td class="source">' + offer.src + '</td>\n')
-        report.write("\t\t\t</tr>")
+        report.write('\t\t\t</tr>\n')
 
     # closure
     report.write('\t</table>\n')
