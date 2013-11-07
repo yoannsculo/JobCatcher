@@ -137,9 +137,9 @@ var MasterFilter = Class.extend({
         new ContractFilter("contract", this).attach(
             $("#lineFilters > .contract")
         );
-        /*new SalaryFilter("salary", this).attach(
+        new SalaryFilter("salary", this).attach(
             $("#lineFilters > .salary")
-        );*/
+        );
         new SourceFilter("source", this).attach(
             $("#lineFilters > .source")
         );
@@ -710,6 +710,7 @@ var SalaryFilter = AbstractFilter.extend({
      */
     priv_elements: [],
     priv_salary_hashmap: [],
+    priv_accept_na: true,
     /**
      * \fn priv_select_from_array(id, options)
      * \brief Creates detached <select> elements from the \a options array.
@@ -776,6 +777,7 @@ var SalaryFilter = AbstractFilter.extend({
         var $filter_salary_slider = $("<div>", {id: "filter_salary_root"});
         var $filter_salary_feedback = $("<span>", {id: "filter_salary_feedback"});
         var $filter_salary_na = $("<span>");
+
         var $filter_salary_na_label = $("<label>")
             .attr("for", "filter_salary_na_checkbox")
             .text("NA")
@@ -783,14 +785,16 @@ var SalaryFilter = AbstractFilter.extend({
         var $filter_salary_na_checkbox = $("<input>", {
             id: "filter_salary_na_checkbox",
             type: "checkbox",
-            checked: "checked",
-            change: function() {
-                Config.set("filter_salary_na_checkbox", $(this).is(":checked"));
-                self.apply();
-            }
+            checked: "checked"
+        })
+        .click(function() {
+            self.priv_accept_na = $(this).prop("checked");
+            Config.set("filter_salary_na_checkbox", self.priv_accept_na);
+            self.apply();
         }).appendTo($filter_salary_na);
         Config.get("filter_salary_na_checkbox", function(value) {
-            $filter_salary_na_checkbox.attr("checked", "true" == value);
+            self.priv_accept_na = "true" == value;
+            $filter_salary_na_checkbox.prop("checked", self.priv_accept_na);
         });
 
         var slide_callback = function(event, ui) {
@@ -847,7 +851,7 @@ var SalaryFilter = AbstractFilter.extend({
         var range_row = this.priv_range_from_string(value);
         // NA
         if (0 == range_row.length)
-            return $("#filter_salary_na_checkbox").is(":checked");
+            return this.priv_accept_na;
         // Values
         return (
             0 == range_row.length
