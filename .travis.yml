@@ -1,10 +1,10 @@
-# Language à parser
+# Language to test
 language: python
 
-# Version de python à tester
+# Version to test
 python:
 - "2.7"
 - "3.2"
 
-# script du test unitaire à executer
+# test
 script: ./test.py
