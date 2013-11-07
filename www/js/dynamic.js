@@ -1,23 +1,45 @@
-/* REQUIRES:
- * - class.js;
- * - PersistJS;
- * - jQuery 1.??;
- * - jQuery-ui :
- *      > datepicker;
- *      > slider.
+/**
+ * \file www/js/dynamic.js
+ * \author Yankel Scialom (YSC) <yankel.scialom@mail.com>
+ *
+ * This file update a specialy-formed HTML table to add:
+ * \li a way to sort its columns;
+ * \li a way to filter the table lines;
+ * \li a dynamic pagination system.
+ *
+ * It requires:
+ * \li jQuery 2.0.3 (earlier version not tested);
+ * \li jQuery-ui 1.10.3 (earlier version not tested);
+ * \li jQuery TableSorter;
+ * \li jQuery SimplePagination;
+ * \li Class.js;
+ * \li PersistJS.
  */
 /**
  * \class MasterFilter
  * \brief Filters the table using \ref AbstractFilters.
  */
 var MasterFilter = Class.extend({
+    /**
+     * \property priv_initialized
+     * \brief Is the object initialized.
+     */
     priv_initialized: false,
+    /**
+     * \property priv_rows_per_page
+     * \brief Number of rows per page.
+     */
     priv_rows_per_page: 10,
     /**
      * \property filters
      * \brief Filters to use.
      */
     priv_filters: null,
+    /**
+     * \fn priv_get_next_rows()
+     * \brief Get the next rows according to the number of rows per page.
+     * \see priv_rows_per_page
+     */
     priv_get_next_rows: function() {
         var first = this.priv_next_row;
         this.priv_next_row += this.priv_rows_per_page;
@@ -25,6 +47,10 @@ var MasterFilter = Class.extend({
             return $("#offers > tbody > tr:lt(" + this.priv_rows_per_page + ")");
         return $("#offers > tbody > tr:gt(" + first + "):lt(" + this.priv_rows_per_page + ")");
     },
+    /**
+     * \fn priv_set_visibility(row, show)
+     * \brief Set the visibility of a row.
+     */
     priv_set_visibility: function(row, show) {
         if (show) {
             $(row).show();
@@ -32,9 +58,17 @@ var MasterFilter = Class.extend({
             $(row).hide();
         }
     },
+    /**
+     * \fn priv_get_visibility(row)
+     * \brief Get the visibility of a row.
+     */
     priv_get_visibility: function(row) {
         return "none" != $(row).css("display");
     },
+    /**
+     * \fn priv_apply_on_row(row, source = null)
+     * \brief Apply the filters on a row.
+     */
     priv_apply_on_row: function(row, source = null) {
         var self = this;
         var accepted = true;
@@ -60,9 +94,27 @@ var MasterFilter = Class.extend({
         this.priv_set_visibility(row, accepted);
         return accepted;
     },
+    /**
+     * \property priv_page_first_indexes
+     * \brief Hashmap caching the index of the first row of each page.
+     */
     priv_page_first_indexes: new Array(),
+    /**
+     * \property priv_next_row
+     * \brief Index of next row to be returned by priv_get_next_rows()
+     * \see priv_get_next_rows()
+     */
     priv_next_row: 0,
+    /**
+     * \property priv_navbar
+     * \brief Navigation bar as NavigationBar object.
+     * \see NavigationBar
+     */
     priv_navbar: null,
+    /**
+     * \fn priv_show_page(page, source = null)
+     * \brief Show page number \a page.
+     */
     priv_show_page: function(page, source = null) {
         var self = this;
 
@@ -174,9 +226,25 @@ var MasterFilter = Class.extend({
     }
 });
 
+/**
+ * \class NavigationBar
+ * \brief The navigation bar to let the user change pages.
+ */
 var NavigationBar = Class.extend({
+    /**
+     * \property priv_current_page
+     * \brief Displayed page.
+     */
     priv_current_page: 0,
+    /**
+     * \property priv_bar
+     * \brief navigation bar as a jQuery object..
+     */
     priv_bar: null,
+    /**
+     * \fn init(options = null)
+     * \brief COnstructor.
+     */
     init: function(options = null) {
         var self = this;
         this.priv_bar = $("<p>");
@@ -189,17 +257,36 @@ var NavigationBar = Class.extend({
             }
         });
     },
+    /**
+     * \fn attach(parent)
+     * \brief Attach itself to \a parent.
+     */
     attach: function(parent) {
         this.priv_bar.appendTo(parent);
     },
+    /**
+     * \fn set_page_count(page_count)
+     * \brief Change total number of pages.
+     */
     set_page_count: function(page_count) {
         this.priv_bar.pagination("setPagesCount", page_count);
     },
+    /**
+     * \fn acknoledge_page(page_number)
+     * \brief Acknoledge the existance of page number \a page_number.
+     *
+     * Increase the total number of pages if necessary.
+     */
     acknoledge_page: function(page_number) {
         var page_count = this.priv_bar.pagination("getPagesCount", page_count);
         if (page_number >= page_count)
             this.set_page_count(page_count+1);
     },
+    /**
+     * \fn set_page(page_number, silent = false)
+     * \brief Set the current displayed page number.
+     * \param[in] silent Either or not the callback bind to the "change page" event is to be called.
+     */
     set_page: function(page_number, silent = false) {
         this.priv_bar.pagination("selectPage", page_number+1, silent);
     }
@@ -709,7 +796,15 @@ var SalaryFilter = AbstractFilter.extend({
      * \brief Array for internal use.
      */
     priv_elements: [],
+    /**
+     * \property priv_salary_hashmap
+     * \brief Hashmap cache containing salary range of computed offers.
+     */
     priv_salary_hashmap: [],
+    /**
+     * \property priv_accept_na
+     * \brief Filter the offers without any data on the salary.
+     */
     priv_accept_na: true,
     /**
      * \fn priv_select_from_array(id, options)
@@ -1186,6 +1281,10 @@ var Config = {
                 success(value);
         });
     },
+    /**
+     * \fn set(name, value)
+     * \brief Write the configuration parameter \a name.
+     */
     set: function(name, value) {
 	    this.priv_store.set(this.priv_encode(name), value);
     }
