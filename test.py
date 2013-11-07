@@ -21,7 +21,8 @@ class TestPackages(unittest.TestCase):
     def setUp(self):
         """Test & Create database"""
         # Remove exist database
-        os.remove(configs['global']['database'])
+        if os.path.isfile(configs['global']['database']):
+            os.remove(configs['global']['database'])
 
         # Check if database not exist
         exists = utilities.db_istableexists(configs, 'offers')
