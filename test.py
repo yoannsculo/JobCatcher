@@ -51,5 +51,24 @@ class TestPackages(unittest.TestCase):
         self.assertEqual(len(urls), 5)
         jb.downloadPages(jobboard, urls)
 
+    def test_JBApec(self):
+        """ Test Apec jobboard"""
+
+        # Jobboardname
+        jobboard = 'Apec'
+
+        # Get feed content
+        plugin = utilities.loadJobBoard(jobboard, configs)
+        url = configs[jobboard]['feeds'][0]
+        filename = plugin.downloadFeed(url)
+        self.assertEqual(filename, '/tmp/dl/Apec/feeds/17a63531332158f5b8204dadc24efcb4.feed')
+
+        # Dowload page
+        jb = utilities.loadJobBoard(jobboard, configs)
+        urls = jb.getUrls()
+        self.assertEqual(len(urls), 30)
+        jb.downloadPages(jobboard, urls)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
