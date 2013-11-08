@@ -202,6 +202,7 @@ class JobBoard(object):
         for d in datas:
             o = self.createOffer(d)
             if o:
+                o.cleanFields()
                 utilities.db_add_offer(configs, o)
 
     def createTable(self,):
@@ -456,6 +457,11 @@ class Offer():
 
     def loadFromHtml(self, filename):
         ""
+
+    def cleanFields(self):
+        self.cleanContract()
+        self.cleanLocation()
+        self.cleanSalary()
 
     def cleanContract(self):
         self.contract = utilities.filter_contract_fr(self.contract)

@@ -1,194 +1,196 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__authors__ = 'Yoann Sculo'
+__authors__ = [
+    'Yoann Sculo <yoann.sculo@gmail.com>',
+    'Bruno Adelé <bruno@adele.im>',
+]
 __license__ = 'GPLv2'
 __version__ = '0.1'
 
-import os
+# System
 import re
+import sys
 import time
+import glob
+from datetime import datetime
 
-from jobcatcher import JobCatcher
-from jobcatcher import Jobboard
-from jobcatcher import Offer
-from jobcatcher import Location
-from config import configs
-
-from xml.dom import minidom
-import datetime
-import utilities
-
-from HTMLParser import HTMLParser
+# Third party
+import sqlite3 as lite
+from html2text import html2text 
 from BeautifulSoup import BeautifulSoup
 
-""" License : http://cadres.apec.fr/delia/core/common/site/ApecViewDetailConseil/currentArticle_ART_46448/Voir+les+conditions+g%C3%A9n%C3%A9rales+d+utilisation.html
-"""
-
-class Apec(Jobboard):
-
-    def __init__(self):
-        self.name = "APEC"
-        self.url = "http://www.apec.fr"
-        self.lastFetch = ""
-        self.processingDir = self.dlDir + "/apec"
-        self.lastFetchDate = 0
-
-    # fetch a specific  url
-    def fetch_offer(self, url):
-        if (not os.path.isfile(os.path.join(self.processingDir, url.split('/')[-1]))):
-            print "Downloading %s" % (url)
-            utilities.download_file(url, self.processingDir)
-        else:
-            print "Download failed. File already there."
-
-        return os.path.join("", url.split('/')[-1])
-
-    def fetch_url(self, url):
-        filename = url.split('/')[-1]
-        utilities.download_file(url, self.processingDir)
-
-        xmldoc = minidom.parse(os.path.join(self.processingDir, filename))
-
-        MainPubDate = xmldoc.getElementsByTagName('pubDate')[0].firstChild.data
-        epochPubDate = datetime.datetime.strptime(MainPubDate, "%a, %d %b %Y %H:%M:%S +0200").strftime('%s')
-
-        # if (epochPubDate <= self.lastFetchDate):
-        #     return 0
-
-        itemlist = xmldoc.getElementsByTagName('item')
-
-        for elt in itemlist :
-            # TODO : Test object first
-            title = elt.getElementsByTagName('title')[0].firstChild.data
-            link = elt.getElementsByTagName('link')[0].firstChild.data.split("?")[0]
-            pubDate = elt.getElementsByTagName('pubDate')[0].firstChild.data
-
-            if (epochPubDate <= self.lastFetchDate):
-                break
-
-            if (not os.path.isfile(os.path.join(self.processingDir, link.split('/')[-1]))):
-                print "Downloading %s" % (link)
-                utilities.download_file(link, self.processingDir)
+# Jobcatcher
+from jobcatcher import JobBoard
+from jobcatcher import Offer
 
 
-    def fetch(self):
-        print "Fetching " + self.name
+class JBApec(JobBoard):
 
-        feed_list = configs['apec']['feeds']
+    def __init__(self, configs=[], interval=1200):
+        self.name = "Apec"
+        super(JBApec, self).__init__(configs, interval)
+        self.encoding = {'feed': 'utf-8', 'page': 'iso-8859-1'}
 
-        if (not os.path.isdir(self.processingDir)):
-                os.makedirs(self.processingDir)
+    def getUrls(self):
+        """Get Urls offers from feed"""
 
-        for url in feed_list :
-            self.fetch_url(url)
+        urls = list()
+        searchdir = "%s/feeds/*.feed" % self._processingDir
 
-        self.processOffers()
+        for feed in glob.glob(searchdir):
+            # Load the HTML feed
+            fd = open(feed, 'rb')
+            html = fd.read()
+            fd.close()
 
-    def processOffer(self, file):
-        if (not file.lower().endswith('.html')):
-            return 1
+            # Search result
+            res = re.finditer(
+                r'<item>(.*?)</item>',
+                html,
+                flags=re.MULTILINE | re.DOTALL
+            )
+            for r in res:
+                # Check if URL is valid
+                m = re.search(r'<link>(http://cadres\.apec\.fr/offres-emploi-cadres/.*?)</link>', r.group(1))
+                if m:
+                    urls.append(m.group(1))
 
-        print "Processing %s" % (file)
-        offer = ApecOffer()
-        res = offer.loadFromHtml(os.path.join(self.processingDir, file))
-        if (res != 0):
-            print "Couldn't add %s offer, html is bad formatted or has unknown pattern." % (file)
-            # os.remove(os.path.join(self.processingDir,file))
-            return 2
+        return urls
 
-        offer.date_add = int(time.time())
+    def _extractItem(self, itemname, soup):
+        """Extract a field in html page"""
 
-        loc = Location()
-        # loc.loadFromAddress(offer.location)
-        offer.lat = loc.lat
-        offer.lon = loc.lon
+        html = unicode.join(u'\n', map(unicode, soup))
 
-        # offer.printElt()
-        res = offer.add_db()
-        # If the offer is already there in database
-        # or successfully added.
-        if (res == 0 or res == 1):
-            ""
-            # os.remove(os.path.join(self.processingDir,file))
-        else:
-            print "Couldn't add %s offer, an error occured." % (file)
+        res = None
+        regex = '<th.*?>%s :.*?</th>.*?<td.*?>(.*?)</td>' % itemname
 
-        return 0
+        m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
+        if m:
+            res = html2text(m.group(1)).strip()
 
-    def setup(self):
-        print "setup " + self.name
+        return res
 
-class ApecOffer(Offer):
+    def _extractCompagny(self, soup):
+        """Extract a field in html page"""
 
-    src     = 'APEC'
-    license = ''
+        html = unicode.join(u'\n', map(unicode, soup))
 
-    def loadFromHtml(self, filename):
-        fd = open(filename, 'rb')
-        html = fd.read()
-        fd.close()
+        res = None
+        regex = u'<th valign="top">Société :</th>.*?<td>.*?<br />(.*?)<br />.*?</td>'
 
-        soup = BeautifulSoup(html, fromEncoding="UTF-8")
+        m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
+        if m:
+            res = html2text(m.group(1)).strip()
 
-        # Offer still available ?
-        res = soup.body.find('div', attrs={'class':'boxSingleMain box'})
-        if (res != None):
-            content = res.find('p')
+        return res
+
+
+    def analyzePage(self, url, html):
+        """Analyze page and extract datas"""
+
+        soup = BeautifulSoup(html, fromEncoding=self.encoding['page'])
+        item = soup.body.find('div', attrs={'class': 'boxMain boxOffres box'})
+
+        if ( item != None):
+            content = item.find('p')
             if (content.text == u'L\'offre que vous souhaitez afficher n\'est plus disponible.Cliquer sur le bouton ci-dessous pour revenir à l\'onglet Mes Offres'):
                 return 1
 
         # Title
-        res = soup.body.find('div', attrs={'class':'boxMain boxOffres box'})
-        if (res == None):
-            return -1
-        res = res.find("h2", attrs={'class':'borderBottom0'})
-        self.title = HTMLParser().unescape(res.text)
-        matchObj = re.match( ur'Offre d\'emploi (.*)', self.title)
-        if matchObj:
-            self.title = matchObj.group(1)
+        h1 = soup.body.find('h1', attrs={'class': 'detailOffre'})
+        self.datas['title'] = html2text(h1.text).replace('Détail de l\'offre : ', '').strip()
 
-        # Other information
-        res = soup.body.find('div', attrs={'class':'content1_9ImbLeft'})
-        res = res.findAll("tr")
 
-        for elt in res:
-            th = elt.find('th')
-            td = elt.find('td')
-            if (th.text == u'Référence Apec :'):
-                self.ref = HTMLParser().unescape(td.text)
-            if (th.text == u'Date de publication :'):
-                apec_date = HTMLParser().unescape(td.text)
-                self.date_pub = datetime.datetime.strptime(apec_date, "%d/%m/%Y").strftime('%s')
-            if (th.text == u'Société :'):
-                self.company = HTMLParser().unescape(td.text)
-                matchObj = re.match( ur'(.*)Voir toutes les offres', self.company)
-                if matchObj:
-                    self.company = matchObj.group(1)
-                matchObj = re.match( ur'(.*)Voir plus d\'infos sur la société', self.company)
-                if matchObj:
-                    self.company = matchObj.group(1)
+        # Refs
+        table = item.find('table', attrs={'class': 'noFieldsTable'})
+        self.datas['url'] = url
+        self.datas['ref'] = self._extractItem(u"Référence Apec", table)
+        self.datas['refsoc'] = self._extractItem(u"Référence société", table)
 
-            if (th.text == u'Type de contrat :' or th.text == u'Nombre de postes :'):
-                self.contract = HTMLParser().unescape(td.text)
-                self.cleanContract()
+        # Dates
+        self.datas['date_add'] = int(time.time())
+        self.datas['date_pub'] = datetime.strptime(
+            self._extractItem("Date de publication", table),
+            "%d/%m/%Y").strftime('%s')
 
-            if (th.text == u'Lieu :'):
-                self.location = HTMLParser().unescape(td.text)
-                self.cleanLocation()
+        # Job informations
+        self.datas['location'] = self._extractItem("Lieu", table)
+        self.datas['company'] = self._extractCompagny(table)
+        self.datas['contract'] = self._extractItem("Nombre de postes", table)
+        # Salary
+        self.datas['salary'] = self._extractItem("Salaire", table)
+        # Experiences
+        self.datas['experience'] = self._extractItem("Expérience", table)
 
-            if (th.text == u'Salaire :'):
-                self.salary = HTMLParser().unescape(td.text)
-                self.cleanSalary()
+        # Insert to jobboard table
+        self.insertToJBTable()
 
-            if (th.text == u'Expérience :'):
-                self.experience = HTMLParser().unescape(td.text)
+    def createTable(self,):
+        if self.isTableCreated():
+            return
 
-        # Content
-        res = soup.body.find('div', attrs={'class':'contentWithDashedBorderTop marginTop boxContent'})
-        res = res.find('div', attrs={'class':'boxContentInside'})
-        self.content = HTMLParser().unescape(res.text);
+        conn = None
+        conn = lite.connect(self.configs['global']['database'])
+        cursor = conn.cursor()
 
-        self.url = "http://cadres.apec.fr/offres-emploi-cadres/" + os.path.basename(filename)
+        # create a table
+        cursor.execute("""CREATE TABLE jb_%s( \
+                       ref TEXT, \
+                       refsoc TEXT, \
+                       url TEXT, \
+                       date_pub INTEGER, \
+                       date_add INTEGER, \
+                       title TEXT, \
+                       company TEXT, \
+                       contract TEXT, \
+                       location TEXT, \
+                       salary TEXT, \
+                       experience TEXT, \
+                       PRIMARY KEY(ref))""" % self.name)
 
+    def insertToJBTable(self):
+        conn = lite.connect(self.configs['global']['database'])
+        conn.text_factory = str
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?)" % 
+                       self.name, (
+                           self.datas['ref'],
+                           self.datas['refsoc'],
+                           self.datas['url'],
+                           self.datas['date_pub'],
+                           self.datas['date_add'],
+                           self.datas['title'],
+                           self.datas['company'],
+                           self.datas['contract'],
+                           self.datas['location'],
+                           self.datas['salary'],
+                           self.datas['experience'],
+                       )
+                   )
+        conn.commit()
+        if conn:
+            conn.close()
         return 0
+
+    def createOffer(self, data):
+        """Create a offer object with jobboard data"""
+        data = dict(data)
+
+        o = Offer()
+        o.src = self.name
+        o.url = data['url']
+        o.ref = data['ref']
+        o.title = data['title']
+        o.company = data['company']
+        o.contract = data['contract']
+        o.location = data['location']
+        o.salary = data['salary']
+        o.date_pub = data['date_pub']
+        o.date_add = data['date_add']
+
+        if o.ref and o.company:
+            return o
+
+        return None

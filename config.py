@@ -17,22 +17,21 @@ configs = {
         'wwwdir': './www',
         'database': 'jobs.db',
         'ignorejobboard': [
-            'apec',
             'cadresonline',
-            'regionjob',
 
             'SUDOUESTJOB',
             'OUESTJOB',
             'CENTREJOB',
-            'PROGRESSIVE',
             'Lolix',
 
-            'APEC',
             'Cadresonline',
-            'REGIONJOB',
+            'Progressive',
+            'RegionJob',
+            'regionjob',
+            'Eures',
         ]
     },
-    'apec': {
+    'Apec': {
         'feeds' : [
             'http://www.apec.fr/fluxRss/XML/OffresCadre_F101833.xml', # informatique
             'http://www.apec.fr/fluxRss/XML/OffresCadre_F101810.xml', # informatique industrielle
