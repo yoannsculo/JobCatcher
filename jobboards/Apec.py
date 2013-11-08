@@ -3,7 +3,7 @@
 
 __authors__ = [
     'Yoann Sculo <yoann.sculo@gmail.com>',
-    'Bruno Adelé <bruno@adele.im>',,
+    'Bruno Adelé <bruno@adele.im>',
     'Yankel Scialom <yankel.scialom@mail.com>'
 ]
 __license__ = 'GPLv2'
