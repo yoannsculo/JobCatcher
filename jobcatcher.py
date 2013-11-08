@@ -526,6 +526,15 @@ class JobCatcher():
                 jb.downloadPages(jobboard.name, urls)
 
 
+def executeall():
+    initblacklist()
+    downloadfeeds()
+    pagesdownload()
+    pagesinsert()
+    pagesmove()
+    generatereport()
+
+
 def generatereport():
     r = ReportGenerator(configs)
     r.generate()
@@ -613,12 +622,7 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if options.all:
-        initblacklist()
-        downloadfeeds()
-        pagesdownload()
-        pagesinsert()
-        pagesmove()
-        generatereport()
+        executeall()
         sys.exit(0)
 
     if options.url:
