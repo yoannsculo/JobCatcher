@@ -35,7 +35,7 @@ class TestPackages(unittest.TestCase):
         exists = utilities.db_istableexists(configs, 'offers')
         self.assertEqual(exists, True)
 
-    def test_JBEures(self):
+    def notest_JBEures(self):
         """ Test Eures jobboard"""
 
         # Jobboardname
@@ -53,7 +53,7 @@ class TestPackages(unittest.TestCase):
         self.assertEqual(len(urls), 5)
         jb.downloadPages(jobboard, urls)
 
-    def test_JBApec(self):
+    def notest_JBApec(self):
         """ Test Apec jobboard"""
 
         # Jobboardname
@@ -72,8 +72,8 @@ class TestPackages(unittest.TestCase):
         jb.downloadPages(jobboard, urls)
 
     def test_jobcatcher(self):
-        """Execute 
-        jobcatcher.executeall()
+        """Execute the jobcatcher functions"""
+        jobcatcher.executeall(configs)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

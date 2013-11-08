@@ -74,11 +74,11 @@ configstest = {
             'SUDOUESTJOB',
             'OUESTJOB',
             'CENTREJOB',
-            'PROGRESSIVE',
             'Lolix',
 
             'Cadresonline',
-            'REGIONJOB',
+            'RegionJob',
+            'Progressive',
         ]
     },
     'Apec': {

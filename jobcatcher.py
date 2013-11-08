@@ -26,7 +26,6 @@ import sqlite3 as lite
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-from config import configs
 
 # For testing
 # rm jobs.db; python jobcatcher.py -a
@@ -62,7 +61,7 @@ class JobBoards(object):
                     feeds = self._configs[jobboardname]['feeds']
 
                     # Donwload all feeds for jobboard
-                    plugin = utilities.loadJobBoard(jobboardname, configs)
+                    plugin = utilities.loadJobBoard(jobboardname, self.configs)
                     for url in feeds:
                         plugin.downloadFeed(url)
 
@@ -72,7 +71,7 @@ class JobBoards(object):
             if jobboardname not in self._configs['global']['ignorejobboard']:
                 if 'feeds' in self._configs[jobboardname]:
                     destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
-                    plugin = utilities.loadJobBoard(jobboardname, configs)
+                    plugin = utilities.loadJobBoard(jobboardname, self.configs)
                     for p in glob.glob("%s/*.page" % destdir):
                         # Load the HTML feed
                         content = utilities.openPage(p)
@@ -83,7 +82,7 @@ class JobBoards(object):
         for jobboardname in self._configs:
             if jobboardname not in self._configs['global']['ignorejobboard']:
                 if 'feeds' in self._configs[jobboardname]:
-                    plugin = utilities.loadJobBoard(jobboardname, configs)
+                    plugin = utilities.loadJobBoard(jobboardname, self.configs)
                     plugin.moveToOffers()
 
 class JobBoard(object):
@@ -203,7 +202,7 @@ class JobBoard(object):
             o = self.createOffer(d)
             if o:
                 o.cleanFields()
-                utilities.db_add_offer(configs, o)
+                utilities.db_add_offer(self.configs, o)
 
     def createTable(self,):
         """Create Jobboard table"""
@@ -292,7 +291,7 @@ class ReportGenerator(object):
         stat.write("</tr>")
         stat.write("</thead>")
 
-        jb = JobCatcher()
+        jb = JobCatcher(self.configs)
         jb.loadPlugins()
         for item in jb.jobBoardList:
             data = item.fetchAllOffersFromDB()
@@ -500,6 +499,17 @@ class JobCatcher():
 
     jobBoardList = []
 
+    def __init__(self, configs=[]):
+        self._configs = configs
+
+    @property
+    def configs(self):
+        return self._configs
+
+    @configs.setter
+    def configs(self, value):
+        self._configs = value
+
     def loadPlugins(self):
         """ load all jobboards from jobboards directory
         """
@@ -509,66 +519,68 @@ class JobCatcher():
             if (name == '__init__'):
                 continue
 
-            if name not in configs['global']['ignorejobboard']:
-                plugin = utilities.loadJobBoard(name, configs)
+            if name not in self.configs['global']['ignorejobboard']:
+                plugin = utilities.loadJobBoard(name, self.configs)
                 self.jobBoardList.append(plugin)
 
     def run(self):
         for jobboard in self.jobBoardList:
-            if jobboard.name not in configs['global']['ignorejobboard']:
+            if jobboard.name not in self.configs['global']['ignorejobboard']:
                 print ""
                 print "=================================="
                 print jobboard.name
                 print "=================================="
 
-                jb = utilities.loadJobBoard(jobboard.name, configs)
+                jb = utilities.loadJobBoard(jobboard.name, self.configs)
                 urls = jb.getUrls()
                 jb.downloadPages(jobboard.name, urls)
 
 
-def executeall():
-    initblacklist()
-    downloadfeeds()
-    pagesdownload()
-    pagesinsert()
-    pagesmove()
-    generatereport()
+def executeall(conf):
+    initblacklist(conf)
+    downloadfeeds(conf)
+    pagesdownload(conf)
+    pagesinsert(conf)
+    pagesmove(conf)
+    generatereport(conf)
 
 
-def generatereport():
-    r = ReportGenerator(configs)
+def generatereport(conf):
+    r = ReportGenerator(conf)
     r.generate()
 
 
-def initblacklist():
-    utilities.db_checkandcreate(configs)
-    utilities.blacklist_flush(configs)
-    utilities.blocklist_load(configs)
+def initblacklist(conf):
+    utilities.db_checkandcreate(conf)
+    utilities.blacklist_flush(conf)
+    utilities.blocklist_load(conf)
 
 
-def downloadfeeds():
-    fd = JobBoards(configs)
+def downloadfeeds(conf):
+    fd = JobBoards(conf)
     fd.downloadFeeds()
 
 
-def pagesdownload():
-    bot = JobCatcher()
+def pagesdownload(conf):
+    bot = JobCatcher(conf)
     bot.loadPlugins()
     bot.run()
 
 
-def pagesinsert():
-    utilities.db_checkandcreate(configs)
-    fd = JobBoards(configs)
+def pagesinsert(conf):
+    utilities.db_checkandcreate(conf)
+    fd = JobBoards(conf)
     fd.analyzesPages()
 
 
-def pagesmove():
-    utilities.db_checkandcreate(configs)
-    fd = JobBoards(configs)
+def pagesmove(conf):
+    utilities.db_checkandcreate(conf)
+    fd = JobBoards(conf)
     fd.moveToOffers()
 
 if __name__ == '__main__':
+    from config import configs
+
     parser = OptionParser(usage = 'syntax: %prog [options] <from> [to]')
     args = sys.argv[1:]
 
@@ -617,12 +629,12 @@ if __name__ == '__main__':
 
     if options.report:
         print "Report generation..."
-        generatereport()
+        generatereport(configs)
         print "Done."
         sys.exit(0)
 
     if options.all:
-        executeall()
+        executeall(configs)
         sys.exit(0)
 
     if options.url:
@@ -639,26 +651,26 @@ if __name__ == '__main__':
 
     if options.start:
         print "Try to load a feed"
-        downloadfeeds()
+        downloadfeeds(configs)
         print "Done."
         sys.exit(0)
 
     if options.pages:
-        pagesdownload()
+        pagesdownload(configs)
         sys.exit(0)
 
     if options.insert:
-        pagesinsert()
+        pagesinsert(configs)
         sys.exit(0)
 
     if options.move:
-        pagesmove()
+        pagesmove(configs)
         sys.exit(0)
 
     if options.blocklist:
-        utilities.blocklist_load();
+        utilities.blocklist_load(configs)
         sys.exit(0)
 
     if options.flush:
-        initblacklist()
+        initblacklist(configs)
         sys.exit(0)

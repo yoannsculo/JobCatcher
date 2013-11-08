@@ -12,18 +12,15 @@ __version__ = '1.0'
 # System
 import os
 import re
-import sys
 import time
 import hashlib
 import importlib
 import sqlite3 as lite
 import urllib2 as urllib
-# Jobcatcher
-from jobcatcher import Offer
-from jobcatcher import JobCatcher
 
 from collections import namedtuple
 PageResult = namedtuple('PageResult', ['url', 'page'])
+
 
 def md5(datas):
     """Calc md5sum string datas"""
@@ -129,15 +126,21 @@ def db_create(configs):
                         PRIMARY KEY(source, ref))""")
     cursor.execute("""CREATE TABLE blacklist(company TEXT, PRIMARY KEY(company))""")
 
+
 def db_add_offer(configs, offer):
     conn = lite.connect(configs['global']['database'])
     try:
         conn.text_factory = str
         cursor = conn.cursor()
         cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (offer.src, offer.ref,
-                 offer.date_pub, offer.date_add,
-                 offer.title, offer.company, offer.contract, offer.location, offer.lat, offer.lon, offer.salary, offer.url, offer.content))
+                       (
+                           offer.src, offer.ref,
+                           offer.date_pub, offer.date_add,
+                           offer.title, offer.company, offer.contract,
+                           offer.location, offer.lat, offer.lon,
+                           offer.salary, offer.url, offer.content
+                       )
+        )
         conn.commit()
         return 0
 
@@ -156,7 +159,8 @@ def db_add_offer(configs, offer):
         if conn:
             conn.close()
 
-def blacklist_flush():
+
+def blacklist_flush(configs):
     conn = lite.connect(configs['global']['database'])
     cursor = conn.cursor()
     sql = "DELETE FROM blacklist"
@@ -164,8 +168,9 @@ def blacklist_flush():
     conn.commit()
     conn.close()
 
+
 def blocklist_load(configs):
-    fp = open('blacklist_company.txt','r') #iso-8859-1
+    fp = open('blacklist_company.txt', 'r')
     list = []
     for line in fp:
         company = unicode(line.rstrip('\n'))
@@ -175,7 +180,7 @@ def blocklist_load(configs):
         conn = lite.connect(configs['global']['database'])
         conn.text_factory = str
         cursor = conn.cursor()
-        res = cursor.executemany("INSERT INTO blacklist VALUES(?)", list)
+        cursor.executemany("INSERT INTO blacklist VALUES(?)", list)
         conn.commit()
 
     except lite.Error, e:
@@ -186,18 +191,22 @@ def blocklist_load(configs):
             conn.close()
 
 
-
-
 def filter_contract_fr(contract):
     contract = re.sub(ur'Perm', "CDI", contract)
     contract = re.sub(ur'[0-9]+ en (.*)', "\\1", contract, flags=re.DOTALL)
     contract = re.sub(ur'.*CDI.*', "CDI", contract, flags=re.DOTALL)
-    contract = re.sub(ur'.*CDD.*de (.*)', "CDD de \\1", contract, flags=re.DOTALL)
+    contract = re.sub(
+        ur'.*CDD.*de (.*)',
+        "CDD de \\1",
+        contract, flags=re.DOTALL
+    )
     return contract
+
 
 def filter_location_fr(location):
     location = re.sub(ur'IDF', "Île-de-France", location)
     return location
+
 
 def filter_salary_fr(salary):
     # TODO : use regexp once whe have a better view of possible combinations
@@ -328,4 +337,3 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'nc', "NA", salary)
 
     return salary
-
