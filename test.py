@@ -15,6 +15,8 @@ import unittest
 import utilities
 from config import configstest as configs
 
+import jobcatcher
+
 
 class TestPackages(unittest.TestCase):
 
@@ -69,6 +71,9 @@ class TestPackages(unittest.TestCase):
         self.assertEqual(len(urls), 30)
         jb.downloadPages(jobboard, urls)
 
+    def test_jobcatcher(self):
+        """Execute 
+        jobcatcher.executeall()
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
