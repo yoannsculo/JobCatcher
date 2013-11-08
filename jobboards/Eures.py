@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 __authors__ = [
+    'Yoann Sculo <yoann.sculo@gmail.com>',
     'Bruno Adelé <bruno@adele.im>',
 ]
 __license__ = 'GPLv2'
@@ -15,6 +16,7 @@ from datetime import datetime
 
 # Third party
 import sqlite3 as lite
+from html2text import html2text
 
 # Jobcatcher
 from jobcatcher import JobBoard
