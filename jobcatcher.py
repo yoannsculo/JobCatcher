@@ -4,6 +4,7 @@
 __authors__ = [
     'Yoann Sculo <yoann.sculo@gmail.com>',
     'Bruno Adelé <bruno@adele.im>',
+    'Yankel Scialom <yankel.scialom@mail.com>'
 ]
 __copyright__ = 'Copyright (C) 2013 Yoann Sculo'
 __license__ = 'GPLv2'
@@ -309,6 +310,8 @@ class ReportGenerator(object):
     def generateReport(self, filtered=True):
 
         html_dir = self.wwwdir
+        if not os.path.exists(html_dir):
+            os.makedirs(html_dir)
 
         conn = lite.connect(self.configs['global']['database'])
         cursor = conn.cursor()
