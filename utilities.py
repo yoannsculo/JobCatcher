@@ -56,7 +56,7 @@ def openPage(filename):
     return PageResult(url=url, page=html)
 
 
-def downloadFile(url, filename, age=60, forcedownload=False):
+def downloadFile(url, filename, age=60, encoding='utf-8', forcedownload=False):
 
     # Check if i must download a file
     destdir = os.path.dirname(filename)
@@ -69,14 +69,15 @@ def downloadFile(url, filename, age=60, forcedownload=False):
         if (not os.path.isdir(destdir)):
             os.makedirs(destdir)
 
+        print encoding
         print "Download %s " % url
         out = open(filename, 'wb')
 
         out.write("%s\n" % url)
         datas = urllib.urlopen(url, filename)
         for line in datas:
-            decoded = line.decode('utf-8')
-            out.write(decoded)
+            #decoded = line.decode(encoding)
+            out.write(line)
         out.close()
 
 
