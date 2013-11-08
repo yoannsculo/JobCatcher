@@ -46,7 +46,6 @@ class JobBoards(object):
     def rootdir(self, value):
         self._rootdir = value
 
-
     @property
     def configs(self):
         return self._configs
@@ -98,6 +97,8 @@ class JobBoard(object):
             self.rootdir,
             self.name
         )
+        self._encoding = {'feed': 'utf-8', 'page': 'utf-8'}
+
 
         #Check and create Jobboard table
         if not self.isTableCreated():
@@ -130,6 +131,14 @@ class JobBoard(object):
         self._rootdir = value
 
     @property
+    def encoding(self):
+        return self._encoding
+
+    @encoding.setter  
+    def encoding(self, value):
+        self._encoding = value
+
+    @property
     def configs(self):
         return self._configs
 
@@ -157,7 +166,7 @@ class JobBoard(object):
         feeddir = "%s/feeds" % self._processingDir
         urlid = utilities.md5(url)
         saveto = "%s/%s.feed" % (feeddir, urlid)
-        utilities.downloadFile(url, saveto, interval)
+        utilities.downloadFile(url, saveto, interval, self.encoding['feed'])
 
         return saveto
 
@@ -168,7 +177,12 @@ class JobBoard(object):
         for u in urls:
             md5 = utilities.md5(u)
             saveto = "%s/%s.page" % (destdir, md5)
-            utilities.downloadFile(u, saveto, self._interval)
+            try:
+                utilities.downloadFile(u, saveto, self._interval,
+                                       self.encoding['page'],
+                )
+            except UnicodeDecodeError:
+                pass
 
     def getAllJBDatas(self):
         """Get all jobboard datas"""
@@ -486,20 +500,16 @@ class JobCatcher():
 
         for file in glob.glob("./jobboards/*.py"):
             name = os.path.splitext(os.path.basename(file))[0]
-            if name != "Eures":
-                continue
             if (name == '__init__'):
                 continue
 
-            plugin = utilities.loadJobBoard(name, configs)
-            self.jobBoardList.append(plugin)
+            if name not in configs['global']['ignorejobboard']:
+                plugin = utilities.loadJobBoard(name, configs)
+                self.jobBoardList.append(plugin)
 
     def run(self):
         for jobboard in self.jobBoardList:
             if jobboard.name not in configs['global']['ignorejobboard']:
-                if jobboard.name != "Eures":
-                    continue
-
                 print ""
                 print "=================================="
                 print jobboard.name
@@ -533,13 +543,13 @@ def pagesdownload():
 
 
 def pagesinsert():
-    utilities.db_checkandcreate()
+    utilities.db_checkandcreate(configs)
     fd = JobBoards(configs)
     fd.analyzesPages()
 
 
 def pagesmove():
-    utilities.db_checkandcreate()
+    utilities.db_checkandcreate(configs)
     fd = JobBoards(configs)
     fd.moveToOffers()
 
