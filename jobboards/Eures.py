@@ -128,29 +128,32 @@ class JBEures(JobBoard):
         conn = lite.connect(self.configs['global']['database'])
         conn.text_factory = str
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
-                       self.name, (
-                           self.datas['ref'],
-                           self.datas['nace'],
-                           self.datas['url'],
-                           self.datas['date_pub'],
-                           self.datas['date_add'],
-                           self.datas['title'],
-                           self.datas['company'],
-                           self.datas['contract'],
-                           self.datas['location'],
-                           self.datas['salary_min'],
-                           self.datas['salary_max'],
-                           self.datas['salary_period'],
-                           self.datas['nb_hours'],
-                           self.datas['qualification'],
-                           self.datas['experience'],
+        try:
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
+                           self.name, (
+                               self.datas['ref'],
+                               self.datas['nace'],
+                               self.datas['url'],
+                               self.datas['date_pub'],
+                               self.datas['date_add'],
+                               self.datas['title'],
+                               self.datas['company'],
+                               self.datas['contract'],
+                               self.datas['location'],
+                               self.datas['salary_min'],
+                               self.datas['salary_max'],
+                               self.datas['salary_period'],
+                               self.datas['nb_hours'],
+                               self.datas['qualification'],
+                               self.datas['experience'],
+                           )
                        )
-                   )
-        conn.commit()
-        if conn:
-            conn.close()
-        return 0
+            conn.commit()
+        except lite.IntegrityError:
+            pass
+        finally:
+            if conn:
+                conn.close()
 
     def createOffer(self, data):
         """Create a offer object with jobboard data"""

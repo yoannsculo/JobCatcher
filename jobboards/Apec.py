@@ -154,24 +154,30 @@ class JBApec(JobBoard):
         conn = lite.connect(self.configs['global']['database'])
         conn.text_factory = str
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?)" % 
-                       self.name, (
-                           self.datas['ref'],
-                           self.datas['refsoc'],
-                           self.datas['url'],
-                           self.datas['date_pub'],
-                           self.datas['date_add'],
-                           self.datas['title'],
-                           self.datas['company'],
-                           self.datas['contract'],
-                           self.datas['location'],
-                           self.datas['salary'],
-                           self.datas['experience'],
+        try:
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?)" % 
+                           self.name, (
+                               self.datas['ref'],
+                               self.datas['refsoc'],
+                               self.datas['url'],
+                               self.datas['date_pub'],
+                               self.datas['date_add'],
+                               self.datas['title'],
+                               self.datas['company'],
+                               self.datas['contract'],
+                               self.datas['location'],
+                               self.datas['salary'],
+                               self.datas['experience'],
+                           )
                        )
-                   )
-        conn.commit()
-        if conn:
-            conn.close()
+
+            conn.commit()
+        except lite.IntegrityError:
+            pass
+        finally:
+            if conn:
+                conn.close()
+
         return 0
 
     def createOffer(self, data):
