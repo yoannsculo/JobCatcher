@@ -2,276 +2,196 @@
 # -*- coding: utf-8 -*-
 
 __authors__ = [
-    'Guillaume DAVID',
+    'Yoann Sculo <yoann.sculo@gmail.com>',
     'Bruno Adelé <bruno@adele.im>',
 ]
 __license__ = 'GPLv2'
 __version__ = '0.1'
 
-import os
+# System
 import re
 import time
+import glob
+from datetime import datetime
 
-from jobcatcher import JobCatcher
-from jobcatcher import Jobboard
-from jobcatcher import Offer
-from jobcatcher import Location
-from config import configs
-
-from xml.dom import minidom
-import datetime
-import utilities
-
-from HTMLParser import HTMLParser
+# Third party
+import sqlite3 as lite
+from html2text import html2text 
 from BeautifulSoup import BeautifulSoup
 
-class RegionJob(Jobboard):
-
-    def __init__(self):
-        self.name = "REGIONJOB"
-        self.url = "http://www.regionjob.com"
-        self.lastFetch = ""
-        self.processingDir = self.dlDir + "/regionjob"
-        self.lastFetchDate = 0
-
-    def fetch_url(self, url):
-        filename = url.split('/')[-1]
-        utilities.download_file(url, self.processingDir)
-
-        xmldoc = minidom.parse(os.path.join(self.processingDir, filename))
-
-        MainPubDate = xmldoc.getElementsByTagName('pubDate')[0].firstChild.data
-        try:
-            epochPubDate = datetime.datetime.strptime(MainPubDate, "%a, %d %b %Y %H:%M:%S +0100").strftime('%s')
-        except:
-            epochPubDate = datetime.datetime.strptime(MainPubDate, "%a, %d %b %Y %H:%M:%S +0200").strftime('%s')
-
-        print "main date " + MainPubDate
-
-        # if (epochPubDate <= self.lastFetchDate):
-        #     return 0
-
-        itemlist = xmldoc.getElementsByTagName('item')
-
-        for elt in itemlist :
-            # TODO : Test object first
-            title = elt.getElementsByTagName('title')[0].firstChild.data
-            link = elt.getElementsByTagName('link')[0].firstChild.data
-            pubDate = elt.getElementsByTagName('pubDate')[0].firstChild.data
-#            print "link " + link
-
-            if (epochPubDate <= self.lastFetchDate):
-                break
-
-            if (not os.path.isfile(os.path.join(self.processingDir, link.split('/')[-1]))):
-                print "Downloading %s" % (link)
-                utilities.download_file(link, self.processingDir)
+# Jobcatcher
+from jobcatcher import JobBoard
+from jobcatcher import Offer
 
 
-    def fetch(self):
-        print "Fetching " + self.name
+class JBRegionJob(JobBoard):
 
-        feed_list = configs['regionjob']['feeds']
+    def __init__(self, configs=[], interval=1200):
+        self.name = "RegionJob"
+        super(JBRegionJob, self).__init__(configs, interval)
+        self.encoding = {'feed': 'utf-8', 'page': 'utf-8'}
 
-        if (not os.path.isdir(self.processingDir)):
-                os.makedirs(self.processingDir)
+    def getUrls(self):
+        """Get Urls offers from feed"""
 
-        for url in feed_list :
-            self.fetch_url(url)
+        urls = list()
+        searchdir = "%s/feeds/*.feed" % self._processingDir
 
-        self.processOffers()
+        for feed in glob.glob(searchdir):
+            # Load the HTML feed
+            fd = open(feed, 'rb')
+            html = fd.read().decode(self.encoding['feed'])
+            fd.close()
 
-    def processOffers(self):
-        for file in os.listdir(self.processingDir):
-            if (not file.lower().startswith('offre')):
-                    continue
+            # Search result
+            res = re.finditer(
+                r'<item>(.*?)</item>',
+                html,
+                flags=re.MULTILINE | re.DOTALL
+            )
+            for r in res:
+                # Check if URL is valid
+                m = re.search(r'<link>(.*?clients/offres_chartees/offre_chartee_modele\.aspx\?numoffre=.*?)</link>', r.group(1))
+                if m:
+                    urls.append(m.group(1))
 
-            offer = PacaOffer()
-            offer.ref = file.split('=')[1]
-            offer.ref = offer.ref.split('&')[0]
-            print "Processing %s" % (offer.ref)
-            res = offer.loadFromHtml(os.path.join(self.processingDir, file))
-            if (res != 0):
-                continue
-            offer.date_add = int(time.time())
-            loc = Location()
-            # loc.loadFromAddress(offer.location)
-            offer.lat = loc.lat
-            offer.lon = loc.lon
-            if (offer.add_db() == 0):
-                os.remove(os.path.join(self.processingDir,file))
+        return urls
 
-    def setup(self):
-        print "setup " + self.name
+    def _regexExtract(self, regex, soup):
+        """Extract a field in html page"""
 
-class PacaOffer(Offer):
+        html = unicode.join(u'\n', map(unicode, soup))
 
-    src     = 'REGIONJOB'
-    license = ''
+        res = None
+        m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
+        if m:
+            res = html2text(m.group(1)).strip()
 
-    def __init__(self):
-        Offer.__init__(self)
-        self.currentsite = ""
+        return res
 
-    def loadFromHtml(self, filename):
-        fd = open(filename, 'rb')
-        html = fd.read()
-        fd.close()
+    def _extractRubrique(self, field, soup):
+        """Extract rubrique"""
 
-        soup = BeautifulSoup(html, fromEncoding="UTF-8")
+        html = unicode.join(u'\n', map(unicode, soup))
 
+        res = None
+        regex = ur'<p class="rubrique_annonce">%s</p>.*?<p>(.*?)</p>' % field
+        m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
+        if m:
+            res = html2text(m.group(1)).strip()
 
-        # Search region
-        res = soup.body.find('div', attrs={'id':'header_interne'})
-        if not res:
-            return -1
+        return res
 
-        res =  res.find('a', href = True)
-        if not res:
-            return -1
+    def analyzePage(self, url, html):
+        """Analyze page and extract datas"""
 
-        self.currentsite = res['href'][:-1]
+        soup = BeautifulSoup(html, fromEncoding=self.encoding['page'])
+        item = soup.body.find('div', attrs={'id': 'annonce'})
 
-        # Offer still available ?
-        res = soup.body.find('div', attrs={'class':'boxSingleMain box'})
-        if (res != None):
-            content = res.find('p')
-            if (content.text == u'L\'offre que vous souhaitez afficher n\'est plus disponible.Cliquer sur le bouton ci-dessous pour revenir à l\'onglet Mes Offres'):
-                return 1
+        if (item is None):
+            return 1
 
         # Title
-        res = soup.body.find('div', attrs={'class':'contenu'})
-        if (res == None):
-            return -1
-        res = res.find("h1")
-        self.title = HTMLParser().unescape(res.text).encode( 'iso-8859-1' )
+        h1 = item.find('h1')
+        if (h1 is None):
+            return 1
 
-        # Other information
-        res = soup.body.find('p', attrs={'class':'contrat_loc'})
-        res = res.findAll("strong")
+        # Title & Url
+        self.datas['title'] = html2text(h1.text).strip()
+        self.datas['url'] = url
 
-        # Temporary fix to avoid empty company fields
-        if (res.__len__() < 3):
-            return -1
+        # Date & Ref
+        p = item.find('p', attrs={'class': 'date_ref'})
+        self.datas['ref'] = self._regexExtract(ur'Réf :(.*)', p)
+        self.datas['date_add'] = int(time.time())
+        self.datas['date_pub'] = datetime.strptime(
+            self._regexExtract(ur'publié le(.*?)<br />', p),
+            "%d/%m/%Y").strftime('%s')
 
-        self.company = HTMLParser().unescape(res[0].text).encode( 'iso-8859-1' )
-        self.contract = HTMLParser().unescape(res[1].text)
-        self.location = HTMLParser().unescape(res[2].text).encode( 'iso-8859-1' )
-        self.location = re.sub(ur'IDF', "Île-de-France", self.location)
- 
-        res = soup.body.find('p', attrs={'id':'description_annonce'})
-        self.content = HTMLParser().unescape(res.text)
-
-        res = soup.body.find('p', attrs={'class':'rubrique_annonce'})
- 
-        res = soup.body.find('p', attrs={'class':'date_ref'})
-        date = HTMLParser().unescape(res.text).split(' ')[2]
-        date = HTMLParser().unescape(date).split('R')[0]
-        self.date_pub = datetime.datetime.strptime(date, "%d/%m/%Y").strftime('%s')
-
-	self.salary = u'NA'
-
-        self.url = "%s/clients/offres_chartees/%s" % (
-            self.currentsite,
-            os.path.basename(filename).split('&')[0],
+        # Job informations
+        p = item.find('p', attrs={'class': 'contrat_loc'})
+        self.datas['location'] = self._regexExtract(
+            ur'Localisation :.*?<strong>(.*?)</strong>', p
+        )
+        self.datas['company'] = self._regexExtract(
+            ur'Entreprise :.*?<strong>(.*?)</strong>', p
+        )
+        self.datas['contract'] = self._regexExtract(
+            ur'Contrat :.*?<strong>(.*?)</strong>', p
         )
 
-        return 0
+        # Salary
+        self.datas['salary'] = self._extractRubrique("Salaire", item)
 
-    def toto( self ):
-        for elt in res:
-            th = elt.find('th')
-            td = elt.find('td')
+        # Insert to jobboard table
+        self.insertToJBTable()
 
-            if (th.text == u'Salaire :'):
-                # TODO : use regexp once whe have a better view of possible combinations
-                self.salary = HTMLParser().unescape(td.text)
-                self.salary = re.sub(ur'Selon diplôme et expérience', "NA", self.salary)
-                self.salary = re.sub(ur'fixe + variable selon profil', "NA", self.salary)
-                self.salary = re.sub(ur'A définir selon profil', "NA", self.salary)
-                self.salary = re.sub(ur'A DEFINIR SELON PROFIL', "NA", self.salary)
-                self.salary = re.sub(ur'à défninir selon profil', "NA", self.salary)
-                self.salary = re.sub(ur'à définir selon profils', "NA", self.salary)
-                self.salary = re.sub(ur'à définir selon expérience', "NA", self.salary)
-                self.salary = re.sub(ur'A négocier selon profil', "NA", self.salary)
-                self.salary = re.sub(ur'A NEGOCIER SELON PROFIL', "NA", self.salary)
-                self.salary = re.sub(ur'à négocier selon profil', "NA", self.salary)
-                self.salary = re.sub(ur'A négocier selon expérience', "NA", self.salary)
-                self.salary = re.sub(ur'A voir selon profil', "NA", self.salary)
-                self.salary = re.sub(ur'En fonction du profil', "NA", self.salary)
-                self.salary = re.sub(ur'Selon profil et expériences', "NA", self.salary)
-                self.salary = re.sub(ur'Selon profil et expérience', "NA", self.salary)
-                self.salary = re.sub(ur'selon profil et expérience +', "NA", self.salary)
-                self.salary = re.sub(ur'selon profil et expérience', "NA", self.salary)
-                self.salary = re.sub(ur'selon profil et exp', "NA", self.salary)
-                self.salary = re.sub(ur'selon profil et avantages', "NA", self.salary)
-                self.salary = re.sub(ur'selon votre profil', "NA", self.salary)
-                self.salary = re.sub(ur'Selon votre profil', "NA", self.salary)
-                self.salary = re.sub(ur'selon le profil', "NA", self.salary)
-                self.salary = re.sub(ur'Selon le profil', "NA", self.salary)
-                self.salary = re.sub(ur'Selon profils', "NA", self.salary)
-                self.salary = re.sub(ur'Selon profil', "NA", self.salary)
-                self.salary = re.sub(ur'selon profil', "NA", self.salary)
-                self.salary = re.sub(ur'selon Profil', "NA", self.salary)
-                self.salary = re.sub(ur'Selon Profil', "NA", self.salary)
-                self.salary = re.sub(ur'SELON PROFIL', "NA", self.salary)
-                self.salary = re.sub(ur'selo profil', "NA", self.salary)
-                self.salary = re.sub(ur'selon l\'expérience', "NA", self.salary)
-                self.salary = re.sub(ur'selon experience', "NA", self.salary)
-                self.salary = re.sub(ur'selon expérience', "NA", self.salary)
-                self.salary = re.sub(ur'Selon expérience', "NA", self.salary)
-                self.salary = re.sub(ur'Selon expérince', "NA", self.salary)
-                self.salary = re.sub(ur'Selon Expérience', "NA", self.salary)
-                self.salary = re.sub(ur'Selon experience', "NA", self.salary)
-                self.salary = re.sub(ur'SELON EXPERIENCE', "NA", self.salary)
-                self.salary = re.sub(ur'Selon compétences', "NA", self.salary)
-                self.salary = re.sub(ur'selon compétences', "NA", self.salary)
-                self.salary = re.sub(ur'Selon compétence', "NA", self.salary)
-                self.salary = re.sub(ur'selon exp.', "NA", self.salary)
-                self.salary = re.sub(ur'suivant profil', "NA", self.salary)
-                self.salary = re.sub(ur'grille fonction publique', "NA", self.salary)
-                self.salary = re.sub(ur'à déterminer', "NA", self.salary)
-                self.salary = re.sub(ur'à convenir', "NA", self.salary)
-                self.salary = re.sub(ur'à négocier', "NA", self.salary)
-                self.salary = re.sub(ur'a négocier', "NA", self.salary)
-                self.salary = re.sub(ur'a negocier', "NA", self.salary)
-                self.salary = re.sub(ur'à negocier', "NA", self.salary)
-                self.salary = re.sub(ur'A négocier', "NA", self.salary)
-                self.salary = re.sub(ur'A NEGOCIER', "NA", self.salary)
-                self.salary = re.sub(ur'A negocier', "NA", self.salary)
-                self.salary = re.sub(ur'à définir', "NA", self.salary)
-                self.salary = re.sub(ur'À définir', "NA", self.salary)
-                self.salary = re.sub(ur'A définir', "NA", self.salary)
-                self.salary = re.sub(ur'A DEFINIR', "NA", self.salary)
-                self.salary = re.sub(ur'A definir', "NA", self.salary)
-                self.salary = re.sub(ur'A défnir', "NA", self.salary)
-                self.salary = re.sub(ur'A discuter', "NA", self.salary)
-                self.salary = re.sub(ur'en fonction exp.', "NA", self.salary)
-                self.salary = re.sub(ur'en fonction du profil', "NA", self.salary)
-                self.salary = re.sub(ur'Négociable', "NA", self.salary)
-                self.salary = re.sub(ur'négociable', "NA", self.salary)
-                self.salary = re.sub(ur'negociable', "NA", self.salary)
-                self.salary = re.sub(ur'NEGOCIABLE', "NA", self.salary)
-                self.salary = re.sub(ur'non indiqué', "NA", self.salary)
-                self.salary = re.sub(ur'non communiqué', "NA", self.salary)
-                self.salary = re.sub(ur'NON COMMUNIQUE', "NA", self.salary)
-                self.salary = re.sub(ur'non précisé', "NA", self.salary)
-                self.salary = re.sub(ur'Non précisé', "NA", self.salary)
-                self.salary = re.sub(ur'Voir annonce', "NA", self.salary)
-                self.salary = re.sub(ur'GRILLE DE LA FPT', "NA", self.salary)
-                self.salary = re.sub(ur'Grille', "NA", self.salary)
-                self.salary = re.sub(ur'confidentiel', "NA", self.salary)
-                self.salary = re.sub(ur'TBD', "NA", self.salary)
-                self.salary = re.sub(ur'N.S.', "NA", self.salary)
-                self.salary = re.sub(ur'ANNUEL', "NA", self.salary)
-                self.salary = re.sub(ur'NC K€ brut/an', "NA", self.salary)
-                self.salary = re.sub(ur'xx K€ brut/an', "NA", self.salary)
-                # self.salary = re.sub(ur'0K€ brut/an', "NA", self.salary)
-                self.salary = re.sub(ur'-K€ brut/an', "NA", self.salary)
-                self.salary = re.sub(ur'NC', "NA", self.salary)
-                self.salary = re.sub(ur'N/C', "NA", self.salary)
-                self.salary = re.sub(ur'-NA', "NA", self.salary)
-            if (th.text == u'Expérience :'):
-                self.experience = HTMLParser().unescape(td.text)
+    def createTable(self,):
+        if self.isTableCreated():
+            return
+
+        conn = None
+        conn = lite.connect(self.configs['global']['database'])
+        cursor = conn.cursor()
+
+        # create a table
+        cursor.execute("""CREATE TABLE jb_%s( \
+                       ref TEXT, \
+                       url TEXT, \
+                       date_pub INTEGER, \
+                       date_add INTEGER, \
+                       title TEXT, \
+                       company TEXT, \
+                       contract TEXT, \
+                       location TEXT, \
+                       salary TEXT, \
+                       PRIMARY KEY(ref))""" % self.name)
+
+    def insertToJBTable(self):
+        conn = lite.connect(self.configs['global']['database'])
+        conn.text_factory = str
+        cursor = conn.cursor()
+        try:
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?)" %
+                           self.name, (
+                               self.datas['ref'],
+                               self.datas['url'],
+                               self.datas['date_pub'],
+                               self.datas['date_add'],
+                               self.datas['title'],
+                               self.datas['company'],
+                               self.datas['contract'],
+                               self.datas['location'],
+                               self.datas['salary'],
+                           )
+            )
+
+            conn.commit()
+        except lite.IntegrityError:
+            pass
+        finally:
+            if conn:
+                conn.close()
 
         return 0
+
+    def createOffer(self, data):
+        """Create a offer object with jobboard data"""
+        data = dict(data)
+
+        o = Offer()
+        o.src = self.name
+        o.url = data['url']
+        o.ref = data['ref']
+        o.title = data['title']
+        o.company = data['company']
+        o.contract = data['contract']
+        o.location = data['location']
+        o.salary = data['salary']
+        o.date_pub = data['date_pub']
+        o.date_add = data['date_add']
+
+        if o.ref and o.company:
+            return o
+
+        return None

@@ -52,9 +52,14 @@ soon.
 - Apec.fr (France)
 - Progressive Recruitment (France)
 - RegionsJob
- - RegionCentre (France)
- - RegionOuest (France)
- - RegionSudOuest (France)
+ - CentreJob (France)
+ - NordJob (France)
+ - PacaJob (France)
+ - RhoneJob (France)
+ - EstJob (France)
+ - OuestJob (France)
+ - SudOuestJob (France)
+ - ParisJob (France)
 - Cadreonline (France)
 - Eures (Europe)
 
