@@ -74,7 +74,7 @@ class JobBoards(object):
                     destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
                     plugin = utilities.loadJobBoard(jobboardname, self.configs)
                     for p in glob.glob("%s/*.page" % destdir):
-                        # Load the HTML feed
+                        # Load the HTML page
                         content = utilities.openPage(p)
                         plugin.analyzePage(content.url, content.page)
 
@@ -166,7 +166,7 @@ class JobBoard(object):
         feeddir = "%s/feeds" % self._processingDir
         urlid = utilities.md5(url)
         saveto = "%s/%s.feed" % (feeddir, urlid)
-        utilities.downloadFile(url, saveto, interval, self.encoding['feed'])
+        utilities.downloadFile(url, saveto, interval)
 
         return saveto
 
@@ -178,9 +178,7 @@ class JobBoard(object):
             md5 = utilities.md5(u)
             saveto = "%s/%s.page" % (destdir, md5)
             try:
-                utilities.downloadFile(u, saveto, self._interval,
-                                       self.encoding['page'],
-                )
+                utilities.downloadFile(u, saveto, self._interval)
             except UnicodeDecodeError:
                 pass
 
