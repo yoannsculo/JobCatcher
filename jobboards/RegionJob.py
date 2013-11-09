@@ -88,12 +88,12 @@ class JBRegionJob(JobBoard):
         soup = BeautifulSoup(html, fromEncoding=self.encoding['page'])
         item = soup.body.find('div', attrs={'id': 'annonce'})
 
-        if (item is None):
+        if not item:
             return 1
 
         # Title
         h1 = item.find('h1')
-        if (h1 is None):
+        if not h1:
             return 1
 
         # Title & Url
@@ -102,6 +102,9 @@ class JBRegionJob(JobBoard):
 
         # Date & Ref
         p = item.find('p', attrs={'class': 'date_ref'})
+        if not p:
+            return 1
+
         self.datas['ref'] = self._regexExtract(ur'Réf :(.*)', p)
         self.datas['date_add'] = int(time.time())
         self.datas['date_pub'] = datetime.strptime(
@@ -110,6 +113,9 @@ class JBRegionJob(JobBoard):
 
         # Job informations
         p = item.find('p', attrs={'class': 'contrat_loc'})
+        if not p:
+            return 1
+
         self.datas['location'] = self._regexExtract(
             ur'Localisation :.*?<strong>(.*?)</strong>', p
         )
