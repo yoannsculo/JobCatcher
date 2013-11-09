@@ -4,6 +4,7 @@
 __authors__ = [
     'Yoann Sculo <yoann.sculo@gmail.com>',
     'Bruno Adelé <bruno@adele.im>',
+    'Yankel Scialom <yankel.scialom@mail.com>'
 ]
 __license__ = 'GPLv2'
 __version__ = '0.1'
@@ -100,11 +101,14 @@ class JBApec(JobBoard):
 
         # Title
         h1 = soup.body.find('h1', attrs={'class': 'detailOffre'})
+        if (None == item):
+                return 1
         self.datas['title'] = html2text(h1.text).replace('Détail de l\'offre : ', '').strip()
-
 
         # Refs
         table = item.find('table', attrs={'class': 'noFieldsTable'})
+        if (None == table):
+                return 1
         self.datas['url'] = url
         self.datas['ref'] = self._extractItem(u"Référence Apec", table)
         self.datas['refsoc'] = self._extractItem(u"Référence société", table)
