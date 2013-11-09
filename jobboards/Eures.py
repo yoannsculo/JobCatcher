@@ -76,9 +76,12 @@ class JBEures(JobBoard):
 
         # Dates
         self.datas['date_add'] = int(time.time())
-        self.datas['date_pub'] = datetime.strptime(
-            self._extractItem("Date de publication", html),
-            "%d/%m/%Y").strftime('%s')
+
+        self.datas['date_pub'] = self._extractItem("Date de publication", html)
+        if self.datas['date_pub']:
+            self.datas['date_pub'] = datetime.strptime(
+                self.datas['date_pub'],
+                "%d/%m/%Y").strftime('%s')
 
         # Job informations
         self.datas['title'] = self._extractItem("Titre", html)
