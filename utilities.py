@@ -13,6 +13,7 @@ __version__ = '1.0'
 import os
 import re
 import time
+import glob
 import hashlib
 import importlib
 import sqlite3 as lite
@@ -74,6 +75,13 @@ def downloadFile(url, filename, age=60, forcedownload=False):
         for line in datas:
             out.write(line)
         out.close()
+
+
+def removeFiles(rep, patern):
+    filelist = glob.glob("%s/%s" % (rep, patern))
+
+    for f in filelist:
+        os.remove(f)
 
 
 def loadJobBoard(jobboardname, configs):
