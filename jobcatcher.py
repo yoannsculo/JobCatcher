@@ -324,6 +324,9 @@ class ReportGenerator(object):
         data_full = cursor.fetchall()
         count_full = len(data_full)
 
+        if (not os.path.isdir(html_dir)):
+            os.makedirs(html_dir)
+
         if (filtered):
             report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
             data = data_filtered
