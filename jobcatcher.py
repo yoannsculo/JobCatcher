@@ -15,7 +15,6 @@ import sys
 import glob
 import datetime
 import codecs
-import html2text
 import requests
 
 
@@ -175,10 +174,11 @@ class JobBoard(object):
         destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
 
         for u in urls:
-            md5 = utilities.md5(u)
+            url = utilities.htmltotext(u)
+            md5 = utilities.md5(url)
             saveto = "%s/%s.page" % (destdir, md5)
             try:
-                utilities.downloadFile(u, saveto, self._interval)
+                utilities.downloadFile(url, saveto, self._interval)
             except UnicodeDecodeError:
                 pass
 

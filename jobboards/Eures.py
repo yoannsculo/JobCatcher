@@ -16,9 +16,9 @@ from datetime import datetime
 
 # Third party
 import sqlite3 as lite
-from html2text import html2text
 
 # Jobcatcher
+import utilities
 from jobcatcher import JobBoard
 from jobcatcher import Offer
 
@@ -63,7 +63,7 @@ class JBEures(JobBoard):
 
         m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
         if m:
-            res = html2text(m.group(1)).rstrip()
+            res = utilities.htmltotext(m.group(1)).rstrip()
 
         return res
 

@@ -16,11 +16,18 @@ import time
 import glob
 import hashlib
 import importlib
+import html2text
 import sqlite3 as lite
 import urllib2 as urllib
 
 from collections import namedtuple
 PageResult = namedtuple('PageResult', ['url', 'page'])
+
+
+def htmltotext(text):
+    """Fix html2text"""
+    html2text.BODY_WIDTH = 0
+    return html2text.html2text(text)
 
 
 def md5(datas):

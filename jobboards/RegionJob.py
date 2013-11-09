@@ -16,10 +16,10 @@ from datetime import datetime
 
 # Third party
 import sqlite3 as lite
-from html2text import html2text 
 from BeautifulSoup import BeautifulSoup
 
 # Jobcatcher
+import utilities
 from jobcatcher import JobBoard
 from jobcatcher import Offer
 
@@ -51,7 +51,7 @@ class JBRegionJob(JobBoard):
             )
             for r in res:
                 # Check if URL is valid
-                m = re.search(r'<link>(.*?clients/offres_chartees/offre_chartee_modele\.aspx\?numoffre=.*?)</link>', r.group(1))
+                m = re.search(r'<link>(.*?numoffre=.*?)</link>', r.group(1))
                 if m:
                     urls.append(m.group(1))
 
@@ -65,7 +65,7 @@ class JBRegionJob(JobBoard):
         res = None
         m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
         if m:
-            res = html2text(m.group(1)).strip()
+            res = utilities.htmltotext(m.group(1)).strip()
 
         return res
 
@@ -78,7 +78,7 @@ class JBRegionJob(JobBoard):
         regex = ur'<p class="rubrique_annonce">%s</p>.*?<p>(.*?)</p>' % field
         m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
         if m:
-            res = html2text(m.group(1)).strip()
+            res = utilities.htmltotext(m.group(1)).strip()
 
         return res
 
@@ -97,7 +97,7 @@ class JBRegionJob(JobBoard):
             return 1
 
         # Title & Url
-        self.datas['title'] = html2text(h1.text).strip()
+        self.datas['title'] = utilities.htmltotext(h1.text).strip()
         self.datas['url'] = url
 
         # Date & Ref

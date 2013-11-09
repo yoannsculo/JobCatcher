@@ -18,13 +18,12 @@ from datetime import datetime
 
 # Third party
 import sqlite3 as lite
-from html2text import html2text 
 from BeautifulSoup import BeautifulSoup
 
 # Jobcatcher
+import utilities
 from jobcatcher import JobBoard
 from jobcatcher import Offer
-
 
 class JBApec(JobBoard):
 
@@ -69,7 +68,7 @@ class JBApec(JobBoard):
 
         m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
         if m:
-            res = html2text(m.group(1)).strip()
+            res = utilities.htmltotext(m.group(1)).strip()
 
         return res
 
@@ -83,7 +82,7 @@ class JBApec(JobBoard):
 
         m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
         if m:
-            res = html2text(m.group(1)).strip()
+            res = utilities.htmltotext(m.group(1)).strip()
 
         return res
 
@@ -103,7 +102,7 @@ class JBApec(JobBoard):
         h1 = soup.body.find('h1', attrs={'class': 'detailOffre'})
         if (None == item):
                 return 1
-        self.datas['title'] = html2text(h1.text).replace('Détail de l\'offre : ', '').strip()
+        self.datas['title'] = utilities.htmltotext(h1.text).replace('Détail de l\'offre : ', '').strip()
 
         # Refs
         table = item.find('table', attrs={'class': 'noFieldsTable'})
