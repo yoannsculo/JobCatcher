@@ -140,6 +140,19 @@ def db_create(configs):
     cursor.execute("""CREATE TABLE blacklist(company TEXT, PRIMARY KEY(company))""")
 
 
+def db_delete_jobboard_datas(configs, jobboardname):
+    """Delete jobboard datas from offers table"""
+    conn = None
+    conn = lite.connect(configs['global']['database'])
+    cursor = conn.cursor()
+
+    # create a table
+    sql = "delete from offers where source='%s'" % jobboardname
+    print sql
+    cursor.execute("delete from offers where source='%s'" % jobboardname)
+    conn.commit()
+
+
 def db_add_offer(configs, offer):
     conn = lite.connect(configs['global']['database'])
     try:

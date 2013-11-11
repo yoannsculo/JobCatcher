@@ -27,64 +27,6 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 
-# For testing
-# rm jobs.db; python jobcatcher.py -a
-
-class JobBoards(object):
-    """A class for dowload a feed or a HTML page"""
-
-    def __init__(self, configs=[]):
-        self._configs = configs
-        self._rootdir = configs['global']['rootdir']
-
-    @property
-    def rootdir(self):
-        return self._rootdir
-
-    @rootdir.setter  
-    def rootdir(self, value):
-        self._rootdir = value
-
-    @property
-    def configs(self):
-        return self._configs
-
-    @configs.setter
-    def configs(self, value):
-        self._configs = value
-
-    def downloadFeeds(self, forcedownload=False):
-        """Download all feeds or HTMLs pages"""
-        for jobboardname in self._configs:
-            if jobboardname not in self._configs['global']['ignorejobboard']:
-                if 'feeds' in self._configs[jobboardname]:
-                    feeds = self._configs[jobboardname]['feeds']
-
-                    # Donwload all feeds for jobboard
-                    plugin = utilities.loadJobBoard(jobboardname, self.configs)
-                    for url in feeds:
-                        plugin.downloadFeed(url)
-
-    def analyzesPages(self):
-        """Analyze downloaded pages"""
-        for jobboardname in self._configs:
-            if jobboardname not in self._configs['global']['ignorejobboard']:
-                if 'feeds' in self._configs[jobboardname]:
-                    destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
-                    plugin = utilities.loadJobBoard(jobboardname, self.configs)
-                    for p in glob.glob("%s/*.page" % destdir):
-                        # Load the HTML page
-                        content = utilities.openPage(p)
-                        plugin.analyzePage(content.url, content.page)
-
-    def moveToOffers(self):
-        """Move jobboards datas to offer"""
-        for jobboardname in self._configs:
-            if jobboardname not in self._configs['global']['ignorejobboard']:
-                if 'feeds' in self._configs[jobboardname]:
-                    plugin = utilities.loadJobBoard(jobboardname, self.configs)
-                    plugin.moveToOffers()
-
 class JobBoard(object):
     """Generic Class forcreate new jobboard"""
     def __init__(self, configs=[], interval=1200):
@@ -97,7 +39,6 @@ class JobBoard(object):
             self.name
         )
         self._encoding = {'feed': 'utf-8', 'page': 'utf-8'}
-
 
         #Check and create Jobboard table
         if not self.isTableCreated():
@@ -160,8 +101,7 @@ class JobBoard(object):
         return utilities.db_istableexists(self.configs, "jb_%s" % self.name)
 
     def downloadFeed(self, url, interval=1200, forcedownload=False):
-        """Download a feed or a HTML page"""
-
+        """Download feed from jobboard"""
         feeddir = "%s/feeds" % self._processingDir
         urlid = utilities.md5(url)
         saveto = "%s/%s.feed" % (feeddir, urlid)
@@ -169,18 +109,28 @@ class JobBoard(object):
 
         return saveto
 
-    def downloadPages(self, jobboardname, urls):
-        """Download all pages from urls list"""
-        destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
+    def downloadFeeds(self, feeds, interval=1200, forcedownload=False):
+        """Download a feeds from jobboard"""
+        for feed in feeds:
+            self.downloadFeed(feed, interval, forcedownload)
 
-        for u in urls:
-            url = utilities.htmltotext(u)
-            md5 = utilities.md5(url)
-            saveto = "%s/%s.page" % (destdir, md5)
-            try:
-                utilities.downloadFile(url, saveto, self._interval)
-            except UnicodeDecodeError:
-                pass
+    def downloadPage(self, url):
+        """Download all pages from urls list"""
+        url = utilities.htmltotext(url)
+        md5 = utilities.md5(url)
+        destdir = "%s/%s/pages" % (self.rootdir, self.name)
+        saveto = "%s/%s.page" % (destdir, md5)
+        try:
+            utilities.downloadFile(url, saveto, self._interval)
+        except UnicodeDecodeError:
+            pass
+
+        return saveto
+
+    def downloadPages(self, urls):
+        """Download all pages from urls list"""
+        for url in urls:
+            self.downloadPage(url)
 
     def getAllJBDatas(self):
         """Get all jobboard datas"""
@@ -290,13 +240,13 @@ class ReportGenerator(object):
         stat.write("</tr>")
         stat.write("</thead>")
 
-        jb = JobCatcher(self.configs)
-        jb.loadPlugins()
-        for item in jb.jobBoardList:
-            data = item.fetchAllOffersFromDB()
+        jobboardlist = getjobboardlist(self.configs)
+        for jobboardname in jobboardlist:
+            plugin = utilities.loadJobBoard(jobboardname, self.configs)
+            data = plugin.fetchAllOffersFromDB()
             stat.write("<tr>")
-            stat.write("<td>%s</td>" %(item.name))
-            stat.write("<td>%s</td>" %(len(data)))
+            stat.write("<td>%s</td>" % plugin.name)
+            stat.write("<td>%s</td>" % len(data))
             stat.write("<td></td>")
             stat.write("<td></td>")
             stat.write("</tr>")
@@ -482,67 +432,26 @@ class Offer():
         #print "Title :" + self.title
         print "Company : " + self.company
 
-    #def set_from_row(row):
-    #    self.src = row[0]
-    #    self.ref = row[1]
-    #    self.date_pub = datetime.datetime.fromtimestamp(int(row[2]))
-    #    self.date_add = datetime.datetime.fromtimestamp(int(row[3]))
-    #    self.title = row[4].encode("utf-8")
-    #    self.company = row[5].encode("utf-8")
-    #    self.contract = row[6].encode("utf-8")
-    #    self.location = row[7].encode("utf-8")
-    #    self.salary = row[8].encode("utf-8")
-    #    self.url = row[9].encode("utf-8")
-    #    self.content = row[10].encode("utf-8")
 
+def getjobboardlist(configs):
+    """Return the jobboard list"""
+    jobboardlist = list()
+    for jobboardname in configs:
+        if 'feeds' in configs[jobboardname]:
+            if len(configs[jobboardname]['feeds']) > 0:
+                module = 'jobboards/%s.py' % jobboardname
+                if os.path.exists(module):
+                    jobboardlist.append(jobboardname)
 
-class JobCatcher():
-
-    jobBoardList = []
-
-    def __init__(self, configs=[]):
-        self._configs = configs
-
-    @property
-    def configs(self):
-        return self._configs
-
-    @configs.setter
-    def configs(self, value):
-        self._configs = value
-
-    def loadPlugins(self):
-        """ load all jobboards from jobboards directory
-        """
-
-        for file in glob.glob("./jobboards/*.py"):
-            name = os.path.splitext(os.path.basename(file))[0]
-            if (name == '__init__'):
-                continue
-
-            if name not in self.configs['global']['ignorejobboard']:
-                plugin = utilities.loadJobBoard(name, self.configs)
-                self.jobBoardList.append(plugin)
-
-    def run(self):
-        for jobboard in self.jobBoardList:
-            if jobboard.name not in self.configs['global']['ignorejobboard']:
-                print ""
-                print "=================================="
-                print jobboard.name
-                print "=================================="
-
-                jb = utilities.loadJobBoard(jobboard.name, self.configs)
-                urls = jb.getUrls()
-                jb.downloadPages(jobboard.name, urls)
+    return jobboardlist
 
 
 def executeall(conf):
     initblacklist(conf)
     downloadfeeds(conf)
-    pagesdownload(conf)
-    pagesinsert(conf)
-    pagesmove(conf)
+    downloadpages(conf)
+    insertpages(conf)
+    movepages(conf)
     generatereport(conf)
 
 
@@ -557,27 +466,87 @@ def initblacklist(conf):
     utilities.blocklist_load(conf)
 
 
+def downloadfeed(conf, jobboardname):
+    """Download a jobboard feeds"""
+    plugin = utilities.loadJobBoard(jobboardname, conf)
+    feeds = conf[jobboardname]['feeds']
+    plugin.downloadFeeds(feeds)
+
+
 def downloadfeeds(conf):
-    fd = JobBoards(conf)
-    fd.downloadFeeds()
+    """Download all jobboard feeds"""
+    jobboardlist = getjobboardlist(conf)
+    for jobboardname in jobboardlist:
+        downloadfeed(conf, jobboardname)
 
 
-def pagesdownload(conf):
-    bot = JobCatcher(conf)
-    bot.loadPlugins()
-    bot.run()
+def downloadpage(conf, jobboardname):
+    """Download a jobboard pages"""
+    plugin = utilities.loadJobBoard(jobboardname, conf)
+    urls = plugin.getUrls()
+    plugin.downloadPages(urls)
 
 
-def pagesinsert(conf):
+def downloadpages(conf):
+    """Download all jobboard pages"""
+    jobboardlist = getjobboardlist(conf)
+    for jobboardname in jobboardlist:
+        downloadpage(conf, jobboardname)
+
+
+def insertpage(conf, jobboardname):
+    """Insert pages in jobboard table"""
     utilities.db_checkandcreate(conf)
-    fd = JobBoards(conf)
-    fd.analyzesPages()
+
+    destdir = "%s/%s/pages" % (conf['global']['rootdir'], jobboardname)
+    plugin = utilities.loadJobBoard(jobboardname, conf)
+    for p in glob.glob("%s/*.page" % destdir):
+        content = utilities.openPage(p)
+        plugin.analyzePage(content.url, content.page)
 
 
-def pagesmove(conf):
+def insertpages(conf):
+    """Insert all pages from all jobboard"""
+    jobboardlist = getjobboardlist(conf)
+    for jobboardname in jobboardlist:
+        insertpage(conf, jobboardname)
+
+
+def movepage(conf, jobboardname):
+    """Move jobboard pages to offers"""
     utilities.db_checkandcreate(conf)
-    fd = JobBoards(conf)
-    fd.moveToOffers()
+
+    plugin = utilities.loadJobBoard(jobboardname, conf)
+    plugin.moveToOffers()
+
+
+def movepages(conf):
+    """Move all pages from all jobboard"""
+    jobboardlist = getjobboardlist(conf)
+    for jobboardname in jobboardlist:
+        movepage(conf, jobboardname)
+
+
+def clean(conf, jobboardname):
+    utilities.db_checkandcreate(conf)
+    utilities.db_delete_jobboard_datas(conf, jobboardname)
+
+
+def importjobboard(conf, jobboardname):
+    utilities.db_checkandcreate(conf)
+    pagesinsert(conf)
+    pagesmove(conf)
+
+
+def imports(conf):
+    jobboardlist = getjobboardlist(conf)
+    for jobboardname in jobboardlist:
+        importjobboard(conf, jobboardname)
+
+
+def reimports(conf, jobboardname):
+    clean(conf, jobboardname)
+    imports(conf)
 
 if __name__ == '__main__':
     from config import configs
@@ -586,39 +555,89 @@ if __name__ == '__main__':
     args = sys.argv[1:]
 
     parser.set_defaults(version = False)
-    parser.add_option('-v', '--version',
-                          action = 'store_true', dest = 'version',
-                          help = 'Output version information and exit')
-    parser.add_option('-r', '--report',
-                          action = 'store_true', dest = 'report',
-                          help = 'Generate a full report')
-    parser.add_option('-a', '--all',
-                          action = 'store_true', dest = 'all',
-                          help = 'Sync the blacklist, fetch the offers and generates reports.')
-    parser.add_option('-c', '--create',
-                          action = 'store_true', dest = 'create',
-                          help = 'create the databse')
-    parser.add_option('-s', '--start',
-                          action = 'store_true', dest = 'start',
-                          help = 'start the fetch')
-    parser.add_option('-p', '--pages',
-                          action = 'store_true', dest = 'pages',
-                          help = 'Pages download')
-    parser.add_option('-i', '--insert',
-                          action = 'store_true', dest = 'insert',
-                          help = 'Insert pages')
-    parser.add_option('-m', '--move',
-                          action = 'store_true', dest = 'move',
-                          help = 'Move datas to offer')
-    # parser.add_option('-b', '--blocklist',
-    #                       action = 'store_true', dest = 'blocklist',
-    #                       help = 'update blocklist')
-    parser.add_option('-u', '--url',
-                          action = 'store_true', dest = 'url',
-                          help = 'analyse an url')
-    parser.add_option('-f', '--flush',
-                          action = 'store_true', dest = 'flush',
-                          help = 'flush the blacklist and update it.')
+    parser.add_option('--all',
+                      action='store_true',
+                      dest='all',
+                      help='sync the blacklist, fetch the offers and generates reports.'
+    )
+
+    parser.add_option('--feeds',
+                      action='store_true',
+                      dest='feeds',
+                      help='download the all feeds in the config'
+    )
+
+    parser.add_option('--feed',
+                      action='store',
+                      metavar='JOBBOARD',
+                      dest='feed',
+                      help='download only the feed from JOBBOARD in the config',
+    )
+
+    parser.add_option('--pages',
+                      action='store_true',
+                      dest='pages',
+                      help='download the all pages in the config'
+    )
+
+    parser.add_option('--page',
+                      action='store',
+                      metavar='JOBBOARD',
+                      dest='page',
+                      help='download only the pages from JOBBOARD in the config'
+    )
+    
+    parser.add_option('--inserts',
+                      action='store_true',
+                      dest='inserts',
+                      help = 'inserts all pages to offers'
+    )
+
+    parser.add_option('--insert',
+                      action='store',
+                      metavar='JOBBOARD',
+                      dest='insert',
+                      help = 'insert JOBBOARD pages to offers'
+    )
+
+
+    parser.add_option('--moves',
+                      action='store_true',
+                      dest='moves',
+                      help='move datas to offer'
+    )
+
+    parser.add_option('--move',
+                      action='store',
+                      metavar='JOBBOARD',
+                      dest='move',
+                      help='move JOBBOARD datas to offer'
+    )
+
+    parser.add_option('--clean',
+                      action='store',
+                      metavar='JOBBOARD',
+                      dest='clean',
+                      help='clean offers from JOBBOARD source'
+    )
+
+    parser.add_option('--report',
+                      action='store_true',
+                      dest='report',
+                      help='generate a full report'
+    )
+
+    parser.add_option('--version',
+                      action='store_true',
+                      dest='version',
+                      help='output version information and exit'
+    )
+    # parser.add_option('-u', '--url',
+    #                       action = 'store_true', dest = 'url',
+    #                       help = 'analyse an url')
+    # parser.add_option('-f', '--flush',
+    #                       action = 'store_true', dest = 'flush',
+    #                       help = 'flush the blacklist and update it.')
 
     (options, args) = parser.parse_args(args)
 
@@ -638,34 +657,44 @@ if __name__ == '__main__':
         executeall(configs)
         sys.exit(0)
 
-    if options.url:
-        if len(args) != 1:
-            print "error"
-        else:
-            import importlib
-            module = importlib.import_module('jobboards.Apec');
-            moduleClass = getattr(module, 'Apec')
-            instance = moduleClass()
-            filename = instance.fetch_offer(args[0])
-            instance.processOffer(filename)
-        sys.exit(0)
-
-    if options.start:
-        print "Try to load a feed"
+    #Feeds
+    if options.feeds:
         downloadfeeds(configs)
-        print "Done."
         sys.exit(0)
 
+    if options.feed:
+        downloadfeed(configs, options.feed)
+        sys.exit(0)
+
+    # Pages
     if options.pages:
-        pagesdownload(configs)
+        downloadpages(configs)
+        sys.exit(0)
+
+    if options.page:
+        downloadpage(configs, options.page)
+        sys.exit(0)
+
+    # Inserts
+    if options.inserts:
+        insertpages(configs)
         sys.exit(0)
 
     if options.insert:
-        pagesinsert(configs)
+        insertpage(configs, options.insert)
+        sys.exit(0)
+
+    # Clean
+    if options.clean:
+        clean(configs, options.clean)
+
+    # Moves
+    if options.moves:
+        movepages(configs)
         sys.exit(0)
 
     if options.move:
-        pagesmove(configs)
+        movepage(configs, options.move)
         sys.exit(0)
 
     if options.blocklist:

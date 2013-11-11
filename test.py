@@ -65,7 +65,7 @@ class TestPackages(unittest.TestCase):
         # Dowload page
         urls = plugin.getUrls()
         self.assertEqual(len(urls), 5)
-        plugin.downloadPages(jobboard, urls)
+        plugin.downloadPages(urls)
 
     def test_JBApec(self):
         """ Test Apec jobboard"""
@@ -88,7 +88,7 @@ class TestPackages(unittest.TestCase):
         # Dowload page
         urls = plugin.getUrls()
         self.assertEqual(len(urls), 30)
-        plugin.downloadPages(jobboard, urls)
+        plugin.downloadPages(urls)
 
     def test_JBRegionJob(self):
         """ Test RegionJob jobboard"""
@@ -119,7 +119,7 @@ class TestPackages(unittest.TestCase):
         # Dowload page
         urls = plugin.getUrls()
         self.assertEqual(len(urls), 80)
-        plugin.downloadPages(jobboard, urls)
+        plugin.downloadPages(urls)
 
     def test_jobcatcher(self):
         """Execute the jobcatcher functions"""
