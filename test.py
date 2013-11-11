@@ -55,11 +55,11 @@ class TestPackages(unittest.TestCase):
 
         # Get feed content
         plugin = utilities.loadJobBoard(jobboard, configs)
-        url = configs[jobboard]['feeds'][0]
-        filename = plugin.downloadFeed(url)
+        feed = configs[jobboard]['feeds'][0]
+        filename = plugin.downloadFeed(feed)
         self.assertEqual(
             filename,
-            '/tmp/dl/Eures/feeds/0855c939d3b5b5cd1fffeb1665dcecfc.feed'
+            '/tmp/dl/Eures/feeds/f5b201bd055ca4f07076e96cdabdf68d.feed'
         )
 
         # Dowload page
@@ -78,11 +78,11 @@ class TestPackages(unittest.TestCase):
 
         # Get feed content
         plugin = utilities.loadJobBoard(jobboard, configs)
-        url = configs[jobboard]['feeds'][0]
-        filename = plugin.downloadFeed(url)
+        feed = configs[jobboard]['feeds'][0]
+        filename = plugin.downloadFeed(feed)
         self.assertEqual(
             filename,
-            '/tmp/dl/Apec/feeds/17a63531332158f5b8204dadc24efcb4.feed'
+            '/tmp/dl/Apec/feeds/2f18abc46311f962025c1701b6a209e5.feed'
         )
 
         # Dowload page
@@ -101,11 +101,11 @@ class TestPackages(unittest.TestCase):
 
         # Get feed content
         plugin = utilities.loadJobBoard(jobboard, configs)
-        url = configs[jobboard]['feeds'][0]
-        filename = plugin.downloadFeed(url)
+        feed = configs[jobboard]['feeds'][0]
+        filename = plugin.downloadFeed(feed)
         self.assertEqual(
             filename,
-            '/tmp/dl/RegionJob/feeds/56d1b5fea7dee697630e6457ac3e1e5e.feed'
+            '/tmp/dl/RegionJob/feeds/a98a7cbf97492bc91d81f33aebfb35bf.feed'
         )
 
         # Clean datas

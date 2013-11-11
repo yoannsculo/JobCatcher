@@ -13,8 +13,8 @@ __version__ = '1.0'
 import os
 import sys
 import glob
-import datetime
 import codecs
+import datetime
 import requests
 
 
@@ -100,12 +100,20 @@ class JobBoard(object):
         """Check if the table for jobboard exist"""
         return utilities.db_istableexists(self.configs, "jb_%s" % self.name)
 
-    def downloadFeed(self, url, interval=1200, forcedownload=False):
+    def downloadFeed(self, feed, interval=1200, forcedownload=False):
         """Download feed from jobboard"""
+        datas = None
+        if 'datas' in feed:
+            datas = feed['datas']
+            urlid = "%s/%s" % (feed['url'], datas)
+        else:
+            urlid = "%s" % feed['url']
+
+        urlid = "%s/%s" % (feed['url'], datas)
         feeddir = "%s/feeds" % self._processingDir
-        urlid = utilities.md5(url)
-        saveto = "%s/%s.feed" % (feeddir, urlid)
-        utilities.downloadFile(url, saveto, interval)
+        pageid = utilities.md5(urlid)
+        saveto = "%s/%s.feed" % (feeddir, pageid)
+        utilities.downloadFile(feed['url'], datas, saveto, interval)
 
         return saveto
 
@@ -116,12 +124,12 @@ class JobBoard(object):
 
     def downloadPage(self, url):
         """Download all pages from urls list"""
-        url = utilities.htmltotext(url)
+        url = utilities.htmltotext(url).strip()
         md5 = utilities.md5(url)
         destdir = "%s/%s/pages" % (self.rootdir, self.name)
         saveto = "%s/%s.page" % (destdir, md5)
         try:
-            utilities.downloadFile(url, saveto, self._interval)
+            utilities.downloadFile(url, None, saveto, self._interval)
         except UnicodeDecodeError:
             pass
 

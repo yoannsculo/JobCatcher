@@ -93,21 +93,23 @@ class JBApec(JobBoard):
         soup = BeautifulSoup(html, fromEncoding=self.encoding['page'])
         item = soup.body.find('div', attrs={'class': 'boxMain boxOffres box'})
 
-        if ( item != None):
+        if not item:
             content = item.find('p')
             if (content.text == u'L\'offre que vous souhaitez afficher n\'est plus disponible.Cliquer sur le bouton ci-dessous pour revenir à l\'onglet Mes Offres'):
                 return 1
 
         # Title
         h1 = soup.body.find('h1', attrs={'class': 'detailOffre'})
-        if (None == item):
-                return 1
+        if not item:
+            return 1
+
         self.datas['title'] = utilities.htmltotext(h1.text).replace('Détail de l\'offre : ', '').strip()
 
         # Refs
         table = item.find('table', attrs={'class': 'noFieldsTable'})
-        if (None == table):
-                return 1
+        if not table:
+            return 1
+
         self.datas['url'] = url
         self.datas['ref'] = self._extractItem(u"Référence Apec", table)
         self.datas['refsoc'] = self._extractItem(u"Référence société", table)

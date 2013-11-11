@@ -18,7 +18,8 @@ import hashlib
 import importlib
 import html2text
 import sqlite3 as lite
-import urllib2 as urllib
+import requests
+
 
 from collections import namedtuple
 PageResult = namedtuple('PageResult', ['url', 'page'])
@@ -61,27 +62,34 @@ def openPage(filename):
     return PageResult(url=url, page=html)
 
 
-def downloadFile(url, filename, age=60, forcedownload=False):
+def downloadFile(url, datas, filename, age=60, forcedownload=False):
+    headers = {
+        'User-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:24.0) Gecko/20100101 Firefox/24.0',
+        'Referer': 'http://candidat.pole-emploi.fr/candidat/rechercheoffres/avancee',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        #'Content-Type': 'application/json',
+    }
 
-    # Check if i must download a file
+    # Check if i must download file
+    if os.path.isfile(filename):
+        now = getNow()
+        t = getModificationFile(filename)
+        if not forcedownload or t + (age) < now:
+            return
+
+    print "Download %s" % url
     destdir = os.path.dirname(filename)
+    if (not os.path.isdir(destdir)):
+        os.makedirs(destdir)
 
-    now = getNow()
-    t = getModificationFile(filename)
-
-    # Download a file
-    if forcedownload or not t or t + (age) < now:
-        if (not os.path.isdir(destdir)):
-            os.makedirs(destdir)
-
-        print "Download %s " % url
-        out = open(filename, 'wb')
-
-        out.write("%s\n" % url)
-        datas = urllib.urlopen(url, filename)
-        for line in datas:
-            out.write(line)
-        out.close()
+    if datas:
+        r = requests.post(url, data=datas, headers=headers)
+    else:
+        r = requests.get(url)
+    out = open(filename, 'wb')
+    out.write("%s\n" % url)
+    out.write(r.content)
+    out.close()
 
 
 def removeFiles(rep, patern):
