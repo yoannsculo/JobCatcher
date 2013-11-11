@@ -109,4 +109,4 @@ Modify the config.py and execute
     python jobcatcher.py -a
 
 
-Help me to add new job boards to JobCatcher ! :)
+Help us to add new job boards to JobCatcher ! :)
