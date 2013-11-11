@@ -106,7 +106,7 @@ soon.
 Modify the config.py and execute
 
     workon jobcatcher
-    python jobcatcher.py -a
+    python jobcatcher.py --all
 
 
 Help us to add new job boards to JobCatcher ! :)
