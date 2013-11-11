@@ -40,6 +40,20 @@ show me mistakes I could have made or improvements I could do.
 	./jobcatcher.py -u # To fetch an offer only with its url
 	./jobcatcher.py -a # Sync the blacklist, fetch the offers and generates reports.
 
+    -h, --help         show this help message and exit
+    --all              sync the blacklist, fetch the offers and generates reports.
+    --feeds            download the all feeds in the config
+    --feed=JOBBOARD    download only the feed from JOBBOARD in the config
+    --pages            download the all pages in the config
+    --page=JOBBOARD    download only the pages from JOBBOARD in the config
+    --inserts          inserts all pages to offers
+    --insert=JOBBOARD  insert JOBBOARD pages to offers
+    --moves            move datas to offer
+    --move=JOBBOARD    move JOBBOARD datas to offer
+    --clean=JOBBOARD   clean offers from JOBBOARD source
+    --report           generate a full report
+    --version          output version information and exit
+
 Reports are generated into the local "www" directory.
 
 I start jobcatcher.py -s manually with crontab for now. But this should change
