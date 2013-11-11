@@ -113,6 +113,6 @@ Help us to add new job boards to JobCatcher ! :)
 
 ## Contributors
 
-- Yoann Sculo - [http://www.yoannsculo.fr](http://www.yoannsculo.fr)
+- Yoann Sculo - [www.yoannsculo.fr](http://www.yoannsculo.fr)
 - Bruno Adelé - [bruno.adele.im](http://bruno.adele.im)
 - Yankel Scialom - [github](https://github.com/yscialom)
