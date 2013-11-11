@@ -88,17 +88,6 @@ configstest = {
         'rootdir': '/tmp/dl',
         'wwwdir': '/tmp/www',
         'database': '/tmp/jobs.db',
-        'ignorejobboard': [
-            'cadresonline',
-
-            'SUDOUESTJOB',
-            'OUESTJOB',
-            'CENTREJOB',
-            'Lolix',
-
-            'Cadresonline',
-            'Progressive',
-        ]
     },
     'PoleEmploi': {
         'feeds': [
