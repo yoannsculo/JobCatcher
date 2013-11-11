@@ -121,6 +121,37 @@ class TestPackages(unittest.TestCase):
         self.assertEqual(len(urls), 80)
         plugin.downloadPages(urls)
 
+    def test_JBPoleEmploi(self):
+        """ Test PoleEmploi jobboard"""
+
+        # Jobboardname
+        jobboard = 'PoleEmploi'
+
+        # Clean datas
+        self.cleanDatas(jobboard)
+
+        # Get feed content
+        plugin = utilities.loadJobBoard(jobboard, configs)
+        feed = configs[jobboard]['feeds'][0]
+        filename = plugin.downloadFeed(feed)
+        self.assertEqual(
+            filename,
+            '/tmp/dl/PoleEmploi/feeds/19917e808ace985a5856f37122d76b65.feed'
+        )
+
+        # Clean datas
+        self.cleanDatas(jobboard)
+
+        # Download all feeds
+        feeds = configs[jobboard]['feeds']
+        for url in feeds:
+            plugin.downloadFeed(url)
+
+        # Dowload page
+        urls = plugin.getUrls()
+        self.assertEqual(len(urls), 20)
+        plugin.downloadPages(urls)
+
     def test_jobcatcher(self):
         """Execute the jobcatcher functions"""
         jobcatcher.executeall(configs)

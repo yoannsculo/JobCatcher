@@ -234,6 +234,13 @@ def filter_contract_fr(contract):
         "CDD de \\1",
         contract, flags=re.DOTALL
     )
+
+    # PoleEmploi
+    contract = re.sub(ur'.*Contrat à durée indéterminée.*', "CDI", contract, flags=re.DOTALL)
+    contract = re.sub(ur'.*Contrat à durée déterminée de.*', "CDD", contract, flags=re.DOTALL)
+    contract = re.sub(ur'.*Contrat travail saisonnier de.*', "CDD", contract, flags=re.DOTALL)
+
+
     return contract
 
 
@@ -369,5 +376,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'N.C', "NA", salary)
     salary = re.sub(ur'NC', "NA", salary)
     salary = re.sub(ur'nc', "NA", salary)
+
+
 
     return salary

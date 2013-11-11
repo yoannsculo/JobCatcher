@@ -55,7 +55,7 @@ configs = {
     },
     'Apec': {
         'feeds' : [
-            { 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101833.xml'},
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101833.xml'},
         ]
     },
     'cadresonline': {
@@ -65,19 +65,19 @@ configs = {
     },
     'RegionJob': {
         'feeds': [
-            {'url': 'http://www.centrejob.com/fr/rss/flux.aspx?&fonction=10'},
-            {'url': 'http://www.nordjob.com/fr/rss/flux.aspx?&fonction=10'},
-            {'url': 'http://www.pacajob.com/fr/rss/flux.aspx?&fonction=10'},
-            {'url': 'http://www.rhonealpesjobs.com/fr/rss/flux.aspx?&fonction=10'},
-            {'url': 'http://www.estjob.com/fr/rss/flux.aspx?&fonction=10'},
-            {'url': 'http://www.ouestjob.com/fr/rss/flux.aspx?&fonction=10'},
-            {'url': 'http://www.sudouestjob.com/fr/rss/flux.aspx?&fonction=10'},
-            {'url': 'http://www.parisjob.com/fr/rss/flux.aspx?&fonction=10'},
+            #{'url': 'http://www.centrejob.com/fr/rss/flux.aspx?&fonction=10'},
+            #{'url': 'http://www.nordjob.com/fr/rss/flux.aspx?&fonction=10'},
+            #{'url': 'http://www.pacajob.com/fr/rss/flux.aspx?&fonction=10'},
+            #{'url': 'http://www.rhonealpesjobs.com/fr/rss/flux.aspx?&fonction=10'},
+            #{'url': 'http://www.estjob.com/fr/rss/flux.aspx?&fonction=10'},
+            #{'url': 'http://www.ouestjob.com/fr/rss/flux.aspx?&fonction=10'},
+            #{'url': 'http://www.sudouestjob.com/fr/rss/flux.aspx?&fonction=10'},
+            #{'url': 'http://www.parisjob.com/fr/rss/flux.aspx?&fonction=10'},
         ]
     },
     'Eures': {
         'feeds': [
-            { 'url': 'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?lg=FR&isco=%25&multipleCountries=FR-R281&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=5&page=1&country=FR&totalCount=781&multipleRegions=R281'}
+            #{ 'url': 'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?lg=FR&isco=%25&multipleCountries=FR-R281&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=5&page=1&country=FR&totalCount=781&multipleRegions=R281'}
         ]
     }
 }

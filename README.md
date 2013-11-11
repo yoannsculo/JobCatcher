@@ -53,6 +53,9 @@ soon.
 ![Unit test result](https://api.travis-ci.org/badele/JobCatcher.png)
 
 - Apec.fr (France)
+- Cadreonline (France)
+- Eures (Europe)
+- PoleEmploi (France)
 - Progressive Recruitment (France)
 - RegionsJob
  - CentreJob (France)
@@ -63,8 +66,6 @@ soon.
  - OuestJob (France)
  - SudOuestJob (France)
  - ParisJob (France)
-- Cadreonline (France)
-- Eures (Europe)
 
 ### TODO
 
