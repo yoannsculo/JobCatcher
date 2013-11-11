@@ -30,17 +30,6 @@ show me mistakes I could have made or improvements I could do.
 
 ## Usage (mainly development options for now)
 
-	./jobcatcher.py -b # To load my blacklist into the DB
-	./jobcatcher.py -f # To flush and update the blacklist
-	./jobcatcher.py -s # To fetch last offers
-	./jobcatcher.py -p # To download a related page
-	./jobcatcher.py -i # Insert data to jobboard table
-	./jobcatcher.py -m # Move jobboard datas to offers table
-	./jobcatcher.py -r # To generate reports
-	./jobcatcher.py -u # To fetch an offer only with its url
-	./jobcatcher.py -a # Sync the blacklist, fetch the offers and generates reports.
-
-    -h, --help         show this help message and exit
     --all              sync the blacklist, fetch the offers and generates reports.
     --feeds            download the all feeds in the config
     --feed=JOBBOARD    download only the feed from JOBBOARD in the config
