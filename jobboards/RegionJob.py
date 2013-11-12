@@ -116,9 +116,16 @@ class JBRegionJob(JobBoard):
         if not p:
             return 1
 
+        # Location
+        self.datas['department'] = None
         self.datas['location'] = self._regexExtract(
             ur'Localisation :.*?<strong>(.*?)</strong>', p
         )
+        m = re.search('(.*?) - ([0-9]+)', self.datas['location'])
+        if m:
+            self.datas['location'] = m.group(1).strip()
+            self.datas['department'] = m.group(2).strip()
+
         self.datas['company'] = self._regexExtract(
             ur'Entreprise :.*?<strong>(.*?)</strong>', p
         )
@@ -150,6 +157,7 @@ class JBRegionJob(JobBoard):
                        company TEXT, \
                        contract TEXT, \
                        location TEXT, \
+                       department TEXT, \
                        salary TEXT, \
                        PRIMARY KEY(ref))""" % self.name)
 
@@ -158,7 +166,7 @@ class JBRegionJob(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?)" %
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
                                self.datas['ref'],
                                self.datas['url'],
@@ -168,6 +176,7 @@ class JBRegionJob(JobBoard):
                                self.datas['company'],
                                self.datas['contract'],
                                self.datas['location'],
+                               self.datas['department'],
                                self.datas['salary'],
                            )
             )
@@ -193,6 +202,7 @@ class JBRegionJob(JobBoard):
         o.company = data['company']
         o.contract = data['contract']
         o.location = data['location']
+        o.department = data['department']
         o.salary = data['salary']
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
