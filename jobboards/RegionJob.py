@@ -129,9 +129,24 @@ class JBRegionJob(JobBoard):
         self.datas['company'] = self._regexExtract(
             ur'Entreprise :.*?<strong>(.*?)</strong>', p
         )
+
+        # Contract
+        self.datas['duration'] = None
         self.datas['contract'] = self._regexExtract(
             ur'Contrat :.*?<strong>(.*?)</strong>', p
         )
+        m = re.search('(.*?) - ([0-9]+ .*)', self.datas['contract'])
+        if m:
+            self.datas['contract'] = m.group(1).strip()
+            print self.datas['contract']
+            text = m.group(2).strip()
+            m = re.search('([0-9]+) (.*)', text)
+            if m:
+                number = m.group(1)
+                if 'ans' in m.group(2):
+                    self.datas['duration'] = int(number) * 12
+                else:
+                    self.datas['duration'] = number
 
         # Salary
         self.datas['salary'] = self._extractRubrique("Salaire", item)
@@ -156,6 +171,7 @@ class JBRegionJob(JobBoard):
                        title TEXT, \
                        company TEXT, \
                        contract TEXT, \
+                       duration INTEGER, \
                        location TEXT, \
                        department TEXT, \
                        salary TEXT, \
@@ -166,7 +182,7 @@ class JBRegionJob(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?)" %
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
                                self.datas['ref'],
                                self.datas['url'],
@@ -175,6 +191,7 @@ class JBRegionJob(JobBoard):
                                self.datas['title'],
                                self.datas['company'],
                                self.datas['contract'],
+                               self.datas['duration'],
                                self.datas['location'],
                                self.datas['department'],
                                self.datas['salary'],
@@ -201,6 +218,7 @@ class JBRegionJob(JobBoard):
         o.title = data['title']
         o.company = data['company']
         o.contract = data['contract']
+        o.duration = data['duration']
         o.location = data['location']
         o.department = data['department']
         o.salary = data['salary']

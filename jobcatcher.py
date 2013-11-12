@@ -223,7 +223,11 @@ class ReportGenerator(object):
         self.generateStatistics()
 
     def box(self, style, text):
-        return '<span class="label label-%s">%s</span>' % (style, text)
+        css = ""
+        if style != "":
+            css = " label-%s" % style
+
+        return '<span class="label%s">%s</span>' % (css, text)
 
     def generateStatistics(self):
         html_dir = self.wwwdir
@@ -321,7 +325,7 @@ class ReportGenerator(object):
 
         for row in data:
             offer = Offer()
-            offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13])
+            offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14])
 
             if (s_date != offer.date_pub.strftime('%Y-%m-%d')):
                 s_date = offer.date_pub.strftime('%Y-%m-%d')
@@ -351,12 +355,28 @@ class ReportGenerator(object):
 
             #report.write('<td><span class="label label-important">SSII</span></td>')
 
-            if (offer.contract == ur'CDI' or offer.contract == ur'CDI (Cab/recrut)'):
-                report.write('<td><span class="label label-success">'+ offer.contract +'</span></td>')
-            elif (offer.contract[:3] == ur'CDD'):
-                report.write('<td><span class="label label-warning">'+ offer.contract +'</span></td>')
+            # Contract
+            duration = ""
+            if offer.duration:
+                duration = "&nbsp;%s" % self.box('info', offer.duration)
+
+            if ('CDI' in offer.contract):
+                report.write('<td>')
+                report.write(self.box('success', offer.contract))
+                report.write(duration)
+                report.write('</td>')
+            elif ('CDD' in offer.contract):
+                report.write('<td>')
+                report.write(self.box('warning', offer.contract))
+                report.write(duration)
+                report.write('</td>')
             else:
-                report.write('<td><span class="label">'+ offer.contract +'</span></td>')
+                report.write('<td>')
+                report.write(self.box('', offer.contract))
+                report.write(duration)
+                report.write('</td>')
+
+
 
             report.write('<td>' + offer.salary + '</td>')
             report.write('<td>' + offer.src + '</td>')
@@ -393,7 +413,10 @@ class Offer():
         self.ref = u""
         self.title = u""
         self.company = u""
+
+        # Contract
         self.contract = u""
+        self.duration = u""
 
         # Location
         self.location = u""
@@ -409,7 +432,8 @@ class Offer():
 
     def load(
             self, src, ref, date_pub, date_add, title, company,
-            contract, location, department, lat, lon, salary, url, content
+            contract, duration, location, department, lat, lon,
+            salary, url, content
     ):
 
         self.src = src
@@ -420,6 +444,7 @@ class Offer():
         self.title = title
         self.company = company
         self.contract = contract
+        self.duration = duration
         self.location = location
         self.department = department
         self.salary = salary

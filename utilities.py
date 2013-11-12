@@ -138,6 +138,7 @@ def db_create(configs):
                         title TEXT, \
                         company TEXT, \
                         contract TEXT, \
+                        duration INTEGER, \
                         location TEXT, \
                         department TEXT, \
                         lat TEXT, \
@@ -166,13 +167,14 @@ def db_add_offer(configs, offer):
     try:
         conn.text_factory = str
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                        (
                            offer.src, offer.ref,
                            offer.date_pub, offer.date_add,
                            offer.title, offer.company, offer.contract,
-                           offer.location, offer.department, offer.lat,
-                           offer.lon, offer.salary, offer.url, offer.content
+                           offer.duration, offer.location, offer.department,
+                           offer.lat, offer.lon, offer.salary,
+                           offer.url, offer.content
                        )
         )
         conn.commit()
@@ -229,6 +231,7 @@ def filter_contract_fr(contract):
     contract = re.sub(ur'Perm', "CDI", contract)
     contract = re.sub(ur'[0-9]+ en (.*)', "\\1", contract, flags=re.DOTALL)
     contract = re.sub(ur'.*CDI.*', "CDI", contract, flags=re.DOTALL)
+    contract = re.sub(ur'Travail temporaire', "CDD", contract, flags=re.DOTALL)
     contract = re.sub(
         ur'.*CDD.*de (.*)',
         "CDD de \\1",
