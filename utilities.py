@@ -139,6 +139,7 @@ def db_create(configs):
                         company TEXT, \
                         contract TEXT, \
                         location TEXT, \
+                        department TEXT, \
                         lat TEXT, \
                         lon TEXT, \
                         salary TEXT, \
@@ -165,13 +166,13 @@ def db_add_offer(configs, offer):
     try:
         conn.text_factory = str
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                        (
                            offer.src, offer.ref,
                            offer.date_pub, offer.date_add,
                            offer.title, offer.company, offer.contract,
-                           offer.location, offer.lat, offer.lon,
-                           offer.salary, offer.url, offer.content
+                           offer.location, offer.department, offer.lat,
+                           offer.lon, offer.salary, offer.url, offer.content
                        )
         )
         conn.commit()

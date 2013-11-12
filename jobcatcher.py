@@ -29,7 +29,7 @@ sys.setdefaultencoding("utf-8")
 
 class JobBoard(object):
     """Generic Class forcreate new jobboard"""
-    def __init__(self, configs=[], interval=1200):
+    def __init__(self, configs=[], interval=3600):
         self._rootdir = configs['global']['rootdir']
         self._configs = configs
         self._interval = interval
@@ -100,7 +100,7 @@ class JobBoard(object):
         """Check if the table for jobboard exist"""
         return utilities.db_istableexists(self.configs, "jb_%s" % self.name)
 
-    def downloadFeed(self, feed, interval=1200, forcedownload=False):
+    def downloadFeed(self, feed, interval=3600, forcedownload=False):
         """Download feed from jobboard"""
         datas = None
         if 'datas' in feed:
@@ -117,7 +117,7 @@ class JobBoard(object):
 
         return saveto
 
-    def downloadFeeds(self, feeds, interval=1200, forcedownload=False):
+    def downloadFeeds(self, feeds, interval=3600, forcedownload=False):
         """Download a feeds from jobboard"""
         for feed in feeds:
             self.downloadFeed(feed, interval, forcedownload)
@@ -217,12 +217,13 @@ class ReportGenerator(object):
     def configs(self, value):
         self._configs = value
 
-
     def generate(self):
         self.generateReport(True)
         self.generateReport(False)
         self.generateStatistics()
 
+    def box(self, style, text):
+        return '<span class="label label-%s">%s</span>' % (style, text)
 
     def generateStatistics(self):
         html_dir = self.wwwdir
@@ -320,7 +321,7 @@ class ReportGenerator(object):
 
         for row in data:
             offer = Offer()
-            offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12])
+            offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13])
 
             if (s_date != offer.date_pub.strftime('%Y-%m-%d')):
                 s_date = offer.date_pub.strftime('%Y-%m-%d')
@@ -340,7 +341,14 @@ class ReportGenerator(object):
             report.write('<td><span class="label label-success">noSSII</span></td>')
             report.write('<td><a href="'+offer.url+'">' + offer.title + '</a></td>')
             report.write('<td>' + offer.company + '</td>')
-            report.write('<td>' + offer.location + '</td>')
+
+            # Location
+            report.write('<td>')
+            if offer.department:
+                report.write("%s&nbsp;" % self.box('primary', offer.department))
+            report.write(offer.location)
+            report.write('</td>')
+
             #report.write('<td><span class="label label-important">SSII</span></td>')
 
             if (offer.contract == ur'CDI' or offer.contract == ur'CDI (Cab/recrut)'):
@@ -386,7 +394,11 @@ class Offer():
         self.title = u""
         self.company = u""
         self.contract = u""
+
+        # Location
         self.location = u""
+        self.department = u""
+
         self.salary = u""
         self.url = u""
         self.content = u""
@@ -397,7 +409,7 @@ class Offer():
 
     def load(
             self, src, ref, date_pub, date_add, title, company,
-            contract, location, lat, lon, salary, url, content
+            contract, location, department, lat, lon, salary, url, content
     ):
 
         self.src = src
@@ -409,6 +421,7 @@ class Offer():
         self.company = company
         self.contract = contract
         self.location = location
+        self.department = department
         self.salary = salary
         self.url = url
         self.content = content
@@ -598,16 +611,15 @@ if __name__ == '__main__':
     parser.add_option('--inserts',
                       action='store_true',
                       dest='inserts',
-                      help = 'inserts all pages to offers'
+                      help='inserts all pages to offers'
     )
 
     parser.add_option('--insert',
                       action='store',
                       metavar='JOBBOARD',
                       dest='insert',
-                      help = 'insert JOBBOARD pages to offers'
+                      help='insert JOBBOARD pages to offers'
     )
-
 
     parser.add_option('--moves',
                       action='store_true',
@@ -704,21 +716,16 @@ if __name__ == '__main__':
     # Inserts
     if options.inserts:
         insertpages(configs)
-        sys.exit(0)
 
     if options.insert:
         insertpage(configs, options.insert)
-        sys.exit(0)
-
 
     # Moves
     if options.moves:
         movepages(configs)
-        sys.exit(0)
 
     if options.move:
         movepage(configs, options.move)
-        sys.exit(0)
 
     if options.blocklist:
         utilities.blocklist_load(configs)

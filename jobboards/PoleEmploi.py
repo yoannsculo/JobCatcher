@@ -113,7 +113,13 @@ class JBPoleEmploi(JobBoard):
         li = item.find('li', attrs={'itemprop': 'addressRegion'})
         if not li:
             return 1
+
+        self.datas['department'] = None
         self.datas['location'] = li.text.strip()
+        m = re.search('([0-9]+) - (.*)', self.datas['location'])
+        if m:
+            self.datas['department'] = m.group(1).strip()
+            self.datas['location'] = m.group(2).strip()
 
         # Compagny
         p = item.find('p', attrs={'itemprop': 'hiringOrganization'})
@@ -142,6 +148,7 @@ class JBPoleEmploi(JobBoard):
                        company TEXT, \
                        contract TEXT, \
                        location TEXT, \
+                       department TEXT, \
                        salary TEXT, \
                        PRIMARY KEY(ref))""" % self.name)
 
@@ -150,7 +157,7 @@ class JBPoleEmploi(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?)" %
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
                                self.datas['ref'],
                                self.datas['url'],
@@ -160,6 +167,7 @@ class JBPoleEmploi(JobBoard):
                                self.datas['company'],
                                self.datas['contract'],
                                self.datas['location'],
+                               self.datas['department'],
                                self.datas['salary'],
                            )
             )
@@ -185,6 +193,7 @@ class JBPoleEmploi(JobBoard):
         o.company = data['company']
         o.contract = data['contract']
         o.location = data['location']
+        o.department = data['department']
         o.salary = data['salary']
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
