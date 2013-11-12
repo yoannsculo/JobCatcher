@@ -635,6 +635,18 @@ if __name__ == '__main__':
                       help='generate a full report'
     )
 
+    parser.add_option('--blocklist',
+                      action='store_true',
+                      dest='blocklist',
+                      help='update blocklist'
+    )
+
+    parser.add_option('--flush',
+                      action='store_true',
+                      dest='flush',
+                      help = 'flush the blacklist and update it.'
+    )
+
     parser.add_option('--version',
                       action='store_true',
                       dest='version',
@@ -649,10 +661,16 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args(args)
 
+    # Clean
+    if options.clean:
+        clean(configs, options.clean)
+
     if options.version:
-        print 'jobcatcher version %s - %s (%s)' % (__version__,
-                                                __copyright__,
-                                                __license__)
+        print 'jobcatcher version %s - %s (%s)' % (
+            __version__,
+            __copyright__,
+            __license__
+        )
         sys.exit(0)
 
     if options.report:
@@ -692,9 +710,6 @@ if __name__ == '__main__':
         insertpage(configs, options.insert)
         sys.exit(0)
 
-    # Clean
-    if options.clean:
-        clean(configs, options.clean)
 
     # Moves
     if options.moves:
