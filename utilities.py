@@ -74,7 +74,7 @@ def downloadFile(url, datas, filename, age=60, forcedownload=False):
     if os.path.isfile(filename):
         now = getNow()
         t = getModificationFile(filename)
-        if not forcedownload or t + (age) < now:
+        if not forcedownload and t + (age) > now:
             return
 
     print "Download %s" % url
