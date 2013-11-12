@@ -156,7 +156,6 @@ def db_delete_jobboard_datas(configs, jobboardname):
 
     # create a table
     sql = "delete from offers where source='%s'" % jobboardname
-    print sql
     cursor.execute("delete from offers where source='%s'" % jobboardname)
     conn.commit()
 
