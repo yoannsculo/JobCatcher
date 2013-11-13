@@ -229,6 +229,24 @@ class ReportGenerator(object):
 
         return '<span class="label%s">%s</span>' % (css, text)
 
+    def header(self, fhandle):
+        fhandle.write('<!doctype html>\n')
+        fhandle.write('<html>\n')
+        # html header
+        fhandle.write('<head>\n')
+        fhandle.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
+        fhandle.write('\t<link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css">\n')
+        fhandle.write('\t<link rel="stylesheet" href="css/simplePagination.css">\n')
+        fhandle.write('\t<link rel="stylesheet" href="css/dynamic.css" />\n')
+        fhandle.write('\t<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>\n')
+        fhandle.write('\t<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>\n')
+        fhandle.write('\t<script type="text/javascript" src="js/jquery.tablesorter.js"></script>\n')
+        fhandle.write('\t<script type="text/javascript" src="js/jquery.simplePagination.js"></script>\n')
+        fhandle.write('\t<script type="text/javascript" src="js/persist-min.js"></script>\n')
+        fhandle.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
+        fhandle.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
+        fhandle.write('</head>\n')
+
     def generateStatistics(self):
         html_dir = self.wwwdir
 
@@ -295,22 +313,8 @@ class ReportGenerator(object):
             report = open(os.path.join(html_dir, 'report_full.html'), 'w')
             data = data_full
 
-        report.write('<!doctype html>\n')
-        report.write('<html>\n')
-        # html header
-        report.write('<head>\n')
-        report.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
-        report.write('\t<link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css">\n')
-        report.write('\t<link rel="stylesheet" href="css/simplePagination.css">\n')
-        report.write('\t<link rel="stylesheet" href="css/dynamic.css" />\n')
-        report.write('\t<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/jquery.tablesorter.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/jquery.simplePagination.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/persist-min.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
-        report.write('</head>\n')
+        self.header(report)
+
         # html body
         report.write('<body>\n')
         # page header
@@ -373,7 +377,7 @@ class ReportGenerator(object):
             duration = ""
             report.write('\t\t\t\t<td class="contract">')
             if offer.duration:
-                duration = "&nbsp;%s" % self.box('info', offer.duration)
+                duration = "&nbsp;%s mois" % self.box('info', offer.duration)
             if ('CDI' in offer.contract):
                 report.write(self.box('success', offer.contract))
                 report.write(duration)
