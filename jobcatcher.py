@@ -362,7 +362,28 @@ class ReportGenerator(object):
             report.write('\t\t\t\t<td class="type">noSSII</td>\n')
             report.write('\t\t\t\t<td class="title"><a href="'+offer.url+'">' + offer.title + '</a></td>\n')
             report.write('\t\t\t\t<td class="company">' + offer.company + '</td>\n')
-            report.write('\t\t\t\t<td class="location">' + offer.location + '</td>\n')
+            # Location
+            report.write('\t\t\t\t<td class="location">')
+            if offer.department:
+                report.write("%s&nbsp;" % self.box('primary', offer.department))
+            report.write(offer.location)
+            report.write('</td>\n')
+
+            # contract
+            duration = ""
+            report.write('\t\t\t\t<td class="contract">')
+            if offer.duration:
+                duration = "&nbsp;%s" % self.box('info', offer.duration)
+            if ('CDI' in offer.contract):
+                report.write(self.box('success', offer.contract))
+                report.write(duration)
+            elif ('CDD' in offer.contract):
+                report.write(self.box('warning', offer.contract))
+                report.write(duration)
+            else:
+                report.write(self.box('', offer.contract))
+                report.write(duration)
+            report.write('</td>\n')
             report.write('\t\t\t\t<td class="contract">' + offer.contract +'</td>\n')
             report.write('\t\t\t\t<td class="salary">' + offer.salary + '</td>\n')
             report.write('\t\t\t\t<td class="source">' + offer.src + '</td>\n')
