@@ -671,12 +671,21 @@ var CompanyFilter = AbstractFilter.extend({
                 companies.push(company);
         });
         companies.sort();
-        companies = (new Array("Tout")).concat(companies);
 
-        $filter_company_combobox = this.priv_select_from_array(
-            "filter_company_combobox", companies
-        );
-        priv_elements = [$filter_company_combobox];
+        $filter_company_combobox = $("<input>", {
+            id: "filter_company_combobox",
+        });
+        $filter_company_combobox.autocomplete({
+            source: companies
+        });
+        var $filter_company_reset = $("<input>", {
+            type: "button",
+            value: "Effacer",
+        }).click(function() {
+            $filter_company_combobox.val("");
+            self.apply();
+        });
+        this.priv_elements = [$filter_company_combobox, $filter_company_reset];
     },
     /**
      * \fn apply()
@@ -696,8 +705,16 @@ var CompanyFilter = AbstractFilter.extend({
      */
     attach: function($parent) {
         var self = this;
-        $parent.append(priv_elements[0]);
-        priv_elements[0].change(function() {self.apply();});
+        var $filter_company_combobox = this.priv_elements[0];
+        $filter_company_combobox.keyup(function() { self.apply(); });
+        $($filter_company_combobox).autocomplete({
+            appendTo: $parent,
+            change: function() { self.apply(); },
+            close: function() { self.apply(); }
+        });
+        $.each(self.priv_elements, function(key, val) {
+            $parent.append(val);
+        });
         return true;
     },
     /**
@@ -706,8 +723,16 @@ var CompanyFilter = AbstractFilter.extend({
      * \returns Either \c true of \c false.
      */
     test: function(value)  {
-        var company = $("#filter_company_combobox :selected").text();
-        return "Tout" == company || value == company;
+        var result = false;
+        var pattern = $("#filter_company_combobox").val();
+        if (0 == pattern.length)
+            return true;
+        var patterns = pattern.split(/,\s*/);
+        $.each(patterns, function(key, val) {
+            if (0 != val.length && (new RegExp(val, "i")).test(value))
+                return result = true;
+        });
+        return result;
     }
 });
 
