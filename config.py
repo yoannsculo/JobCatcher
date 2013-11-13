@@ -69,7 +69,7 @@ configs = {
     },
     'RegionJob': {
         'feeds': [
-            #{'url': 'http://www.centrejob.com/fr/rss/flux.aspx?&fonction=10'},
+            {'url': 'http://www.centrejob.com/fr/rss/flux.aspx?&fonction=10'},
             #{'url': 'http://www.nordjob.com/fr/rss/flux.aspx?&fonction=10'},
             #{'url': 'http://www.pacajob.com/fr/rss/flux.aspx?&fonction=10'},
             #{'url': 'http://www.rhonealpesjobs.com/fr/rss/flux.aspx?&fonction=10'},

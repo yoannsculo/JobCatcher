@@ -229,6 +229,26 @@ class ReportGenerator(object):
 
         return '<span class="label%s">%s</span>' % (css, text)
 
+    def header(self, fhandle):
+        fhandle.write('<!doctype html>\n')
+        fhandle.write('<html>\n')
+        fhandle.write('<head>\n')
+        fhandle.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
+        fhandle.write('\t<link rel="stylesheet" href="css/bootstrap.css">\n')
+        fhandle.write('\t<link rel="stylesheet" href="css/bootstrap-responsive.css">\n')
+        if self.configs['report']['dynamic']:
+            fhandle.write('\t<link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css">\n')
+            fhandle.write('\t<link rel="stylesheet" href="css/simplePagination.css">\n')
+            fhandle.write('\t<link rel="stylesheet" href="css/dynamic.css" />\n')
+            fhandle.write('\t<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>\n')
+            fhandle.write('\t<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>\n')
+            fhandle.write('\t<script type="text/javascript" src="js/jquery.tablesorter.js"></script>\n')
+            fhandle.write('\t<script type="text/javascript" src="js/jquery.simplePagination.js"></script>\n')
+            fhandle.write('\t<script type="text/javascript" src="js/persist-min.js"></script>\n')
+            fhandle.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
+            fhandle.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
+        fhandle.write('</head>\n')
+
     def generateStatistics(self):
         html_dir = self.wwwdir
 
@@ -274,59 +294,46 @@ class ReportGenerator(object):
 
     def generateReport(self, filtered=True):
 
+        # Directory
         html_dir = self.wwwdir
         if not os.path.exists(html_dir):
             os.makedirs(html_dir)
 
+        # Query
         conn = lite.connect(self.configs['global']['database'])
         cursor = conn.cursor()
-
-        sql_filtered = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
-        sql_full = "SELECT * FROM offers ORDER BY date_pub DESC"
-
-        cursor.execute(sql_filtered)
-        data_filtered = cursor.fetchall()
-        count_filtered = len(data_filtered)
-
-        cursor.execute(sql_full)
-        data_full = cursor.fetchall()
-        count_full = len(data_full)
-
+        data = None
+        count_full = 0
+        count_filtered = 0
         if (filtered):
-            report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
-            data = data_filtered
-        else:
-            report = open(os.path.join(html_dir, 'report_full.html'), 'w')
-            data = data_full
+            # Filtered query
+            sql_filtered = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
+            cursor.execute(sql_filtered)
+            data = cursor.fetchall()
+            count_filtered = len(data)
 
-        report.write('<!doctype html>\n')
-        report.write('<html>\n')
-        # html header
-        report.write('<head>\n')
-        report.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
-        report.write('\t<link rel="stylesheet" href="css/bootstrap.css">\n')
-        report.write('\t<link rel="stylesheet" href="css/bootstrap-responsive.css">\n')
-        if self.configs['report']['dynamic']:
-            report.write('\t<link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css">\n')
-            report.write('\t<link rel="stylesheet" href="css/simplePagination.css">\n')
-            report.write('\t<link rel="stylesheet" href="css/dynamic.css" />\n')
-            report.write('\t<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>\n')
-            report.write('\t<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>\n')
-            report.write('\t<script type="text/javascript" src="js/jquery.tablesorter.js"></script>\n')
-            report.write('\t<script type="text/javascript" src="js/jquery.simplePagination.js"></script>\n')
-            report.write('\t<script type="text/javascript" src="js/persist-min.js"></script>\n')
-            report.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
-            report.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
-        report.write('</head>\n')
-        # html body
+            report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
+        else:
+            # Full query
+            sql_full = "SELECT * FROM offers ORDER BY date_pub DESC"
+            cursor.execute(sql_full)
+            data = cursor.fetchall()
+            count_full = len(data)
+
+            report = open(os.path.join(html_dir, 'report_full.html'), 'w')
+
+        self.header(report)
+
         report.write('<body>\n')
         # page header
-        report.write('\t<ul class="nav nav-pills nav-justified">\n')
-        report.write('\t\t<li class="%s"><a href="report_full.html">All %s offers</a></li>\n' %("" if filtered else "active", count_full))
-        report.write('\t\t<li class="%s"><a href="report_filtered.html">%s filtered offers (%.2f%%)</a></li>\n' %("active" if filtered else "", count_filtered, 100*(float)(count_filtered)/count_full))
-        report.write('\t\t<li><a href="statistics.html">Statistics</a></li>\n')
-        report.write('\t\t<li class="disabled"><a href="#">%s blacklisted offers (%.2f%%)</a></li>\n' %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full))
-        report.write('\t</ul>\n')
+        if count_full:
+            report.write('\t<ul class="nav nav-pills nav-justified">\n')
+            report.write('\t\t<li class="%s"><a href="report_full.html">All %s offers</a></li>\n' %(count_full))
+            report.write('\t\t<li class="%s"><a href="report_filtered.html">%s filtered offers (%.2f%%)</a></li>\n' %(count_filtered, 100*(float)(count_filtered)/count_full))
+            report.write('\t\t<li><a href="statistics.html">Statistics</a></li>\n')
+            report.write('\t\t<li class="disabled"><a href="#">%s blacklisted offers (%.2f%%)</a></li>\n' %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full))
+            report.write('\t</p>\n')
+
         # page body
         report.write('\t<table id="offers" class="table table-condensed">\n')
         # table header
@@ -359,7 +366,11 @@ class ReportGenerator(object):
         s_date = ''
         for row in data:
             offer = Offer()
-            offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14])
+            offer.load(
+                row[0], row[1], row[2], row[3], row[4], row[5], row[6],
+                row[7], row[8], row[9], row[10], row[11], row[12],
+                row[13], row[14]
+            )
 
             if (not self.configs['report']['dynamic'] and s_date != offer.date_pub.strftime('%Y-%m-%d')):
                 s_date = offer.date_pub.strftime('%Y-%m-%d')
@@ -383,7 +394,7 @@ class ReportGenerator(object):
             duration = ""
             report.write('\t\t\t\t<td class="contract">')
             if offer.duration:
-                duration = "&nbsp;%s" % self.box('info', offer.duration)
+                duration = "&nbsp;%s mois" % self.box('info', offer.duration)
             if ('CDI' in offer.contract):
                 report.write(self.box('success', offer.contract))
                 report.write(duration)
