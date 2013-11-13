@@ -288,30 +288,33 @@ class ReportGenerator(object):
 
     def generateReport(self, filtered=True):
 
+        # Directory
         html_dir = self.wwwdir
         if not os.path.exists(html_dir):
             os.makedirs(html_dir)
 
+        # Query
         conn = lite.connect(self.configs['global']['database'])
         cursor = conn.cursor()
-
-        sql_filtered = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
-        sql_full = "SELECT * FROM offers ORDER BY date_pub DESC"
-
-        cursor.execute(sql_filtered)
-        data_filtered = cursor.fetchall()
-        count_filtered = len(data_filtered)
-
-        cursor.execute(sql_full)
-        data_full = cursor.fetchall()
-        count_full = len(data_full)
-
+        data = None
+        count_full = 0
+        count_filtered = 0
         if (filtered):
+            # Filtered query
+            sql_filtered = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
+            cursor.execute(sql_filtered)
+            data = cursor.fetchall()
+            count_filtered = len(data)
+
             report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
-            data = data_filtered
         else:
+            # Full query
+            sql_full = "SELECT * FROM offers ORDER BY date_pub DESC"
+            cursor.execute(sql_full)
+            data = cursor.fetchall()
+            count_full = len(data)
+
             report = open(os.path.join(html_dir, 'report_full.html'), 'w')
-            data = data_full
 
         self.header(report)
 
@@ -358,7 +361,11 @@ class ReportGenerator(object):
 
         for row in data:
             offer = Offer()
-            offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14])
+            offer.load(
+                row[0], row[1], row[2], row[3], row[4], row[5], row[6],
+                row[7], row[8], row[9], row[10], row[11], row[12],
+                row[13], row[14]
+            )
 
             if (s_date != offer.date_pub.strftime('%Y-%m-%d')):
                 s_date = offer.date_pub.strftime('%Y-%m-%d')
