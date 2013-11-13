@@ -300,16 +300,19 @@ class ReportGenerator(object):
         # html header
         report.write('<head>\n')
         report.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
-        report.write('\t<link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css">\n')
-        report.write('\t<link rel="stylesheet" href="css/simplePagination.css">\n')
-        report.write('\t<link rel="stylesheet" href="css/dynamic.css" />\n')
-        report.write('\t<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/jquery.tablesorter.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/jquery.simplePagination.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/persist-min.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
-        report.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
+        report.write('\t<link rel="stylesheet" href="css/bootstrap.css">\n')
+        report.write('\t<link rel="stylesheet" href="css/bootstrap-responsive.css">\n')
+        if self.configs['report']['dynamic']:
+            report.write('\t<link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css">\n')
+            report.write('\t<link rel="stylesheet" href="css/simplePagination.css">\n')
+            report.write('\t<link rel="stylesheet" href="css/dynamic.css" />\n')
+            report.write('\t<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>\n')
+            report.write('\t<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>\n')
+            report.write('\t<script type="text/javascript" src="js/jquery.tablesorter.js"></script>\n')
+            report.write('\t<script type="text/javascript" src="js/jquery.simplePagination.js"></script>\n')
+            report.write('\t<script type="text/javascript" src="js/persist-min.js"></script>\n')
+            report.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
+            report.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
         report.write('</head>\n')
         # html body
         report.write('<body>\n')
@@ -321,7 +324,7 @@ class ReportGenerator(object):
         report.write('\t\t- <a href=\"statistics.html\">Statistics</a></li>\n')
         report.write('\t</p>\n')
         # page body
-        report.write('\t<table id="offers">\n')
+        report.write('\t<table id="offers" class="table table-condensed">\n')
         # table header
         report.write('\t\t<thead>\n')
         report.write('\t\t\t<tr id="lineHeaders">\n')
@@ -334,32 +337,35 @@ class ReportGenerator(object):
         report.write('\t\t\t\t<th>Salary</th>\n')
         report.write('\t\t\t\t<th>Source</th>\n')
         report.write('\t\t\t</tr>\n')
-        report.write('\t\t\t<tr id="lineFilters">\n')
-        report.write('\t\t\t\t<td class="pubdate"></td>\n')
-        report.write('\t\t\t\t<td class="type"></td>\n')
-        report.write('\t\t\t\t<td class="title"></td>\n')
-        report.write('\t\t\t\t<td class="company"></td>\n')
-        report.write('\t\t\t\t<td class="location"></td>\n')
-        report.write('\t\t\t\t<td class="contract"></td>\n')
-        report.write('\t\t\t\t<td class="salary"></td>\n')
-        report.write('\t\t\t\t<td class="source"></td>\n')
-        report.write('\t\t\t</tr>\n')
+        if self.configs['report']['dynamic']:
+            report.write('\t\t\t<tr id="lineFilters">\n')
+            report.write('\t\t\t\t<td class="pubdate"></td>\n')
+            report.write('\t\t\t\t<td class="type"></td>\n')
+            report.write('\t\t\t\t<td class="title"></td>\n')
+            report.write('\t\t\t\t<td class="company"></td>\n')
+            report.write('\t\t\t\t<td class="location"></td>\n')
+            report.write('\t\t\t\t<td class="contract"></td>\n')
+            report.write('\t\t\t\t<td class="salary"></td>\n')
+            report.write('\t\t\t\t<td class="source"></td>\n')
+            report.write('\t\t\t</tr>\n')
         report.write('\t\t</thead>\n')
         # table body
-        report.write('\t\t<tbody>\n')
+        report.write('\t\t<tbody>\n')            
 
         s_date = ''
-
         for row in data:
             offer = Offer()
             offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14])
 
-            if (s_date != offer.date_pub.strftime('%Y-%m-%d')):
+            if (not self.configs['report']['dynamic'] and s_date != offer.date_pub.strftime('%Y-%m-%d')):
                 s_date = offer.date_pub.strftime('%Y-%m-%d')
+                report.write('\t\t\t<tr class="error">\n');
+                report.write('\t\t\t\t<td colspan="8" />\n')
+                report.write('\t\t\t</tr>\n')
 
             report.write('\t\t\t<tr>\n')
             report.write('\t\t\t\t<td class="pubdate">' + offer.date_pub.strftime('%Y-%m-%d') + '</td>\n')
-            report.write('\t\t\t\t<td class="type">noSSII</td>\n')
+            report.write('\t\t\t\t<td class="type"><span class="label label-success">noSSII</span></td>\n')
             report.write('\t\t\t\t<td class="title"><a href="'+offer.url+'">' + offer.title + '</a></td>\n')
             report.write('\t\t\t\t<td class="company">' + offer.company + '</td>\n')
             # Location

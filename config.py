@@ -17,6 +17,10 @@ configs = {
         'wwwdir': './www',
         'database': 'jobs.db',
     },
+    'report': {
+        # dynamic: true/false
+        'dynamic': False,
+    },
     'PoleEmploi': {
         'feeds': [
             {
