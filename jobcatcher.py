@@ -303,24 +303,21 @@ class ReportGenerator(object):
         conn = lite.connect(self.configs['global']['database'])
         cursor = conn.cursor()
         data = None
-        count_full = 0
-        count_filtered = 0
+
+        sql_filtered = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
+        sql_full = "SELECT * FROM offers ORDER BY date_pub DESC"
+        cursor.execute(sql_filtered)
+        data_filtered = cursor.fetchall()
+        cursor.execute(sql_full)
+        data_full = cursor.fetchall()
+        count_filtered = len(data_filtered)
+        count_full = len(data_full)
         if (filtered):
-            # Filtered query
-            sql_filtered = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
-            cursor.execute(sql_filtered)
-            data = cursor.fetchall()
-            count_filtered = len(data)
-
             report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
+            data = data_filtered
         else:
-            # Full query
-            sql_full = "SELECT * FROM offers ORDER BY date_pub DESC"
-            cursor.execute(sql_full)
-            data = cursor.fetchall()
-            count_full = len(data)
-
             report = open(os.path.join(html_dir, 'report_full.html'), 'w')
+            data = data_full
 
         self.header(report)
 
