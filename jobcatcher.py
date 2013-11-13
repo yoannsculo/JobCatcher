@@ -358,7 +358,7 @@ class ReportGenerator(object):
             report.write('\t\t\t</tr>\n')
         report.write('\t\t</thead>\n')
         # table body
-        report.write('\t\t<tbody>\n')            
+        report.write('\t\t<tbody>\n')
 
         s_date = ''
         for row in data:
