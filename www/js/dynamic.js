@@ -1143,6 +1143,8 @@ var LocationFilter = AbstractFilter.extend({
      * \brief Constructor.
      */
     init: function(classname, master_filter) {
+        console.debug("LocationFilter: temporarly removed until improvment."); // FIXME
+        return;
         this._super(classname, master_filter);
         var self = this;
         /* input type text */
@@ -1222,7 +1224,7 @@ var LocationFilter = AbstractFilter.extend({
      * \brief Applies the filters, calling \ref MasterFilter.apply().
      */
     apply: function() {
-        this._super(this);
+        //this._super(this); FIXME LocationFilter: temporarly removed until improvment.
     },
     /**
      * \property classname()
@@ -1234,6 +1236,7 @@ var LocationFilter = AbstractFilter.extend({
      * \brief Attaches the DOM elements the given \a $parent.
      */
     attach: function($parent) {
+        return false; // FIXME LocationFilter: temporarly removed until improvment.
         var filter = this;
         $.each(priv_elements, function(key, val) {
             $parent.append(val);
@@ -1254,6 +1257,7 @@ var LocationFilter = AbstractFilter.extend({
      * function manually hide the row.
      */
     test: function(value)  { // FIXME: precalcul all distances on refresh click
+        return true; // FIXME LocationFilter: temporarly removed until improvment.
         var self = this;
         var max_distance = 35000;
         var location = $("#filter_location_text").val();
