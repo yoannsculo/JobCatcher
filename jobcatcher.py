@@ -242,7 +242,11 @@ class ReportGenerator(object):
         stat.write("<style>table{font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>")
         stat.write("<meta http-equiv=\"Content-type\" content=\"text/html\"; charset=\"utf-8\"></head>")
         stat.write("<body>")
-
+        stat.write('\t<ul class="nav nav-pills nav-justified">\n')
+        stat.write('\t\t<li><a href="report_full.html">All offers</a></li>\n')
+        stat.write('\t\t<li><a href="report_filtered.html">Filtered offers</a></li>\n')
+        stat.write('\t\t<li class="active"><a href="statistics.html">Statistics</a></li>\n')
+        stat.write('\t</ul>\n')
         stat.write("<table class=\"table table-condensed\">")
         stat.write("<thead>")
         stat.write("<tr>")
