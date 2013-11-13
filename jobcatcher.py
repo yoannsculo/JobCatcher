@@ -384,7 +384,6 @@ class ReportGenerator(object):
                 report.write(self.box('', offer.contract))
                 report.write(duration)
             report.write('</td>\n')
-            report.write('\t\t\t\t<td class="contract">' + offer.contract +'</td>\n')
             report.write('\t\t\t\t<td class="salary">' + offer.salary + '</td>\n')
             report.write('\t\t\t\t<td class="source">' + offer.src + '</td>\n')
             report.write('\t\t\t</tr>\n')
