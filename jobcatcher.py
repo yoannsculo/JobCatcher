@@ -329,7 +329,7 @@ class ReportGenerator(object):
             report.write('\t\t<li class="%s"><a href="report_filtered.html">%s filtered offers (%.2f%%)</a></li>\n' %("active" if filtered else "", count_filtered, 100*(float)(count_filtered)/count_full))
             report.write('\t\t<li><a href="statistics.html">Statistics</a></li>\n')
             report.write('\t\t<li class="disabled"><a href="#">%s blacklisted offers (%.2f%%)</a></li>\n' %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full))
-            report.write('\t</p>\n')
+            report.write('\t</ul>\n')
 
         # page body
         report.write('\t<table id="offers" class="table table-condensed">\n')
