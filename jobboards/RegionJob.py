@@ -138,7 +138,6 @@ class JBRegionJob(JobBoard):
         m = re.search('(.*?) - ([0-9]+ .*)', self.datas['contract'])
         if m:
             self.datas['contract'] = m.group(1).strip()
-            print self.datas['contract']
             text = m.group(2).strip()
             m = re.search('([0-9]+) (.*)', text)
             if m:
