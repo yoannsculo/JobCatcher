@@ -317,12 +317,12 @@ class ReportGenerator(object):
         # html body
         report.write('<body>\n')
         # page header
-        report.write('\t<p id="header">\n')
-        report.write('\t\t<a href=\"report_filtered.html\">%s filtered offers (%.2f%%)</a></li>\n' %(count_filtered, 100*(float)(count_filtered)/count_full))
-        report.write('\t\t- %s blacklisted offers (%.2f%%)</li>\n' %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full))
-        report.write('\t\t- <a href=\"report_full.html\">All %s offers</a></li>\n' %(count_full))
-        report.write('\t\t- <a href=\"statistics.html\">Statistics</a></li>\n')
-        report.write('\t</p>\n')
+        report.write('\t<ul class="nav nav-pills nav-justified">\n')
+        report.write('\t\t<li class="%s"><a href="report_full.html">All %s offers</a></li>\n' %("" if filtered else "active", count_full))
+        report.write('\t\t<li class="%s"><a href="report_filtered.html">%s filtered offers (%.2f%%)</a></li>\n' %("active" if filtered else "", count_filtered, 100*(float)(count_filtered)/count_full))
+        report.write('\t\t<li><a href="statistics.html">Statistics</a></li>\n')
+        report.write('\t\t<li class="disabled"><a href="#">%s blacklisted offers (%.2f%%)</a></li>\n' %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full))
+        report.write('\t</ul>\n')
         # page body
         report.write('\t<table id="offers" class="table table-condensed">\n')
         # table header
