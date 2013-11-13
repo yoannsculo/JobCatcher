@@ -1,3 +1,6 @@
+![Unit test result](https://api.travis-ci.org/badele/JobCatcher.png)
+
+
 # JobCatcher
 
 ![JobCatcher Screenshot](https://raw.github.com/yoannsculo/JobCatcher/master/screenshots/jobcatcher.png)
@@ -27,13 +30,18 @@ show me mistakes I could have made or improvements I could do.
 
 ## Usage (mainly development options for now)
 
-	./jobcatcher.py -c # To create database
-	./jobcatcher.py -b # To load my blacklist into the DB
-	./jobcatcher.py -f # To flush and update the blacklist
-	./jobcatcher.py -s # To fetch last offers
-	./jobcatcher.py -r # To generate reports
-	./jobcatcher.py -u # To fetch an offer only with its url
-	./jobcatcher.py -a # Sync the blacklist, fetch the offers and generates reports.
+    --all              sync the blacklist, fetch the offers and generates reports.
+    --feeds            download the all feeds in the config
+    --feed=JOBBOARD    download only the feed from JOBBOARD in the config
+    --pages            download the all pages in the config
+    --page=JOBBOARD    download only the pages from JOBBOARD in the config
+    --inserts          inserts all pages to offers
+    --insert=JOBBOARD  insert JOBBOARD pages to offers
+    --moves            move datas to offer
+    --move=JOBBOARD    move JOBBOARD datas to offer
+    --clean=JOBBOARD   clean offers from JOBBOARD source
+    --report           generate a full report
+    --version          output version information and exit
 
 Reports are generated into the local "www" directory.
 
@@ -42,12 +50,22 @@ soon.
 
 # List of supported Job Boards
 
+![Unit test result](https://api.travis-ci.org/badele/JobCatcher.png)
+
 - Apec.fr (France)
-- Progressive Recruitment (France)
-- RegionsJob - RegionCentre (France)
-- RegionsJob - RegionOuest (France)
-- RegionsJob - RegionSudOuest (France)
 - Cadreonline (France)
+- Eures (Europe)
+- PoleEmploi (France)
+- Progressive Recruitment (France)
+- RegionsJob
+ - CentreJob (France)
+ - NordJob (France)
+ - PacaJob (France)
+ - RhoneJob (France)
+ - EstJob (France)
+ - OuestJob (France)
+ - SudOuestJob (France)
+ - ParisJob (France)
 
 ### TODO
 
@@ -56,4 +74,46 @@ soon.
 - L'eXpress-Board (France)
 - Remixjobs.com (France)
 
-Help me to add new job boards to JobCatcher ! :)
+## Installation
+
+### Debian, Ubuntu
+
+    # Install a packages
+    apt-get update
+    apt-get install sqlite3 python-pip git 
+    pip install virtualenv virtualenvwrapper
+
+
+    # Configure virtualenvwrapper
+    cat << EOF >> ~/.bashrc
+    export WORKON_HOME=$HOME/.virtualenvs
+    export PROJECT_HOME=$HOME/Devel
+    source /usr/local/bin/virtualenvwrapper.sh
+    EOF
+    source ~/.bashrc
+    
+    # Prepare jobcatcher environment
+    mkvirtualenv --no-site-packages -p /usr/bin/python2.7 jobcatcher
+    add2virtualenv /opt/JobCatcher
+
+    # Install jobcatcher project
+    cd opt
+    git clone -b unstable https://github.com/badele/JobCatcher.git
+    cd JobCatcher
+    pip install -r requirements.txt
+
+## Utilisation
+
+Modify the config.py and execute
+
+    workon jobcatcher
+    python jobcatcher.py --all
+
+
+Help us to add new job boards to JobCatcher ! :)
+
+## Contributors
+
+- Yoann Sculo - [www.yoannsculo.fr](http://www.yoannsculo.fr)
+- Bruno Adelé - [bruno.adele.im](http://bruno.adele.im)
+- Yankel Scialom - [github](https://github.com/yscialom)

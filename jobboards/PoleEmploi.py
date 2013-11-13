@@ -2,16 +2,13 @@
 # -*- coding: utf-8 -*-
 
 __authors__ = [
-    'Yoann Sculo <yoann.sculo@gmail.com>',
     'Bruno Adelé <bruno@adele.im>',
-    'Yankel Scialom <yankel.scialom@mail.com>'
 ]
 __license__ = 'GPLv2'
 __version__ = '0.1'
 
 # System
 import re
-import sys
 import time
 import glob
 from datetime import datetime
@@ -25,12 +22,13 @@ import utilities
 from jobcatcher import JobBoard
 from jobcatcher import Offer
 
-class JBApec(JobBoard):
+
+class JBPoleEmploi(JobBoard):
 
     def __init__(self, configs=[], interval=1200):
-        self.name = "Apec"
-        super(JBApec, self).__init__(configs, interval)
-        self.encoding = {'feed': 'utf-8', 'page': 'iso-8859-1'}
+        self.name = "PoleEmploi"
+        super(JBPoleEmploi, self).__init__(configs, interval)
+        self.encoding = {'feed': 'utf-8', 'page': 'utf-8'}
 
     def getUrls(self):
         """Get Urls offers from feed"""
@@ -41,93 +39,93 @@ class JBApec(JobBoard):
         for feed in glob.glob(searchdir):
             # Load the HTML feed
             fd = open(feed, 'rb')
-            html = fd.read()
+            html = fd.read().decode(self.encoding['feed'])
             fd.close()
 
             # Search result
             res = re.finditer(
-                r'<item>(.*?)</item>',
+                r'<tr.*?>(.*?)</tr>',
                 html,
                 flags=re.MULTILINE | re.DOTALL
             )
             for r in res:
                 # Check if URL is valid
-                m = re.search(r'<link>(http://cadres\.apec\.fr/offres-emploi-cadres/.*?)</link>', r.group(1))
+                m = re.search(r'href="\./resultats\.tableauresultatrechercheoffre:detailOffre/(.*?)"', r.group(1))
                 if m:
-                    urls.append(m.group(1))
+                    url = "http://candidat.pole-emploi.fr/candidat/rechercheoffres/detail/%s" % m.group(1)
+                    urls.append(url)
 
         return urls
 
-    def _extractItem(self, itemname, soup):
+    def _regexExtract(self, text, soup):
         """Extract a field in html page"""
 
         html = unicode.join(u'\n', map(unicode, soup))
-
+        regex='<div class="label"><span>%s</span></div>.*?<div class="value"><span.*?>(.*?)</span></div>' % text
         res = None
-        regex = '<th.*?>%s :.*?</th>.*?<td.*?>(.*?)</td>' % itemname
-
         m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
         if m:
             res = utilities.htmltotext(m.group(1)).strip()
 
         return res
-
-    def _extractCompagny(self, soup):
-        """Extract a field in html page"""
-
-        html = unicode.join(u'\n', map(unicode, soup))
-
-        res = None
-        regex = u'<th valign="top">Société :</th>.*?<td>.*?<br />(.*?)<br />.*?</td>'
-
-        m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
-        if m:
-            res = utilities.htmltotext(m.group(1)).strip()
-
-        return res
-
 
     def analyzePage(self, url, html):
         """Analyze page and extract datas"""
 
         soup = BeautifulSoup(html, fromEncoding=self.encoding['page'])
-        item = soup.body.find('div', attrs={'class': 'boxMain boxOffres box'})
+        item = soup.body.find('div', attrs={'class': 'block-content'})
 
         if not item:
-            content = item.find('p')
-            if (content.text == u'L\'offre que vous souhaitez afficher n\'est plus disponible.Cliquer sur le bouton ci-dessous pour revenir à l\'onglet Mes Offres'):
-                return 1
+            return 1
 
         # Title
-        h1 = soup.body.find('h1', attrs={'class': 'detailOffre'})
-        if not item:
+        h4 = item.find('h4', attrs={'itemprop': 'title'})
+        if not h4:
             return 1
 
-        self.datas['title'] = utilities.htmltotext(h1.text).replace('Détail de l\'offre : ', '').strip()
-
-        # Refs
-        table = item.find('table', attrs={'class': 'noFieldsTable'})
-        if not table:
-            return 1
-
+        # Title & Url
+        self.datas['title'] = utilities.htmltotext(h4.text).strip()
         self.datas['url'] = url
-        self.datas['ref'] = self._extractItem(u"Référence Apec", table)
-        self.datas['refsoc'] = self._extractItem(u"Référence société", table)
 
-        # Dates
+        # Ref
+        li = item.find('li', attrs={'class': 'primary'})
+        self.datas['ref'] = self._regexExtract(u'Numéro de l\'offre', li)
+
+        li = item.find('li', attrs={'class': 'secondary'})
+        if not li:
+            return 1
+
+        # Date
         self.datas['date_add'] = int(time.time())
         self.datas['date_pub'] = datetime.strptime(
-            self._extractItem("Date de publication", table),
+            self._regexExtract(u'Offre actualisée le', li),
             "%d/%m/%Y").strftime('%s')
 
         # Job informations
-        self.datas['location'] = self._extractItem("Lieu", table)
-        self.datas['company'] = self._extractCompagny(table)
-        self.datas['contract'] = self._extractItem("Nombre de postes", table)
-        # Salary
-        self.datas['salary'] = self._extractItem("Salaire", table)
-        # Experiences
-        self.datas['experience'] = self._extractItem("Expérience", table)
+        self.datas['contract'] = self._regexExtract(
+            u'Type de contrat', item
+        )
+        self.datas['salary'] = self._regexExtract(
+            u'Salaire indicatif', item
+        )
+
+        # Location
+        li = item.find('li', attrs={'itemprop': 'addressRegion'})
+        if not li:
+            return 1
+
+        self.datas['department'] = None
+        self.datas['location'] = li.text.strip()
+        m = re.search('([0-9]+) - (.*)', self.datas['location'])
+        if m:
+            self.datas['department'] = m.group(1).strip()
+            self.datas['location'] = m.group(2).strip()
+
+        # Compagny
+        p = item.find('p', attrs={'itemprop': 'hiringOrganization'})
+        if not p:
+            return 1
+        self.datas['company'] = p.text.strip()
 
         # Insert to jobboard table
         self.insertToJBTable()
@@ -143,7 +141,6 @@ class JBApec(JobBoard):
         # create a table
         cursor.execute("""CREATE TABLE jb_%s( \
                        ref TEXT, \
-                       refsoc TEXT, \
                        url TEXT, \
                        date_pub INTEGER, \
                        date_add INTEGER, \
@@ -151,8 +148,8 @@ class JBApec(JobBoard):
                        company TEXT, \
                        contract TEXT, \
                        location TEXT, \
+                       department TEXT, \
                        salary TEXT, \
-                       experience TEXT, \
                        PRIMARY KEY(ref))""" % self.name)
 
     def insertToJBTable(self):
@@ -160,10 +157,9 @@ class JBApec(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?)" % 
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
                                self.datas['ref'],
-                               self.datas['refsoc'],
                                self.datas['url'],
                                self.datas['date_pub'],
                                self.datas['date_add'],
@@ -171,10 +167,10 @@ class JBApec(JobBoard):
                                self.datas['company'],
                                self.datas['contract'],
                                self.datas['location'],
+                               self.datas['department'],
                                self.datas['salary'],
-                               self.datas['experience'],
                            )
-                       )
+            )
 
             conn.commit()
         except lite.IntegrityError:
@@ -197,6 +193,7 @@ class JBApec(JobBoard):
         o.company = data['company']
         o.contract = data['contract']
         o.location = data['location']
+        o.department = data['department']
         o.salary = data['salary']
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']

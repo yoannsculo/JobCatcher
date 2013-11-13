@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__authors__ = 'Jonathan Courtoux <j.courtoux@gmail.com>'
+__authors__ = [
+    'Jonathan Courtoux <j.courtoux@gmail.com>',
+    'Bruno Adelé <bruno@adele.im>'
+]
 __copyright__ = 'Copyright (C) 2013 jonathan courtoux'
 __license__ = 'GPLv2'
 __version__ = '0.1'
@@ -14,6 +17,7 @@ from jobcatcher import JobCatcher
 from jobcatcher import Jobboard
 from jobcatcher import Offer
 from jobcatcher import Location
+from config import configs
 
 from xml.dom import minidom
 import datetime
@@ -47,14 +51,14 @@ class Cadresonline(Jobboard):
             link = elt.getElementsByTagName('link')[0].firstChild.data.split("?")[0]
             pubDate = elt.getElementsByTagName('pubDate')[0].firstChild.data
 
-        if (not os.path.isfile(os.path.join(self.processingDir, link.split('/')[-1]))):
+            if (not os.path.isfile(os.path.join(self.processingDir, link.split('/')[-1]))):
                 print "Downloading %s" % (link)
                 utilities.download_file(link, self.processingDir)
 
     def fetch(self):
         print "Fetching " + self.name
 
-        feed_list = ['http://www.cadresonline.com/resultat-emploi/feed.rss?flux=1&kw=developpeur&kt=1&jc=5t.0.1.2.3.4.5.6.7-10t.0.1.2.3.4.5.6.7.8&ct=0&dt=1374746615'] # Développeur
+        feed_list = configs['cadresonline']['feeds']
         if (not os.path.isdir(self.processingDir)):
                 os.makedirs(self.processingDir)
 
@@ -97,7 +101,7 @@ class CadreonlineOffer(Offer):
         soup = BeautifulSoup(html, fromEncoding="UTF-8")
 
         # Offer still available ?
-        res = soup.body.find('div', attrs={'class':'boxSingleMain box'})
+        res = soup.body.find('div', attrs={'id':'job_offer'})
         if (res != None):
             content = res.find('p')
             if (content.text == u'L\'offre que vous souhaitez afficher n\'est plus disponible.Cliquer sur le bouton c\
@@ -105,34 +109,55 @@ class CadreonlineOffer(Offer):
                 return 1
 
         # Title
-        res = soup.body.find('div', attrs={'class':'boxMain boxOffres box'})
-        if (res == None):
+        res = soup.body.find("div", attrs={'id': 'ariane'})
+        if not res:
             return -1
-        res = res.find("h2", attrs={'class':'borderBottom0'})
+        res = res.find('strong')
         self.title = HTMLParser().unescape(res.text)
-        matchObj = re.match( ur'Offre d\'emploi (.*)', self.title)
-        if matchObj:
-            self.title = matchObj.group(1)
 
         # Other information
-        res = soup.body.find('div', attrs={'class':'content1_9ImbLeft'})
-        res = res.findAll("tr")
+        res = soup.body.find("ul", attrs={'class': 'resume'})
+        if not res:
+            return -1
+
+        res = res.findAll("li")
+        if not res:
+            return -1
 
         for elt in res:
-            th = elt.find('th')
-            td = elt.find('td')
+            # Contract
+            m = re.match(ur'^Contrat.* :(.*)', elt.text)
+            if m:
+                self.contract = m.group(1)
+                self.cleanContract()
 
-            if (th.text == u'Salaire :'):
-                self.cleanSalary()
+            # Company
+            m = re.match(ur'^Soci.* :(.*)', elt.text)  # TODO fix a UTF problem
+            if m:
+                self.company = m.group(1)
 
-            if (th.text == u'Expérience :'):
-                self.experience = HTMLParser().unescape(td.text)
+            # Location
+            m = re.match(ur'^Localisation.* :(.*)', elt.text)
+            if m:
+                self.location = m.group(1)
+
+            # Reference
+            m = re.match(ur'^R.*f.*ence.* :(.*)', elt.text)
+            if m:
+                self.ref = m.group(1)
+
+            # Reference
+            m = re.match(ur'^Publi.* le :(.*)', elt.text)
+            if m:
+                self.date_pub = datetime.datetime.strptime(m.group(1), "%d/%m/%Y").strftime('%s')
+                print self.date_pub
+
 
         # Content
-        res = soup.body.find('div', attrs={'class':'contentWithDashedBorderTop marginTop boxContent'})
-        res = res.find('div', attrs={'class':'boxContentInside'})
-        self.content = HTMLParser().unescape(res.text);
+        # res = soup.body.find('div', attrs={'class':'contentWithDashedBorderTop marginTop boxContent'})
+        # res = res.find('div', attrs={'class':'boxContentInside'})
+        # self.content = HTMLParser().unescape(res.text);
 
-        self.url = "http://cadresonline.fr/" + os.path.basename(filename)
+        self.url = "http://cadresonline.com/" + os.path.basename(filename)
 
         return 0

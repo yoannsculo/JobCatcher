@@ -1,31 +1,132 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__authors__ = [
+    'Yoann Sculo <yoann.sculo@gmail.com>',
+    'Bruno Adelé <bruno@adele.im>',
+]
+__copyright__ = 'Copyright (C) 2013 Yoann Sculo'
+__license__ = 'GPLv2'
+__version__ = '1.0'
+
+# System
 import os
 import re
-import urllib2 as urllib
-from xml.dom import minidom
+import time
+import glob
+import hashlib
+import importlib
+import html2text
 import sqlite3 as lite
-import datetime
+import requests
 
-from jobcatcher import Offer
-from jobcatcher import JobCatcher
 
-def download_file(url, path="./"):
-    filename = os.path.join(path, url.split('/')[-1])
-    file = urllib.urlopen(url, filename);
-    out = open(filename,'wb') #iso-8859-1
-    #encoding=file.headers #['content-type'].split('charset=')[-1]
-    #print encoding
-    #ucontent = unicode(content, encoding)
-    # Python sees "Content-Type: text/html" for Apec pages, no charset information...
-    # Let's force encoding
-    out.write(unicode(file.read(), 'iso-8859-1'))
+from collections import namedtuple
+PageResult = namedtuple('PageResult', ['url', 'page'])
+
+
+def htmltotext(text):
+    """Fix html2text"""
+    html2text.BODY_WIDTH = 0
+    return html2text.html2text(text)
+
+
+def md5(datas):
+    """Calc md5sum string datas"""
+    return hashlib.md5(datas).hexdigest()
+
+
+def getModificationFile(filename):
+    """ Get a modification file (in timestamp)"""
+    t = None
+
+    try:
+        t = os.path.getmtime(filename)
+    except:
+        pass
+
+    return t
+
+
+def getNow():
+    """Get now timestamp"""
+    return time.time()
+
+
+def openPage(filename):
+    fd = open(filename, 'rb')
+    url = fd.readline()
+    html = fd.read()
+    fd.close()
+
+    return PageResult(url=url, page=html)
+
+
+def downloadFile(url, datas, filename, age=60, forcedownload=False):
+    headers = {
+        'User-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:24.0) Gecko/20100101 Firefox/24.0',
+        'Referer': 'http://candidat.pole-emploi.fr/candidat/rechercheoffres/avancee',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        #'Content-Type': 'application/json',
+    }
+
+    # Check if i must download file
+    if os.path.isfile(filename):
+        now = getNow()
+        t = getModificationFile(filename)
+        if not forcedownload and t + (age) > now:
+            return
+
+    print "Download %s" % url
+    destdir = os.path.dirname(filename)
+    if (not os.path.isdir(destdir)):
+        os.makedirs(destdir)
+
+    if datas:
+        r = requests.post(url, data=datas, headers=headers)
+    else:
+        r = requests.get(url)
+    out = open(filename, 'wb')
+    out.write("%s\n" % url)
+    out.write(r.content)
     out.close()
 
-def db_create():
+
+def removeFiles(rep, patern):
+    filelist = glob.glob("%s/%s" % (rep, patern))
+
+    for f in filelist:
+        os.remove(f)
+
+
+def loadJobBoard(jobboardname, configs):
+    """Load Jobboard plugin"""
+    module = importlib.import_module(
+        'jobboards.%s' % jobboardname
+    )
+    moduleClass = getattr(module, "JB%s" % jobboardname)
+    return moduleClass(configs)
+
+
+def db_checkandcreate(configs):
+    """Check and create offers table"""
+    if not db_istableexists(configs, 'offers'):
+        db_create(configs)
+
+
+def db_istableexists(configs, tablename):
+    """Check if tablename exist"""
+    conn = lite.connect(configs['global']['database'])
+    cursor = conn.cursor()
+    sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='%s';" % tablename
+    cursor.execute(sql)
+    return len(cursor.fetchall()) == 1
+
+
+def db_create(configs):
+    """Create the offers table"""
     conn = None
-    conn = lite.connect("jobs.db")
+    conn = lite.connect(configs['global']['database'])
     cursor = conn.cursor()
 
     # create a table
@@ -37,7 +138,9 @@ def db_create():
                         title TEXT, \
                         company TEXT, \
                         contract TEXT, \
+                        duration INTEGER, \
                         location TEXT, \
+                        department TEXT, \
                         lat TEXT, \
                         lon TEXT, \
                         salary TEXT, \
@@ -46,15 +149,34 @@ def db_create():
                         PRIMARY KEY(source, ref))""")
     cursor.execute("""CREATE TABLE blacklist(company TEXT, PRIMARY KEY(company))""")
 
-def db_add_offer(offer):
-    conn = lite.connect("jobs.db")
+
+def db_delete_jobboard_datas(configs, jobboardname):
+    """Delete jobboard datas from offers table"""
+    conn = None
+    conn = lite.connect(configs['global']['database'])
+    cursor = conn.cursor()
+
+    # create a table
+    sql = "delete from offers where source='%s'" % jobboardname
+    cursor.execute("delete from offers where source='%s'" % jobboardname)
+    conn.commit()
+
+
+def db_add_offer(configs, offer):
+    conn = lite.connect(configs['global']['database'])
     try:
         conn.text_factory = str
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (offer.src, offer.ref,
-                 offer.date_pub, offer.date_add,
-                 offer.title, offer.company, offer.contract, offer.location, offer.lat, offer.lon, offer.salary, offer.url, offer.content))
+        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                       (
+                           offer.src, offer.ref,
+                           offer.date_pub, offer.date_add,
+                           offer.title, offer.company, offer.contract,
+                           offer.duration, offer.location, offer.department,
+                           offer.lat, offer.lon, offer.salary,
+                           offer.url, offer.content
+                       )
+        )
         conn.commit()
         return 0
 
@@ -73,34 +195,28 @@ def db_add_offer(offer):
         if conn:
             conn.close()
 
-def blacklist_flush():
-    conn = lite.connect("jobs.db")
+
+def blacklist_flush(configs):
+    conn = lite.connect(configs['global']['database'])
     cursor = conn.cursor()
     sql = "DELETE FROM blacklist"
     cursor.execute(sql)
     conn.commit()
     conn.close()
 
-def blocklist_load():
-    url = "http://raw.github.com/yoannsculo/emploi/master/ssii/ssii_extended.csv"
-    filename = url.split('/')[-1]
-    file = urllib.urlopen(url, filename);
+
+def blocklist_load(configs):
+    fp = open('blacklist_company.txt', 'r')
     list = []
-    for line in file:
+    for line in fp:
         company = unicode(line.rstrip('\n'))
         list.append([company])
 
-    # fp = open('/home/yoann/dev/emploi/ssii/ssii_extended.csv','r') #iso-8859-1
-    # list = []
-    # for line in fp:
-    #     line = unicode(line.rstrip('\n'))
-    #     list.append([line])
-
     try:
-        conn = lite.connect("jobs.db")
+        conn = lite.connect(configs['global']['database'])
         conn.text_factory = str
         cursor = conn.cursor()
-        res = cursor.executemany("INSERT INTO blacklist VALUES(?)", list)
+        cursor.executemany("INSERT INTO blacklist VALUES(?)", list)
         conn.commit()
 
     except lite.Error, e:
@@ -110,215 +226,69 @@ def blocklist_load():
         if conn:
             conn.close()
 
-def statistics_generate():
-    html_dir = "./www"
-
-    conn = lite.connect("jobs.db")
-    cursor = conn.cursor()
-
-    stat = open(os.path.join(html_dir, 'statistics.html'), 'w')
-    stat.write("<html><head>")
-    stat.write("<link href=\"./bootstrap.css\" rel=\"stylesheet\">")
-    stat.write("<link href=\"./bootstrap-responsive.css\" rel=\"stylesheet\">")
-    stat.write("<style>table{font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>")
-    stat.write("<meta http-equiv=\"Content-type\" content=\"text/html\"; charset=\"utf-8\"></head>")
-    stat.write("<body>")
-
-    stat.write("<table class=\"table table-condensed\">")
-    stat.write("<thead>")
-    stat.write("<tr>")
-    stat.write("<th>JobBoard</th>")
-    stat.write("<th>Total Offers</th>")
-    stat.write("<th>Offers not from blacklist</th>")
-    stat.write("<th>Offers from blacklist</th>")
-    stat.write("</tr>")
-    stat.write("</thead>")
-
-    jb = JobCatcher()
-    jb.load_jobBoards()
-    for item in jb.jobBoardList:
-        data = item.fetchAllOffersFromDB()
-        stat.write("<tr>")
-        stat.write("<td><a href=\"%s\">%s</a></td>" %(item.url, item.name))
-        stat.write("<td>%s</td>" %(len(data)))
-        stat.write("<td></td>")
-        stat.write("<td></td>")
-        stat.write("</tr>")
-
-    stat.write("</table>")
-    stat.write("</html>")
-    stat.close()
-
-def report_generate(filtered=True):
-    html_dir = "./www"
-
-    conn = lite.connect("jobs.db")
-    cursor = conn.cursor()
-
-    sql_filtered = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
-    sql_full = "SELECT * FROM offers ORDER BY date_pub DESC"
-
-    cursor.execute(sql_filtered)
-    data_filtered = cursor.fetchall()
-    count_filtered = len(data_filtered)
-
-    cursor.execute(sql_full)
-    data_full = cursor.fetchall()
-    count_full = len(data_full)
-
-    #sql = "SELECT * FROM offers WHERE company IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
-
-    # sql = "SELECT count(*)FROM offers"
-    # cursor.execute(sql)
-    # count = cursor.fetchone()[0]
-
-    if (filtered):
-        report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
-        data = data_filtered
-    else:
-        report = open(os.path.join(html_dir, 'report_full.html'), 'w')
-        data = data_full
-
-    report.write('<!doctype html>\n')
-    report.write('<html>\n')
-    # html header
-    report.write('<head>\n')
-    report.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
-    report.write('\t<link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css">\n')
-    report.write('\t<link rel="stylesheet" href="css/simplePagination.css">\n')
-    report.write('\t<link rel="stylesheet" href="css/dynamic.css" />\n')
-    report.write('\t<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>\n')
-    report.write('\t<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>\n')
-    report.write('\t<script type="text/javascript" src="js/jquery.tablesorter.js"></script>\n')
-    report.write('\t<script type="text/javascript" src="js/jquery.simplePagination.js"></script>\n')
-    report.write('\t<script type="text/javascript" src="js/persist-min.js"></script>\n')
-    report.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
-    report.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
-    report.write('</head>\n')
-    # html body
-    report.write('<body>\n')
-    # page header
-    report.write('\t<p id="header">\n')
-    report.write('\t\t<a href=\"report_filtered.html\">%s filtered offers (%.2f%%)</a></li>\n' %(count_filtered, 100*(float)(count_filtered)/count_full))
-    report.write('\t\t- %s blacklisted offers (%.2f%%)</li>\n' %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full))
-    report.write('\t\t- <a href=\"report_full.html\">All %s offers</a></li>\n' %(count_full))
-    report.write('\t\t- <a href=\"statistics.html\">Statistics</a></li>\n')
-    report.write('\t</p>\n')
-    # page body
-    report.write('\t<table id="offers">\n')
-    # table header
-    report.write('\t\t<thead>\n')
-    report.write('\t\t\t<tr id="lineHeaders">\n')
-    report.write('\t\t\t\t<th>Pubdate</th>\n')
-    report.write('\t\t\t\t<th>Type</th>\n')
-    report.write('\t\t\t\t<th>Title</th>\n')
-    report.write('\t\t\t\t<th>Company</th>\n')
-    report.write('\t\t\t\t<th>Location</th>\n')
-    report.write('\t\t\t\t<th>Contract</th>\n')
-    report.write('\t\t\t\t<th>Salary</th>\n')
-    report.write('\t\t\t\t<th>Source</th>\n')
-    report.write('\t\t\t</tr>\n')
-    report.write('\t\t\t<tr id="lineFilters">\n')
-    report.write('\t\t\t\t<td class="pubdate"></td>\n')
-    report.write('\t\t\t\t<td class="type"></td>\n')
-    report.write('\t\t\t\t<td class="title"></td>\n')
-    report.write('\t\t\t\t<td class="company"></td>\n')
-    report.write('\t\t\t\t<td class="location"></td>\n')
-    report.write('\t\t\t\t<td class="contract"></td>\n')
-    report.write('\t\t\t\t<td class="salary"></td>\n')
-    report.write('\t\t\t\t<td class="source"></td>\n')
-    report.write('\t\t\t</tr>\n')
-    report.write('\t\t</thead>\n')
-    # table body
-    report.write('\t\t<tbody>\n')
-
-    s_date = ''
-
-    for row in data:
-        offer = Offer()
-        offer.load(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12])
-
-        if (s_date != offer.date_pub.strftime('%Y-%m-%d')):
-            s_date = offer.date_pub.strftime('%Y-%m-%d')
-
-        report.write('\t\t\t<tr>\n')
-        report.write('\t\t\t\t<td class="pubdate">' + offer.date_pub.strftime('%Y-%m-%d') + '</td>\n')
-        report.write('\t\t\t\t<td class="type">noSSII</td>\n')
-        report.write('\t\t\t\t<td class="title"><a href="'+offer.url+'">' + offer.title + '</a></td>\n')
-        report.write('\t\t\t\t<td class="company">' + offer.company + '</td>\n')
-        report.write('\t\t\t\t<td class="location">' + offer.location + '</td>\n')
-        report.write('\t\t\t\t<td class="contract">' + offer.contract +'</td>\n')
-        report.write('\t\t\t\t<td class="salary">' + offer.salary + '</td>\n')
-        report.write('\t\t\t\t<td class="source">' + offer.src + '</td>\n')
-        report.write('\t\t\t</tr>\n')
-
-    # closure
-    report.write('\t</table>\n')
-    report.write('</body>\n')
-    report.write('</html>\n')
-    report.close()
-
 
 def filter_contract_fr(contract):
     contract = re.sub(ur'Perm', "CDI", contract)
     contract = re.sub(ur'[0-9]+ en (.*)', "\\1", contract, flags=re.DOTALL)
     contract = re.sub(ur'.*CDI.*', "CDI", contract, flags=re.DOTALL)
-    contract = re.sub(ur'.*CDD.*de (.*)', "CDD de \\1", contract, flags=re.DOTALL)
+    contract = re.sub(ur'Travail temporaire', "CDD", contract, flags=re.DOTALL)
+    contract = re.sub(
+        ur'.*CDD.*de (.*)',
+        "CDD de \\1",
+        contract, flags=re.DOTALL
+    )
+
+    # PoleEmploi
+    contract = re.sub(ur'.*Contrat à durée indéterminée.*', "CDI", contract, flags=re.DOTALL)
+    contract = re.sub(ur'.*Contrat à durée déterminée de.*', "CDD", contract, flags=re.DOTALL)
+    contract = re.sub(ur'.*Contrat travail saisonnier de.*', "CDD", contract, flags=re.DOTALL)
+
+
     return contract
+
 
 def filter_location_fr(location):
     location = re.sub(ur'IDF', "Île-de-France", location)
     return location
 
+
 def filter_salary_fr(salary):
     # TODO : use regexp once whe have a better view of possible combinations
     # TODO : use something similar as ^...$
+    # Selon profil
+    salary = re.sub(ur'.*selon profil.*', "NA", salary, flags=re.DOTALL | re.IGNORECASE)
     salary = re.sub(ur'Selon diplôme et expérience', "NA", salary)
-    salary = re.sub(ur'fixe + variable selon profil', "NA", salary)
-    salary = re.sub(ur'Fixe+Variable selon profil', "NA", salary)
-    salary = re.sub(ur'Fixe + Variable selon profil', "NA", salary)
-    salary = re.sub(ur'A définir selon profil', "NA", salary)
-    salary = re.sub(ur'A DEFINIR SELON PROFIL', "NA", salary)
-    salary = re.sub(ur'à défninir selon profil', "NA", salary)
-    salary = re.sub(ur'à définir selon profils', "NA", salary)
+    #salary = re.sub(ur'fixe + variable selon profil', "NA", salary)
+    #salary = re.sub(ur'Fixe+Variable selon profil', "NA", salary)
+    #salary = re.sub(ur'Fixe + Variable selon profil', "NA", salary)
+    #salary = re.sub(ur'A définir selon profil', "NA", salary)
+    #salary = re.sub(ur'A DEFINIR SELON PROFIL', "NA", salary)
+    #salary = re.sub(ur'à défninir selon profil', "NA", salary)
+    #salary = re.sub(ur'à définir selon profils', "NA", salary)
+    #salary = re.sub(ur'A négocier selon profil', "NA", salary)
+    #salary = re.sub(ur'A NEGOCIER SELON PROFIL', "NA", salary)
+    #salary = re.sub(ur'à négocier selon profil', "NA", salary)
+    #salary = re.sub(ur'à négocier selon le profil', "NA", salary)
+    #salary = re.sub(ur'à déterminer selon profil', "NA", salary)
     salary = re.sub(ur'à définir selon expérience', "NA", salary)
-    salary = re.sub(ur'A négocier selon profil', "NA", salary)
-    salary = re.sub(ur'A NEGOCIER SELON PROFIL', "NA", salary)
-    salary = re.sub(ur'à négocier selon profil', "NA", salary)
-    salary = re.sub(ur'à négocier selon le profil', "NA", salary)
-    salary = re.sub(ur'à déterminer selon profil', "NA", salary)
     salary = re.sub(ur'A négocier selon expérience', "NA", salary)
     salary = re.sub(ur'à négocier selon expérience', "NA", salary)
     salary = re.sub(ur'à négocier selon exp', "NA", salary)
     salary = re.sub(ur'à negocier K€ brut/an', "NA", salary)
-    salary = re.sub(ur'A voir selon profil', "NA", salary)
-    salary = re.sub(ur'Attractive et selon profil', "NA", salary)
+    #salary = re.sub(ur'A voir selon profil', "NA", salary)
+    #salary = re.sub(ur'Attractive et selon profil', "NA", salary)
     salary = re.sub(ur'De débutant à confirmé', "NA", salary)
     salary = re.sub(ur'En fonction du profil', "NA", salary)
     salary = re.sub(ur'en fonction du profil', "NA", salary)
     salary = re.sub(ur'En fonction de votre profil', "NA", salary)
     salary = re.sub(ur'Fonction profil et expérience', "NA", salary)
-    salary = re.sub(ur'Selon profil/expérience', "NA", salary)
-    salary = re.sub(ur'Selon profil et expériences', "NA", salary)
-    salary = re.sub(ur'Selon profil et expérience', "NA", salary)
-    salary = re.sub(ur'selon profil et expérience +', "NA", salary)
+    #salary = re.sub(ur'Selon profil/expérience', "NA", salary)
     salary = re.sub(ur'selon niveau d\'expérience', "NA", salary)
-    salary = re.sub(ur'selon profil et expérience', "NA", salary)
-    salary = re.sub(ur'selon profil et exp', "NA", salary)
-    salary = re.sub(ur'selon profil et avantages', "NA", salary)
     salary = re.sub(ur'Selon formation et/ou exp.', "NA", salary)
     salary = re.sub(ur'selon votre profil', "NA", salary)
     salary = re.sub(ur'Selon votre profil', "NA", salary)
     salary = re.sub(ur'selon le profil', "NA", salary)
     salary = re.sub(ur'Selon le profil', "NA", salary)
-    salary = re.sub(ur'Selon profils', "NA", salary)
-    salary = re.sub(ur'Selon profile', "NA", salary)
-    salary = re.sub(ur'Selon profil', "NA", salary)
-    salary = re.sub(ur'selon profil', "NA", salary)
-    salary = re.sub(ur'selon Profil', "NA", salary)
-    salary = re.sub(ur'Selon Profil', "NA", salary)
-    salary = re.sub(ur'SELON PROFILS', "NA", salary)
-    salary = re.sub(ur'SELON PROFIL', "NA", salary)
     salary = re.sub(ur'selo profil', "NA", salary)
     salary = re.sub(ur'Suivant profil', "NA", salary)
     salary = re.sub(ur'selon l\'expérience', "NA", salary)
@@ -398,5 +368,6 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'NC', "NA", salary)
     salary = re.sub(ur'nc', "NA", salary)
 
-    return salary
 
+
+    return salary

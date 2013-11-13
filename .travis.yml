@@ -1,0 +1,9 @@
+# Language to test
+language: python
+
+# Version to test
+python:
+- "2.7"
+
+# test
+script: python test.py

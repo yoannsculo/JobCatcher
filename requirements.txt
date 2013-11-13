@@ -1,0 +1,3 @@
+BeautifulSoup==3.2.1
+html2text==3.200.3
+requests==2.0.1
