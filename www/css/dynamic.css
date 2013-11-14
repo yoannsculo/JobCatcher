@@ -62,6 +62,7 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
     text-align: center;
 }
 thead .type {
+    text-align: center;
     vertical-align: middle;
 }
 #filter_type_pivot {
@@ -76,6 +77,7 @@ thead .type {
     min-width: 10em;
 }
 thead .title {
+    text-align: center;
     vertical-align: bottom;
 }
 
@@ -87,6 +89,7 @@ thead .title {
     min-width: 6em;
 }
 thead .company {
+    text-align: center;
     vertical-align: bottom;
 }
 
@@ -103,6 +106,7 @@ thead .company {
     width: 5em;
 }
 thead .contract {
+    text-align: center;
     vertical-align: middle;
 }
 
@@ -149,6 +153,7 @@ thead .contract {
 
 /* source */
 .source {
+    text-align: center;
     min-width: 4%;
 }
 #filter_source_combobox {
