@@ -309,6 +309,7 @@ var AbstractFilter = Class.extend({
      */
     priv_select_from_array: function(id, options)  {
         var $result = $("<select>", {id: id});
+        $result.addClass("form-control");
         $.each(options, function(key, val) {
             var $elt = $("<option>");
             $elt.append(val);
