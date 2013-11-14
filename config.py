@@ -19,7 +19,9 @@ configs = {
     },
     'report': {
         # dynamic: true/false
-        'dynamic': False,
+        'dynamic': True,
+        # offer_per_page: int
+        'offer_per_page': 15,
     },
     'PoleEmploi': {
         'feeds': [

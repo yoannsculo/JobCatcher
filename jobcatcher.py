@@ -246,6 +246,7 @@ class ReportGenerator(object):
             fhandle.write('\t<script type="text/javascript" src="js/jquery.simplePagination.js"></script>\n')
             fhandle.write('\t<script type="text/javascript" src="js/persist-min.js"></script>\n')
             fhandle.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
+            fhandle.write('\t<script type="text/javascript">var offers_per_page = %s;</script>\n' %self.configs['report']['offer_per_page'])
             fhandle.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
         fhandle.write('</head>\n')
 

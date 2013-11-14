@@ -29,7 +29,7 @@ var MasterFilter = Class.extend({
      * \property priv_rows_per_page
      * \brief Number of rows per page.
      */
-    priv_rows_per_page: 10,
+    priv_rows_per_page: offers_per_page,
     /**
      * \property filters
      * \brief Filters to use.
