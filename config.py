@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__authors__ = 'Bruno Adelé <bruno@adele.im>'
+__authors__ = [
+    'Bruno Adelé <bruno@adele.im>',
+    'Yankel Scialom <yankel.scialom@mail.com>'
+]
 __license__ = 'GPLv2'
 __version__ = '0.1'
 
