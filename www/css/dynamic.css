@@ -61,6 +61,9 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
     width: 6em;
     text-align: center;
 }
+thead .type {
+    vertical-align: middle;
+}
 #filter_type_pivot {
     width: 5em;
 }
@@ -72,6 +75,9 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
 #filter_title_text {
     min-width: 10em;
 }
+thead .title {
+    vertical-align: bottom;
+}
 
 /* company */
 .company {
@@ -79,6 +85,9 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
 }
 #filter_company_dropdown {
     min-width: 6em;
+}
+thead .company {
+    vertical-align: bottom;
 }
 
 /* location */
@@ -92,6 +101,9 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
 }
 #filter_contract_combobox {
     width: 5em;
+}
+thead .contract {
+    vertical-align: middle;
 }
 
 /* salary */
@@ -141,4 +153,7 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
 }
 #filter_source_combobox {
     width: 6em;
+}
+thead .source {
+    vertical-align: middle;
 }
