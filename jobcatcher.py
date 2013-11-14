@@ -258,6 +258,8 @@ class ReportGenerator(object):
             fhandle.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
             fhandle.write('\t<script type="text/javascript">var offers_per_page = %s;</script>\n' %self.configs['report']['offer_per_page'])
             fhandle.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
+        else:
+            fhandle.write('\t<link rel="stylesheet" href="css/static.css" />\n')
         fhandle.write('</head>\n')
 
     def generateDownloadedFile(self):
@@ -367,14 +369,14 @@ class ReportGenerator(object):
         # table header
         report.write('\t\t<thead>\n')
         report.write('\t\t\t<tr id="lineHeaders">\n')
-        report.write('\t\t\t\t<th>Pubdate</th>\n')
-        report.write('\t\t\t\t<th>Type</th>\n')
-        report.write('\t\t\t\t<th>Title</th>\n')
-        report.write('\t\t\t\t<th>Company</th>\n')
-        report.write('\t\t\t\t<th>Location</th>\n')
-        report.write('\t\t\t\t<th>Contract</th>\n')
-        report.write('\t\t\t\t<th>Salary</th>\n')
-        report.write('\t\t\t\t<th>Source</th>\n')
+        report.write('\t\t\t\t<th class="pubdate">Pubdate</th>\n')
+        report.write('\t\t\t\t<th class="type">Type</th>\n')
+        report.write('\t\t\t\t<th class="title">Title</th>\n')
+        report.write('\t\t\t\t<th class="company">Company</th>\n')
+        report.write('\t\t\t\t<th class="location">Location</th>\n')
+        report.write('\t\t\t\t<th class="contract">Contract</th>\n')
+        report.write('\t\t\t\t<th class="salary">Salary</th>\n')
+        report.write('\t\t\t\t<th class="source">Source</th>\n')
         report.write('\t\t\t</tr>\n')
         if self.configs['report']['dynamic']:
             report.write('\t\t\t<tr id="lineFilters">\n')

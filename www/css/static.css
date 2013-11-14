@@ -1,0 +1,45 @@
+body {
+	overflow: hidden;
+}
+
+table#offers > thead > tr {
+	position: relative;
+}
+#lineHeaders > th {
+	text-align: center;
+}
+
+table#offers > tbody {
+	display: block;
+	position: absolute;
+	overflow: auto;
+	height: 100%;
+}
+td.pubdate, th.pubdate {
+	width: 7%;
+	text-align: center;
+}
+td.type, th.type {
+	width: 5%;
+	text-align: center;
+}
+td.title, th.title {
+	width: 27%;
+}
+td.company, th.company {
+	width: 13%;
+}
+td.location, th.location {
+	width: 10%;
+}
+td.contract, th.contract {
+	width: 8%;
+	text-align: center;
+}
+td.salary, th.salary {
+	width: 20%;
+}
+td.source, th.source {
+	width: 10%;
+	text-align: center;
+

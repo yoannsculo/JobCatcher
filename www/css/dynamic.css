@@ -44,7 +44,7 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
  * filters
  **/
 /* pubdate */
-#lineFilters > .pubdate {
+.pubdate {
     width: 8%;
     text-align: center;
 }
@@ -56,56 +56,111 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
 }
 
 /* type */
-#lineFilters > .type {
+.type {
     max-width: 6em;
     width: 6em;
     text-align: center;
+}
+thead .type {
+    text-align: center;
+    vertical-align: middle;
 }
 #filter_type_pivot {
     width: 5em;
 }
 
 /* title */
-#lineFilters > .title {
+.title {
     min-width: 30%;
 }
 #filter_title_text {
     min-width: 10em;
 }
+thead .title {
+    text-align: center;
+    vertical-align: bottom;
+}
 
 /* company */
-#lineFilters > .company {
+.company {
     min-width: 20%;
 }
 #filter_company_dropdown {
     min-width: 6em;
 }
+thead .company {
+    text-align: center;
+    vertical-align: bottom;
+}
 
 /* location */
-#lineFilters > .location {
+.location {
     min-width: 12%;
 }
 
 /* contract */
-#lineFilters > .contract {
+.contract {
     min-width: 10%;
 }
 #filter_contract_combobox {
     width: 5em;
 }
+thead .contract {
+    text-align: center;
+    vertical-align: middle;
+}
 
 /* salary */
-#lineFilters > .salary {
+.salary {
     min-width: 10%;
 }
+#filter_salary_feedback {
+    float: left;
+    padding: 5px;
+    font-size: 1.2em;
+}
+#filter_salary_na_checkbox {
+    vertical-align: top;
+}
+#filter_salary_na {
+    display: inline;
+    float: right;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+#filter_salary_spacer {
+    clear: both;
+}
 #filter_salary_root {
+    margin-top: -15px;
+    margin-left: 0.75em;
+    margin-right: 0.75em;
     min-width: 5em;
+}
+.ui-slider-handle:nth-child(2) {
+    background-image: url(../img/ui-icons_2e83ff_256x240.png) !important;
+    background-position: -41px -2px !important;
+    background-size: 307px 288px !important;
+}
+.ui-slider-handle:nth-child(3) {
+    background-image: url(../img/ui-icons_2e83ff_256x240.png) !important;
+    background-position: -118px -2px !important;
+    background-size: 307px 288px !important;
+}
+.ui-slider-range {
+    background: none;
+    background-color: #50b0e0;
 }
 
 /* source */
-#lineFilters > .source {
+.source {
+    text-align: center;
     min-width: 4%;
 }
 #filter_source_combobox {
     width: 6em;
+}
+thead .source {
+    vertical-align: middle;
 }
