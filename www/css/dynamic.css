@@ -68,21 +68,17 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
 /* title */
 #lineFilters > .title {
     min-width: 30%;
-    text-align: center;
 }
 #filter_title_text {
     min-width: 10em;
-    width: 75%;
 }
 
 /* company */
 #lineFilters > .company {
     min-width: 20%;
-    text-align: center;
 }
-#filter_company_combobox {
+#filter_company_dropdown {
     min-width: 6em;
-    width: 75%;
 }
 
 /* location */

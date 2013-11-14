@@ -323,11 +323,13 @@ var AbstractFilter = Class.extend({
      */
     priv_textbox: function(id, filigran, callbacks, buttons) {
         var $span = $("<span>")
-            .addClass("input-append");
+            .addClass("input-append")
+            .addClass("row-fluid");
         var $edit = $("<input>", {id: id})
             .attr("placeholder", filigran)
             .attr("type", "text")
-            .addClass("span2")
+            .addClass("span9")
+            .addClass("form-control")
             .addClass("search-query")
             .appendTo($span);
         var cbs = $.extend({
