@@ -1,39 +1,115 @@
-/* tables */
+/*
+ * tables
+ **/
 table#offers {
-	font-family:arial;
-	background-color: #CDCDCD;
-	margin:10px 0pt 15px;
-	font-size: 8pt;
-	width: 100%;
-	text-align: left;
+    font-family:arial;
+    background-color: #CDCDCD;
+    margin:10px 0pt 15px;
+    font-size: 8pt;
+    width: 100%;
+    text-align: left;
 }
 table#offers thead tr th, table#offers tfoot tr th {
-	background-color: #e6EEEE;
-	border: 1px solid #FFF;
-	font-size: 8pt;
-	padding: 4px;
+    background-color: #e6EEEE;
+    border: 1px solid #FFF;
+    font-size: 8pt;
+    padding: 4px;
 }
 table#offers thead tr .header {
-	background-image: url(../img/bg.gif);
-	background-repeat: no-repeat;
-	background-position: center right;
-	cursor: pointer;
+    background-image: url(../img/bg.gif);
+    background-repeat: no-repeat;
+    background-position: center right;
+    cursor: pointer;
 }
 table#offers tbody td {
-	color: #3D3D3D;
-	padding: 4px;
-	background-color: #FFF;
-	vertical-align: top;
+    color: #3D3D3D;
+    padding: 4px;
+    background-color: #FFF;
+    vertical-align: top;
 }
 table#offers tbody tr.odd td {
-	background-color:#F0F0F6;
+    background-color:#F0F0F6;
 }
 table#offers thead tr .headerSortUp {
-	background-image: url(../img/asc.gif);
+    background-image: url(../img/asc.gif);
 }
 table#offers thead tr .headerSortDown {
-	background-image: url(../img/desc.gif);
+    background-image: url(../img/desc.gif);
 }
 table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
-background-color: #8dbdd8;
+    background-color: #8dbdd8;
+}
+
+/*
+ * filters
+ **/
+/* pubdate */
+#lineFilters > .pubdate {
+    width: 8%;
+    text-align: center;
+}
+#filter_pubdate_pivot {
+    width: 5em;
+}
+#filter_pubdate_root {
+    width: 5.5em;
+}
+
+/* type */
+#lineFilters > .type {
+    max-width: 6em;
+    width: 6em;
+    text-align: center;
+}
+#filter_type_pivot {
+    width: 5em;
+}
+
+/* title */
+#lineFilters > .title {
+    min-width: 30%;
+    text-align: center;
+}
+#filter_title_text {
+    min-width: 10em;
+    width: 75%;
+}
+
+/* company */
+#lineFilters > .company {
+    min-width: 20%;
+    text-align: center;
+}
+#filter_company_combobox {
+    min-width: 6em;
+    width: 75%;
+}
+
+/* location */
+#lineFilters > .location {
+    min-width: 12%;
+}
+
+/* contract */
+#lineFilters > .contract {
+    min-width: 10%;
+}
+#filter_contract_combobox {
+    width: 5em;
+}
+
+/* salary */
+#lineFilters > .salary {
+    min-width: 10%;
+}
+#filter_salary_root {
+    min-width: 5em;
+}
+
+/* source */
+#lineFilters > .source {
+    min-width: 4%;
+}
+#filter_source_combobox {
+    width: 6em;
 }
