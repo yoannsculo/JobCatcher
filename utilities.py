@@ -15,6 +15,7 @@ import re
 import time
 import glob
 import hashlib
+import fnmatch
 import importlib
 import html2text
 import sqlite3 as lite
@@ -46,6 +47,16 @@ def getModificationFile(filename):
         pass
 
     return t
+
+
+def findFiles(srcdir, pattern):
+    """ Find files with the pattern"""
+    matches = []
+    for root, dirnames, filenames in os.walk(srcdir):
+        for filename in fnmatch.filter(filenames, pattern):
+            matches.append(os.path.join(root, filename))
+
+    return matches
 
 
 def getNow():

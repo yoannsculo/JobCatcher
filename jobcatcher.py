@@ -198,6 +198,7 @@ class JobBoard(object):
 class ReportGenerator(object):
     """Generic Class forcreate new jobboard"""
     def __init__(self, configs=[]):
+        self._rootdir = configs['global']['rootdir']
         self._wwwdir = configs['global']['wwwdir']
         self._configs = configs
 
@@ -208,6 +209,14 @@ class ReportGenerator(object):
     @wwwdir.setter  
     def wwwdir(self, value):
         self._wwwdir = value
+
+    @property
+    def rootdir(self):
+        return self._rootdir
+
+    @rootdir.setter  
+    def rootdir(self, value):
+        self._rootdir = value
 
     @property
     def configs(self):
@@ -221,6 +230,7 @@ class ReportGenerator(object):
         self.generateReport(True)
         self.generateReport(False)
         self.generateStatistics()
+        self.generateDownloadedFile()
 
     def box(self, style, text):
         css = ""
@@ -249,6 +259,26 @@ class ReportGenerator(object):
             fhandle.write('\t<script type="text/javascript">var offers_per_page = %s;</script>\n' %self.configs['report']['offer_per_page'])
             fhandle.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
         fhandle.write('</head>\n')
+
+    def generateDownloadedFile(self):
+        # Search feeds
+        feeds = utilities.findFiles(self.rootdir, '*.feed')
+        fl = open(os.path.join(self.wwwdir, 'feeds.txt'), 'w')
+        for f in feeds:
+            fl.write(os.path.basename("%s\n" % f))
+        fl.close()
+
+        # Search pages
+        dirs = os.listdir(self.rootdir)
+        for d in dirs:
+            pagedir = '%s/%s' % (self.rootdir, d)
+            pages = utilities.findFiles(pagedir, '*.page')
+            saveto = os.path.join('%s/%s.txt' % (self.wwwdir, d))
+            pl = open(saveto, 'w')
+            for p in pages:
+                pl.write(os.path.basename("%s\n" % p))
+            pl.close()
+
 
     def generateStatistics(self):
         html_dir = self.wwwdir
