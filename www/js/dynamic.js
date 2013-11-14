@@ -946,32 +946,48 @@ var SalaryFilter = AbstractFilter.extend({
         });
 
         var $filter_salary_slider = $("<div>", {id: "filter_salary_root"});
-        var $filter_salary_feedback = $("<span>", {id: "filter_salary_feedback"});
-        var $filter_salary_na = $("<span>");
 
-        var $filter_salary_na_label = $("<label>")
-            .attr("for", "filter_salary_na_checkbox")
-            .text("NA")
-            .appendTo($filter_salary_na);
-        var $filter_salary_na_checkbox = $("<input>", {
-            id: "filter_salary_na_checkbox",
-            type: "checkbox",
-            checked: "checked"
-        })
-        .click(function() {
-            self.priv_accept_na = $(this).prop("checked");
-            Config.set("filter_salary_na_checkbox", self.priv_accept_na);
-            self.apply();
-        }).appendTo($filter_salary_na);
+        /*
+         * <form>
+         *   <div>
+         *     <span>feedback</span>                    [ 0k€ ; 45k€ ]
+         *     <span><label><input /><label></span>     NA [ ]
+         *   </div>
+         * </form>
+         * <div />                                      SLIDER
+         */
+        var $filter_salary_from = $(
+            '<form role="form">' +
+                    '<span id="filter_salary_feedback" />' +
+                    '<span id="filter_salary_na">' +
+                        '<label>' +
+                            '<input id="filter_salary_na_checkbox" type="checkbox" />' +
+                            '&nbsp;&nbsp;NA' +
+                        '</label>' +
+                    '</span>' +
+                '<div id="filter_salary_spacer" />' +
+            '</form>'
+        );
+
+        $filter_salary_from
+            .find("#filter_salary_na_checkbox")
+            .prop("checked", "checked")
+            .click(function() {
+                self.priv_accept_na = $(this).prop("checked");
+                Config.set("filter_salary_na_checkbox", self.priv_accept_na);
+                self.apply();
+            });
         Config.get("filter_salary_na_checkbox", function(value) {
             self.priv_accept_na = "true" == value;
-            $filter_salary_na_checkbox.prop("checked", self.priv_accept_na);
+            $("#filter_salary_na_checkbox").prop("checked", self.priv_accept_na);
         });
 
         var slide_callback = function(event, ui) {
             var min = $filter_salary_slider.slider("values")[0];
             var max = $filter_salary_slider.slider("values")[1];
-            $filter_salary_feedback.html("[<b>" + min + "</b>k€&nbsp;;&nbsp;<b>" + max + "</b>k€]");
+            $filter_salary_from
+                .find("#filter_salary_feedback")
+                .html("[<b>" + min + "</b>k€&nbsp;;&nbsp;<b>" + max + "</b>k€]");
         };
         var change_callback = function(event, ui) {
             slide_callback(event, ui);
@@ -987,7 +1003,7 @@ var SalaryFilter = AbstractFilter.extend({
             change: change_callback,
             slide: slide_callback
         });
-        priv_elements = [$filter_salary_feedback, $filter_salary_na, $filter_salary_slider];
+        priv_elements = [$filter_salary_from, $filter_salary_slider];
     },
     /**
      * \fn apply()
