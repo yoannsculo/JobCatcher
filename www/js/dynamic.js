@@ -318,6 +318,42 @@ var AbstractFilter = Class.extend({
         return $result;
     },
     /**
+     * \fn priv_textbox(id, filigran, buttons)
+     * \brief Creates detached text box width buttons.
+     */
+    priv_textbox: function(id, filigran, callbacks, buttons) {
+        var $span = $("<span>")
+            .addClass("input-append");
+        var $edit = $("<input>", {id: id})
+            .attr("placeholder", filigran)
+            .attr("type", "text")
+            .addClass("span2")
+            .addClass("search-query")
+            .appendTo($span);
+        var cbs = $.extend({
+            click: function() {},
+            keyup: function() {},
+            keydown: function() {},
+            change: function() {}
+        }, callbacks || {});
+        $edit.click(cbs.click);
+        $edit.keyup(cbs.keyup);
+        $edit.keydown(cbs.keydown);
+        $edit.change(cbs.change);
+        $.each(buttons, function(key, val) {
+            var button = $.extend({
+                text: "OK",
+                click: function() {}
+            }, val || {});
+            var $button = $("<button>", {type: "button"})
+                .addClass("btn")
+                .appendTo($span)
+                .text(button.text)
+                .click(button.click);
+        });
+        return $span;
+    },
+    /**
      * \fn init(classname, master_filter)
      * \brief Constructor.
      */
@@ -572,22 +608,23 @@ var TitleFilter = AbstractFilter.extend({
     init: function(classname, master_filter) {
         this._super(classname, master_filter);
         var self = this;
-        var $filter_title_text = $("<input>", {
-            id: "filter_title_text",
-            type: "text",
-        });
-        var $filter_title_reset = $("<input>", {
-            type: "button",
-            value: "Effacer",
-        });
-        $filter_title_text.keyup(function() {
-            self.apply();
-        });
-        $filter_title_reset.click(function() {
-            $("#filter_title_text").val("");
-            self.apply();
-        });
-        priv_elements = [$filter_title_text, $filter_title_reset];
+        var $filter_title_form = $("<form>")
+            .addClass("form-search");
+        var $filter_title = this.priv_textbox(
+            "filter_title_text",
+            "Coma-separated words",
+            { keyup: function() { self.apply(); } },
+            [
+                {
+                    text: "Clear",
+                    click: function() {
+                        $("#filter_title_text").val("");
+                        self.apply();
+                    }
+                }
+        ]).appendTo($filter_title_form);
+
+        priv_elements = [$filter_title_form];
     },
     /**
      * \fn apply()
@@ -623,7 +660,7 @@ var TitleFilter = AbstractFilter.extend({
     test: function(value)  {
         var result = false;
         var pattern = $("#filter_title_text").val();
-        if (0 == pattern.length)
+        if (undefined === pattern || 0 == pattern.length)
             return true;
         var patterns = pattern.split(/,\s*/);
         $.each(patterns, function(key, val) {
@@ -651,6 +688,11 @@ var CompanyFilter = AbstractFilter.extend({
      */
     priv_elements: [],
     /**
+     * \property priv_companies
+     * \brief List of companies.
+     */
+     priv_companies: [],
+    /**
      * \fn priv_select_from_array(id, options)
      * \brief Creates detached <select> elements from the \a options array.
      * \see \ref AbstractFilter.priv_select_from_array(id, options)
@@ -672,21 +714,26 @@ var CompanyFilter = AbstractFilter.extend({
                 companies.push(company);
         });
         companies.sort();
+        this.priv_companies = companies;
 
-        $filter_company_combobox = $("<input>", {
-            id: "filter_company_combobox",
-        });
-        $filter_company_combobox.autocomplete({
-            source: companies
-        });
-        var $filter_company_reset = $("<input>", {
-            type: "button",
-            value: "Effacer",
-        }).click(function() {
-            $filter_company_combobox.val("");
-            self.apply();
-        });
-        this.priv_elements = [$filter_company_combobox, $filter_company_reset];
+        var $filter_company_form = $("<form>")
+            .addClass("form-search");
+        var $filter_company = this.priv_textbox(
+            "filter_company_dropdown",
+            "Company",
+            null,
+            [
+                {
+                    text: "Clear",
+                    click: function() {
+                        $("#filter_company_dropdown").val("");
+                        self.apply();
+                    }
+                }
+            ]
+        ).appendTo($filter_company_form);
+
+        self.priv_elements = [$filter_company_form];
     },
     /**
      * \fn apply()
@@ -706,15 +753,16 @@ var CompanyFilter = AbstractFilter.extend({
      */
     attach: function($parent) {
         var self = this;
-        var $filter_company_combobox = this.priv_elements[0];
-        $filter_company_combobox.keyup(function() { self.apply(); });
-        $($filter_company_combobox).autocomplete({
+        $.each(self.priv_elements, function(key, val) {
+            $parent.append(val);
+        });
+        var $filter_company_dropdown = $("#filter_company_dropdown");
+        $filter_company_dropdown.keyup(function() { self.apply(); });
+        $($filter_company_dropdown).autocomplete({
+            source: self.priv_companies,
             appendTo: $parent,
             change: function() { self.apply(); },
             close: function() { self.apply(); }
-        });
-        $.each(self.priv_elements, function(key, val) {
-            $parent.append(val);
         });
         return true;
     },
@@ -725,8 +773,8 @@ var CompanyFilter = AbstractFilter.extend({
      */
     test: function(value)  {
         var result = false;
-        var pattern = $("#filter_company_combobox").val();
-        if (0 == pattern.length)
+        var pattern = $("#filter_company_dropdown").val();
+        if (undefined === pattern || 0 == pattern.length)
             return true;
         var patterns = pattern.split(/,\s*/);
         $.each(patterns, function(key, val) {
