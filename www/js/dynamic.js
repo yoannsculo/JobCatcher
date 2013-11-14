@@ -958,13 +958,13 @@ var SalaryFilter = AbstractFilter.extend({
          */
         var $filter_salary_from = $(
             '<form role="form">' +
-                    '<span id="filter_salary_feedback" />' +
-                    '<span id="filter_salary_na">' +
-                        '<label>' +
-                            '<input id="filter_salary_na_checkbox" type="checkbox" />' +
-                            '&nbsp;&nbsp;NA' +
-                        '</label>' +
-                    '</span>' +
+                '<span id="filter_salary_feedback" />' +
+                '<span id="filter_salary_na">' +
+                    '<label>' +
+                        '<input id="filter_salary_na_checkbox" type="checkbox" />' +
+                        '&nbsp;&nbsp;NA' +
+                    '</label>' +
+                '</span>' +
                 '<div id="filter_salary_spacer" />' +
             '</form>'
         );
@@ -979,7 +979,9 @@ var SalaryFilter = AbstractFilter.extend({
             });
         Config.get("filter_salary_na_checkbox", function(value) {
             self.priv_accept_na = "true" == value;
-            $("#filter_salary_na_checkbox").prop("checked", self.priv_accept_na);
+            $filter_salary_from
+                .find("#filter_salary_na_checkbox")
+                .prop("checked", self.priv_accept_na);
         });
 
         var slide_callback = function(event, ui) {
