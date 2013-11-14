@@ -457,15 +457,15 @@ var PubdateFilter = AbstractFilter.extend({
             filter.apply();
         });
         $("#filter_pubdate_root").datepicker({
-	    autoSize: true,
-	    buttonText: "Calendar",
-	    buttonImage: "img/calendar-16.png",
-	    dateFormat: "yy-mm-dd",
-	    defaultDate: 0,
-	    showOn: "button",
-	    onSelect: function(date_text, sender) {
-	        filter.apply();
-	    }
+            autoSize: true,
+            buttonText: "Calendar",
+            buttonImage: "img/calendar-16.png",
+            dateFormat: "yy-mm-dd",
+            defaultDate: 0,
+            showOn: "button",
+            onSelect: function(date_text, sender) {
+                filter.apply();
+            }
         });
         return true;
     },
