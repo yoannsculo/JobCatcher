@@ -134,6 +134,8 @@ thead .contract {
 }
 #filter_salary_root {
     margin-top: -15px;
+    margin-left: 0.75em;
+    margin-right: 0.75em;
     min-width: 5em;
 }
 .ui-slider-handle:nth-child(2) {
