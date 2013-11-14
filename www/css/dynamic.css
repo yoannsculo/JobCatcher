@@ -101,6 +101,7 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
 #filter_salary_feedback {
     float: left;
     padding: 5px;
+    font-size: 1.2em;
 }
 #filter_salary_na_checkbox {
     vertical-align: top;
@@ -118,6 +119,20 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
 #filter_salary_root {
     margin-top: -15px;
     min-width: 5em;
+}
+.ui-slider-handle:nth-child(2) {
+    background-image: url(../img/ui-icons_2e83ff_256x240.png) !important;
+    background-position: -41px -2px !important;
+    background-size: 307px 288px !important;
+}
+.ui-slider-handle:nth-child(3) {
+    background-image: url(../img/ui-icons_2e83ff_256x240.png) !important;
+    background-position: -118px -2px !important;
+    background-size: 307px 288px !important;
+}
+.ui-slider-range {
+    background: none;
+    background-color: #50b0e0;
 }
 
 /* source */
