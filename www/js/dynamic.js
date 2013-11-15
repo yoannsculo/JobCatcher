@@ -201,7 +201,7 @@ var MasterFilter = Class.extend({
             }
         });
         this.priv_navbar.attach(
-            $("<p>").appendTo("body")
+            $("<p>", {id: "pagination_bar_root"}).appendTo("body")
         );
         this.priv_initialized = true;
         this.apply();

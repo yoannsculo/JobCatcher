@@ -1,6 +1,6 @@
 /*
  * tables
- **/
+ ******************************************************************************/
 table#offers {
     font-family:arial;
     background-color: #CDCDCD;
@@ -42,7 +42,7 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
 
 /*
  * filters
- **/
+ ******************************************************************************/
 /* pubdate */
 .pubdate {
     width: 8%;
@@ -163,4 +163,13 @@ thead .contract {
 }
 thead .source {
     vertical-align: middle;
+}
+
+/*
+ * Pagination bar
+ ******************************************************************************/
+#pagination_bar_root {
+    position: fixed;
+    top: 10px;
+    right: 0px;
 }
