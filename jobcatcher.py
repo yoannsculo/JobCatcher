@@ -100,20 +100,28 @@ class JobBoard(object):
         """Check if the table for jobboard exist"""
         return utilities.db_istableexists(self.configs, "jb_%s" % self.name)
 
-    def downloadFeed(self, feed, interval=3600, forcedownload=False):
-        """Download feed from jobboard"""
+    def getEncodedURL(self, feed):
         datas = None
         if 'datas' in feed:
-            datas = feed['datas']
             urlid = "%s/%s" % (feed['url'], datas)
         else:
             urlid = "%s" % feed['url']
 
         urlid = "%s/%s" % (feed['url'], datas)
-        feeddir = "%s/feeds" % self._processingDir
         pageid = utilities.md5(urlid)
+
+        return pageid
+
+    def downloadFeed(self, feed, interval=3600, forcedownload=False):
+        """Download feed from jobboard"""
+        datas = None
+        if 'datas' in feed:
+            datas = feed['datas']
+
+        feeddir = "%s/feeds" % self._processingDir
+        pageid = self.getEncodedURL(feed)
         saveto = "%s/%s.feed" % (feeddir, pageid)
-        utilities.downloadFile(feed['url'], datas, saveto, interval)
+        utilities.downloadFile(feed['url'], datas, saveto, True, interval)
 
         return saveto
 
@@ -129,7 +137,7 @@ class JobBoard(object):
         destdir = "%s/%s/pages" % (self.rootdir, self.name)
         saveto = "%s/%s.page" % (destdir, md5)
         try:
-            utilities.downloadFile(url, None, saveto, self._interval)
+            utilities.downloadFile(url, None, saveto, True, self._interval)
         except UnicodeDecodeError:
             pass
 
@@ -193,6 +201,93 @@ class JobBoard(object):
         cursor.execute(sql)
         data = cursor.fetchall()
         return data
+
+
+class P2PDownloader(object):
+    """Download jobboard via static P2P"""
+    def __init__(self, configs=[]):
+        self._wwwdir = configs['global']['wwwdir']
+        self._p2pdir = configs['global']['p2pdir']
+        self._rootdir = configs['global']['rootdir']
+        self._configs = configs
+        self._pages = dict()
+
+    @property
+    def wwwdir(self):
+        return self._wwwdir
+
+    @wwwdir.setter  
+    def wwwdir(self, value):
+        self._wwwdir = value
+
+    @property
+    def rootdir(self):
+        return self._rootdir
+
+    @rootdir.setter  
+    def rootdir(self, value):
+        self._rootdir = value
+
+
+    @property
+    def p2pdir(self):
+        return self._p2pdir
+
+    @p2pdir.setter  
+    def p2pdir(self, value):
+        self._p2pdir = value
+
+
+    @property
+    def configs(self):
+        return self._configs
+
+    @configs.setter
+    def configs(self, value):
+        self._configs = value
+
+    # def listServers(self):
+    #     names = list()
+    #     for name, url in self.configs['global']['p2pservers']:
+    #         if 'name' in s:
+    #             names.append(s['name'])
+
+        return names
+
+    def initcache(self):
+        #p2plist = self.listServers()
+        plugins = getjobboardlist(self.configs)
+
+        for name, url in self.configs['global']['p2pservers'].iteritems():
+            # Download feed ifnormations
+            print 'Search for %s' % name
+            destdir = "%s/%s" % (self.p2pdir, name)
+            saveto = "%s/feeds.txt" % destdir
+            utilities.downloadFile('%s/feeds.txt' % url, None, saveto, False)
+
+            # Search pages for jobboards
+            for jobboardname in plugins:
+                saveto = "%s/%s.txt" % (destdir, jobboardname)
+                page = utilities.downloadFile('%s/%s.txt' % (url, jobboardname), None, saveto, False)
+                if page and page.statuscode == 200:
+                    if name not in self._pages:
+                        self._pages[name] = dict()
+                    self._pages[name][jobboardname] = page.content.strip().split('\n')
+
+    def sync(self):
+        todownload = list()
+        for p2psite, value in self._pages.iteritems():
+            for jobboardname, value in self._pages[p2psite].iteritems():
+                for u in self._pages[p2psite][jobboardname]:
+                    destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
+                    local = "%s/%s/pages/%s" % (self.rootdir, jobboardname, u)
+                    remote = "%s/dl/%s/pages/%s" % (
+                        self.configs['global']['p2pservers'][p2psite],
+                        jobboardname, u
+                    )
+
+                    if not os.path.exists(local):
+                        utilities.downloadFile(remote, None, local, False)
 
 
 class ReportGenerator(object):
@@ -745,6 +840,12 @@ if __name__ == '__main__':
                       help = 'flush the blacklist and update it.'
     )
 
+    parser.add_option('--p2pinit',
+                      action='store_true',
+                      dest='p2pinit',
+                      help = 'init P2P'
+    )
+
     parser.add_option('--version',
                       action='store_true',
                       dest='version',
@@ -820,3 +921,8 @@ if __name__ == '__main__':
     if options.flush:
         initblacklist(configs)
         sys.exit(0)
+
+    if options.p2pinit:
+        p = P2PDownloader(configs)
+        p.initcache()
+        p.sync()

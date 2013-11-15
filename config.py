@@ -16,9 +16,15 @@ __version__ = '0.1'
 configs = {
     'global': {
         'debug': True,
-        'rootdir': './dl',
+        'rootdir': './www/dl',
         'wwwdir': './www',
         'database': 'jobs.db',
+        'p2pdir': './p2p',
+        'p2pservers': {
+            #'yankel': 'http://yankee.sierra77.free.fr/jobcatcher',
+            'jesuislibre': 'http://jobs.jesuislibre.org',
+            'sculo': 'http://jobcatcher.sculo.fr',
+        }
     },
     'report': {
         # dynamic: true/false

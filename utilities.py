@@ -24,7 +24,7 @@ import requests
 
 from collections import namedtuple
 PageResult = namedtuple('PageResult', ['url', 'page'])
-
+DownloadResult = namedtuple('DownloadResult', ['url', 'statuscode', 'content'])
 
 def htmltotext(text):
     """Fix html2text"""
@@ -73,7 +73,23 @@ def openPage(filename):
     return PageResult(url=url, page=html)
 
 
-def downloadFile(url, datas, filename, age=60, forcedownload=False):
+def download(url, datas):
+    headers = {
+        'User-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:24.0) Gecko/20100101 Firefox/24.0',
+        'Referer': 'http://candidat.pole-emploi.fr/candidat/rechercheoffres/avancee',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        #'Content-Type': 'application/json',
+    }
+
+    if datas:
+        r = requests.post(url, data=datas, headers=headers)
+    else:
+        r = requests.get(url)
+
+    return DownloadResult(url=url, statuscode=r.status_code, content=r.content)
+
+
+def downloadFile(url, datas, filename, withmeta = False, age=0, forcedownload=False):
     headers = {
         'User-agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:24.0) Gecko/20100101 Firefox/24.0',
         'Referer': 'http://candidat.pole-emploi.fr/candidat/rechercheoffres/avancee',
@@ -93,14 +109,17 @@ def downloadFile(url, datas, filename, age=60, forcedownload=False):
     if (not os.path.isdir(destdir)):
         os.makedirs(destdir)
 
-    if datas:
-        r = requests.post(url, data=datas, headers=headers)
-    else:
-        r = requests.get(url)
-    out = open(filename, 'wb')
-    out.write("%s\n" % url)
-    out.write(r.content)
-    out.close()
+    # Download file
+    r = download(url, datas)
+
+    if r.statuscode == 200:
+        out = open(filename, 'wb')
+        if withmeta:
+            out.write("%s\n" % url)
+        out.write(r.content)
+        out.close()
+
+    return r
 
 
 def removeFiles(rep, patern):
