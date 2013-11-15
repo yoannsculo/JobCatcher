@@ -279,6 +279,7 @@ def filter_contract_fr(contract):
 
 def filter_location_fr(location):
     location = re.sub(ur'IDF', "Île-de-France", location)
+    location = re.sub(ur'Ile-de-France', "Île-de-France", location)
     return location
 
 
@@ -317,6 +318,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'selon niveau d\'expérience', "NA", salary)
     salary = re.sub(ur'Selon formation et/ou exp.', "NA", salary)
     salary = re.sub(ur'selon votre profil', "NA", salary)
+    salary = re.sub(ur'Selon votre profil.', "NA", salary)
     salary = re.sub(ur'Selon votre profil', "NA", salary)
     salary = re.sub(ur'selon le profil', "NA", salary)
     salary = re.sub(ur'Selon le profil', "NA", salary)
@@ -362,6 +364,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'À définir', "NA", salary)
     salary = re.sub(ur'A définir.', "NA", salary)
     salary = re.sub(ur'A définir', "NA", salary)
+    salary = re.sub(ur'A Definir', "NA", salary)
     salary = re.sub(ur'A DEFINIR', "NA", salary)
     salary = re.sub(ur'A DETERMINER', "NA", salary)
     salary = re.sub(ur'à determiner', "NA", salary)
