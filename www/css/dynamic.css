@@ -173,3 +173,8 @@ thead .source {
     top: 10px;
     right: 0px;
 }
+
+#pagination_bar_root li:first-child {
+    position: fixed;
+    right: 11.5em;
+}
