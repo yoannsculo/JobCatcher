@@ -485,11 +485,11 @@ var PubdateFilter = AbstractFilter.extend({
         {
         case "All":
             return true;
-        case "Avant":
+        case "Before":
             return pivot_date >= row_date;
-        case "Le":
+        case "At":
             return Math.abs(pivot_date - row_date) < 1000*86400-1;
-        case "Après":
+        case "After":
             return pivot_date <= row_date;
         default:
             console.error("Inconsistancy here. Must match <select> creation on init().");
