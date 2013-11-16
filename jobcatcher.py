@@ -700,8 +700,8 @@ def insertpage(conf, jobboardname):
     destdir = "%s/%s/pages" % (conf['global']['rootdir'], jobboardname)
     plugin = utilities.loadJobBoard(jobboardname, conf)
     for p in glob.glob("%s/*.page" % destdir):
-        content = utilities.openPage(p)
-        plugin.analyzePage(content.url, content.page)
+        page = utilities.openPage(p)
+        plugin.analyzePage(page.url, page.content)
 
 
 def insertpages(conf):
