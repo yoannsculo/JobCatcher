@@ -69,7 +69,9 @@ var MasterFilter = Class.extend({
      * \fn priv_apply_on_row(row, source = null)
      * \brief Apply the filters on a row.
      */
-    priv_apply_on_row: function(row, source = null) {
+    priv_apply_on_row: function(row, source) {
+		if (undefined === source)
+			source = null;
         var self = this;
         var accepted = true;
         var test_value = function(filter, row) {
@@ -115,7 +117,9 @@ var MasterFilter = Class.extend({
      * \fn priv_show_page(page, source = null)
      * \brief Show page number \a page.
      */
-    priv_show_page: function(page, source = null) {
+    priv_show_page: function(page, source) {
+		if (undefined === source)
+				source = null;
         var self = this;
 
         // pagination initialization
@@ -218,7 +222,9 @@ var MasterFilter = Class.extend({
      * \brief Applies the filters' selections and filters the table.
      * \param[in] source The filter to update or \c null to apply all filters.
      */
-    apply: function(source = null) {
+    apply: function(source) {
+		if (undefined === source)
+			source = null;
         // source no more used.
         if (!this.priv_initialized)
             return;
@@ -245,7 +251,10 @@ var NavigationBar = Class.extend({
      * \fn init(options = null)
      * \brief COnstructor.
      */
-    init: function(options = null) {
+    init: function(options) {
+		var opt = $.extend({
+			change: function(page) {}
+		}, options || {} );
         var self = this;
         this.priv_bar = $("<p>");
         this.priv_bar.pagination({
@@ -287,7 +296,9 @@ var NavigationBar = Class.extend({
      * \brief Set the current displayed page number.
      * \param[in] silent Either or not the callback bind to the "change page" event is to be called.
      */
-    set_page: function(page_number, silent = false) {
+    set_page: function(page_number, silent) {
+		if (undefined === silent)
+			silent = false;
         this.priv_bar.pagination("selectPage", page_number+1, silent);
     }
 });
@@ -369,8 +380,8 @@ var AbstractFilter = Class.extend({
      * \brief Applies the filters, calling \ref MasterFilter.apply().
      * \param[in] source The filter to update or \c null to apply all filters.
      */
-    apply: function(source = null) {
-        if (null != this.priv_master_filter)
+    apply: function(source) {
+        if (undefined !== this.priv_master_filter)
             this.priv_master_filter.apply(source);
     },
     /**
@@ -1370,7 +1381,9 @@ var Config = {
 	 * \param[in] success (\c {function(value)}) The success callback
 	 * \param[in] failure (\c {function()}) The failure callback
 	 */
-	get: function(name, success, failure = null) {
+	get: function(name, success, failure) {
+		if (undefined === failure)
+			failure = null;
 	    this.priv_store.get(this.priv_encode(name), function(status, value) {
             if (!status || null == value) {
                 if (null != failure)
