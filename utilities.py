@@ -23,8 +23,45 @@ import requests
 
 
 from collections import namedtuple
-PageResult = namedtuple('PageResult', ['url', 'page'])
+PageResult = namedtuple('PageResult', ['pageid', 'url', 'content'])
 DownloadResult = namedtuple('DownloadResult', ['url', 'statuscode', 'content'])
+
+
+def getEncodedURL(url, datas):
+    datas = None
+    if datas:
+        urlid = "%s/%s" % (url, datas)
+    else:
+        urlid = "%s" % url
+
+    urlid = "%s/%s" % (url, datas)
+    pageid = md5(urlid)
+
+    return pageid
+
+
+def getFeedDestination(rootdir, jobboardname, url, datas):
+    feedid = getEncodedURL(url, datas)
+    saveto = "%s/%s/feeds/%s.feed" % (
+        rootdir,
+        jobboardname,
+        feedid
+    )
+
+    return saveto
+
+
+def getPageDestination(rootdir, jobboardname, feedid, url, datas):
+    pageid = getEncodedURL(url, datas)
+    saveto = "%s/%s/pages/%s/%s.page" % (
+        rootdir,
+        jobboardname,
+        feedid,
+        pageid,
+    )
+
+    return saveto
+
 
 def htmltotext(text):
     """Fix html2text"""
@@ -66,11 +103,12 @@ def getNow():
 
 def openPage(filename):
     fd = open(filename, 'rb')
-    url = fd.readline()
-    html = fd.read()
+    pageid = fd.readline().strip()
+    url = fd.readline().strip()
+    content = fd.read()
     fd.close()
 
-    return PageResult(url=url, page=html)
+    return PageResult(pageid=pageid, url=url, content=content)
 
 
 def download(url, datas):
@@ -115,6 +153,8 @@ def downloadFile(url, datas, filename, withmeta = False, age=0, forcedownload=Fa
     if r.statuscode == 200:
         out = open(filename, 'wb')
         if withmeta:
+            pageid = getEncodedURL(url, datas)
+            out.write("%s\n" % pageid)
             out.write("%s\n" % url)
         out.write(r.content)
         out.close()

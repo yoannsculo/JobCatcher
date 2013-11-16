@@ -11,6 +11,7 @@ __license__ = 'GPLv2'
 __version__ = '1.0'
 
 import os
+import re
 import sys
 import glob
 import codecs
@@ -100,27 +101,15 @@ class JobBoard(object):
         """Check if the table for jobboard exist"""
         return utilities.db_istableexists(self.configs, "jb_%s" % self.name)
 
-    def getEncodedURL(self, feed):
-        datas = None
-        if 'datas' in feed:
-            urlid = "%s/%s" % (feed['url'], datas)
-        else:
-            urlid = "%s" % feed['url']
-
-        urlid = "%s/%s" % (feed['url'], datas)
-        pageid = utilities.md5(urlid)
-
-        return pageid
-
     def downloadFeed(self, feed, interval=3600, forcedownload=False):
         """Download feed from jobboard"""
         datas = None
         if 'datas' in feed:
             datas = feed['datas']
 
-        feeddir = "%s/feeds" % self._processingDir
-        pageid = self.getEncodedURL(feed)
-        saveto = "%s/%s.feed" % (feeddir, pageid)
+        saveto = utilities.getFeedDestination(
+            self.rootdir, self.name, feed['url'], datas
+        )
         utilities.downloadFile(feed['url'], datas, saveto, True, interval)
 
         return saveto
@@ -130,12 +119,11 @@ class JobBoard(object):
         for feed in feeds:
             self.downloadFeed(feed, interval, forcedownload)
 
-    def downloadPage(self, url):
-        """Download all pages from urls list"""
-        url = utilities.htmltotext(url).strip()
-        md5 = utilities.md5(url)
-        destdir = "%s/%s/pages" % (self.rootdir, self.name)
-        saveto = "%s/%s.page" % (destdir, md5)
+    def downloadPage(self, feedid, url):
+        """Download pages from url"""
+        saveto = utilities.getPageDestination(
+            self.rootdir, self.name, feedid, url, None
+        )
         try:
             utilities.downloadFile(url, None, saveto, True, self._interval)
         except UnicodeDecodeError:
@@ -145,8 +133,8 @@ class JobBoard(object):
 
     def downloadPages(self, urls):
         """Download all pages from urls list"""
-        for url in urls:
-            self.downloadPage(url)
+        for feedid, url in urls:
+            self.downloadPage(feedid, url)
 
     def getAllJBDatas(self):
         """Get all jobboard datas"""
@@ -275,19 +263,24 @@ class P2PDownloader(object):
                     self._pages[name][jobboardname] = page.content.strip().split('\n')
 
     def sync(self):
-        todownload = list()
+        feeds = utilities.findFiles(self.rootdir, '*.feed')
+        for i in range(len(feeds)):
+            feeds[i] = re.sub(r'.*?/feeds/([a-z0-9]+)\.feed', r'\1', feeds[i])
+
         for p2psite, value in self._pages.iteritems():
             for jobboardname, value in self._pages[p2psite].iteritems():
                 for u in self._pages[p2psite][jobboardname]:
-                    destdir = "%s/%s/pages" % (self.rootdir, jobboardname)
-                    local = "%s/%s/pages/%s" % (self.rootdir, jobboardname, u)
-                    remote = "%s/dl/%s/pages/%s" % (
-                        self.configs['global']['p2pservers'][p2psite],
-                        jobboardname, u
-                    )
+                    feeddir = u.split('/')[0]
+                    # Check if the url is in local feed
+                    if feeddir in feeds:
+                        local = "%s/%s/pages/%s" % (self.rootdir, jobboardname, u)
+                        remote = "%s/dl/%s/pages/%s" % (
+                            self.configs['global']['p2pservers'][p2psite],
+                            jobboardname, u
+                        )
 
-                    if not os.path.exists(local):
-                        utilities.downloadFile(remote, None, local, False)
+                        if not os.path.exists(local):
+                            utilities.downloadFile(remote, None, local, False)
 
 
 class ReportGenerator(object):
@@ -373,7 +366,8 @@ class ReportGenerator(object):
             saveto = os.path.join('%s/%s.txt' % (self.wwwdir, d))
             pl = open(saveto, 'w')
             for p in pages:
-                pl.write(os.path.basename("%s\n" % p))
+                filename = re.sub(r'.*?/pages/', '', p)
+                pl.write("%s\n" % filename)
             pl.close()
 
 
