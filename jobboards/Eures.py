@@ -37,9 +37,10 @@ class JBEures(JobBoard):
 
         for feed in glob.glob(searchdir):
             # Load the HTML feed
-            fd = open(feed, 'rb')
-            html = fd.read()
-            fd.close()
+            utilities.openPage(feed)
+            page = utilities.openPage(feed)
+            feedid = page.pageid
+            html = page.content
 
             # Search result
             res = re.finditer(
@@ -52,7 +53,7 @@ class JBEures(JobBoard):
                 m = re.match(r'\./ShowJvServlet\?lg=FR&pesId=[0-9]+&uniqueJvId=[0-9A-Z]+&nnImport=false', r.group(1))
                 if m:
                     url = "http://ec.europa.eu/eures/eures-searchengine/servlet/%s" % r.group(1)
-                    urls.append(url)
+                    urls.append([feedid, url])
 
         return urls
 

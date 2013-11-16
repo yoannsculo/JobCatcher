@@ -39,9 +39,10 @@ class JBRegionJob(JobBoard):
 
         for feed in glob.glob(searchdir):
             # Load the HTML feed
-            fd = open(feed, 'rb')
-            html = fd.read().decode(self.encoding['feed'])
-            fd.close()
+            utilities.openPage(feed)
+            page = utilities.openPage(feed)
+            feedid = page.pageid
+            html = page.content
 
             # Search result
             res = re.finditer(
@@ -53,7 +54,7 @@ class JBRegionJob(JobBoard):
                 # Check if URL is valid
                 m = re.search(r'<link>(.*?numoffre=.*?)</link>', r.group(1))
                 if m:
-                    urls.append(m.group(1))
+                    urls.append([feedid, m.group(1)])
 
         return urls
 

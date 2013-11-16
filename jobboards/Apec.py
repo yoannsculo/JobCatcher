@@ -40,9 +40,10 @@ class JBApec(JobBoard):
 
         for feed in glob.glob(searchdir):
             # Load the HTML feed
-            fd = open(feed, 'rb')
-            html = fd.read()
-            fd.close()
+            utilities.openPage(feed)
+            page = utilities.openPage(feed)
+            feedid = page.pageid
+            html = page.content
 
             # Search result
             res = re.finditer(
@@ -54,7 +55,7 @@ class JBApec(JobBoard):
                 # Check if URL is valid
                 m = re.search(r'<link>(http://cadres\.apec\.fr/offres-emploi-cadres/.*?)</link>', r.group(1))
                 if m:
-                    urls.append(m.group(1))
+                    urls.append([feedid, m.group(1)])
 
         return urls
 
