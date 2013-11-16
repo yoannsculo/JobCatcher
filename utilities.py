@@ -319,6 +319,7 @@ def filter_contract_fr(contract):
 
 def filter_location_fr(location):
     location = re.sub(ur'IDF', "Île-de-France", location)
+    location = re.sub(ur'Ile-de-France', "Île-de-France", location)
     return location
 
 
@@ -341,6 +342,7 @@ def filter_salary_fr(salary):
     #salary = re.sub(ur'à négocier selon le profil', "NA", salary)
     #salary = re.sub(ur'à déterminer selon profil', "NA", salary)
     salary = re.sub(ur'à définir selon expérience', "NA", salary)
+    salary = re.sub(ur'A négocier selon expérience.', "NA", salary)
     salary = re.sub(ur'A négocier selon expérience', "NA", salary)
     salary = re.sub(ur'à négocier selon expérience', "NA", salary)
     salary = re.sub(ur'à négocier selon exp', "NA", salary)
@@ -356,6 +358,7 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'selon niveau d\'expérience', "NA", salary)
     salary = re.sub(ur'Selon formation et/ou exp.', "NA", salary)
     salary = re.sub(ur'selon votre profil', "NA", salary)
+    salary = re.sub(ur'Selon votre profil.', "NA", salary)
     salary = re.sub(ur'Selon votre profil', "NA", salary)
     salary = re.sub(ur'selon le profil', "NA", salary)
     salary = re.sub(ur'Selon le profil', "NA", salary)
@@ -392,13 +395,16 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'a négocier', "NA", salary)
     salary = re.sub(ur'a negocier', "NA", salary)
     salary = re.sub(ur'à negocier', "NA", salary)
+    salary = re.sub(ur'A négocier.', "NA", salary)
     salary = re.sub(ur'A négocier', "NA", salary)
     salary = re.sub(ur'A NEGOCIER', "NA", salary)
     salary = re.sub(ur'A negocier', "NA", salary)
     salary = re.sub(ur'à définir', "NA", salary)
     salary = re.sub(ur'à défiinir', "NA", salary)
     salary = re.sub(ur'À définir', "NA", salary)
+    salary = re.sub(ur'A définir.', "NA", salary)
     salary = re.sub(ur'A définir', "NA", salary)
+    salary = re.sub(ur'A Definir', "NA", salary)
     salary = re.sub(ur'A DEFINIR', "NA", salary)
     salary = re.sub(ur'A DETERMINER', "NA", salary)
     salary = re.sub(ur'à determiner', "NA", salary)
@@ -417,7 +423,10 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'non communiqué', "NA", salary)
     salary = re.sub(ur'NON COMMUNIQUE', "NA", salary)
     salary = re.sub(ur'non précisé', "NA", salary)
+    salary = re.sub(ur'Non précisé.', "NA", salary)
     salary = re.sub(ur'Non précisé', "NA", salary)
+    salary = re.sub(ur'Motivant.', "NA", salary)
+    salary = re.sub(ur'Motivant', "NA", salary)
     salary = re.sub(ur'Voir annonce', "NA", salary)
     salary = re.sub(ur'GRILLE DE LA FPT', "NA", salary)
     salary = re.sub(ur'Grille', "NA", salary)

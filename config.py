@@ -70,7 +70,16 @@ configs = {
     },
     'Apec': {
         'feeds' : [
-            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101833.xml'},
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101828.xml'}, # Commercial, Marketing (Lieu indifférent)
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101829.xml'}, # Communication, Création (Lieu indifférent)
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101830.xml'}, # Direction d'entreprise (Lieu indifférent)
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101831.xml'}, # Etudes, Recherche et Développement (Lieu indifférent)
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101832.xml'}, # Gestion, Finance, Administration (Lieu indifférent)
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101833.xml'}, # Informatique (Lieu indifférent)
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101834.xml'}, # Production Industrielle, Travaux, Chantiers (Lieu indifférent)
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101835.xml'}, # Ressources Humaines (Lieu indifférent)
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101836.xml'}, # Sanitaire, Social, Culture (Lieu indifférent)
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101837.xml'}, # Services Techniques (Lieu indifférent)
         ]
     },
     'cadresonline': {
