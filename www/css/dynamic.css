@@ -44,15 +44,24 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
  * filters
  ******************************************************************************/
 /* pubdate */
-.pubdate {
+thead .pubdate {
     width: 8%;
     text-align: center;
+    vertical-align: middle;
 }
-#filter_pubdate_pivot {
-    width: 5em;
+.ui-my-selected-button {
+    background: url(../img/ui-bg_flat_75_ffffff_40x100.png) repeat-x center;
 }
-#filter_pubdate_root {
-    width: 5.5em;
+#filter_pubdate_box .filter_pubdate_buttons {
+    height: 18px;
+}
+#filter_pubdate_box .filter_pubdate_buttons span.ui-button-text {
+    padding: 2px 5px 5px 5px;
+    margin: 0px;
+}
+#filter_pubdate_datepicker {
+    display: none;
+    position: absolute;
 }
 
 /* type */
