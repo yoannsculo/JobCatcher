@@ -106,7 +106,7 @@ class JBEures(JobBoard):
             return
 
         conn = None
-        conn = lite.connect(self.configs['global']['database'])
+        conn = lite.connect(self.configs.globals['database'])
         cursor = conn.cursor()
 
         # create a table
@@ -129,7 +129,7 @@ class JBEures(JobBoard):
                        PRIMARY KEY(ref))""" % self.name)
 
     def insertToJBTable(self):
-        conn = lite.connect(self.configs['global']['database'])
+        conn = lite.connect(self.configs.globals['database'])
         conn.text_factory = str
         cursor = conn.cursor()
         try:

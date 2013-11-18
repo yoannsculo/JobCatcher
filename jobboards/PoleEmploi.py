@@ -25,7 +25,7 @@ from jobcatcher import Offer
 
 class JBPoleEmploi(JobBoard):
 
-    def __init__(self, configs=[], interval=1200):
+    def __init__(self, configs=None, interval=1200):
         self.name = "PoleEmploi"
         super(JBPoleEmploi, self).__init__(configs, interval)
         self.encoding = {'feed': 'utf-8', 'page': 'utf-8'}
@@ -136,7 +136,7 @@ class JBPoleEmploi(JobBoard):
             return
 
         conn = None
-        conn = lite.connect(self.configs['global']['database'])
+        conn = lite.connect(self.configs.globals['database'])
         cursor = conn.cursor()
 
         # create a table
@@ -154,7 +154,7 @@ class JBPoleEmploi(JobBoard):
                        PRIMARY KEY(ref))""" % self.name)
 
     def insertToJBTable(self):
-        conn = lite.connect(self.configs['global']['database'])
+        conn = lite.connect(self.configs.globals['database'])
         conn.text_factory = str
         cursor = conn.cursor()
         try:
