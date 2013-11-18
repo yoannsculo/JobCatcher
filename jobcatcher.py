@@ -17,7 +17,8 @@ import glob
 import codecs
 import datetime
 import requests
-
+import importlib
+import pprint
 
 from optparse import OptionParser
 from xml.dom import minidom
@@ -30,8 +31,8 @@ sys.setdefaultencoding("utf-8")
 
 class JobBoard(object):
     """Generic Class forcreate new jobboard"""
-    def __init__(self, configs=[], interval=3600):
-        self._rootdir = configs['global']['rootdir']
+    def __init__(self, configs=None, interval=3600):
+        self._rootdir = configs.globals['rootdir']
         self._configs = configs
         self._interval = interval
         self._datas = {}
@@ -99,7 +100,7 @@ class JobBoard(object):
 
     def isTableCreated(self):
         """Check if the table for jobboard exist"""
-        return utilities.db_istableexists(self.configs, "jb_%s" % self.name)
+        return utilities.db_istableexists(self.configs.globals, "jb_%s" % self.name)
 
     def downloadFeed(self, feed, interval=3600, forcedownload=False):
         """Download feed from jobboard"""
@@ -138,7 +139,7 @@ class JobBoard(object):
 
     def getAllJBDatas(self):
         """Get all jobboard datas"""
-        conn = lite.connect(self.configs['global']['database'])
+        conn = lite.connect(self.configs.globals['database'])
         conn.row_factory = lite.Row
         cursor = conn.cursor()
 
@@ -155,7 +156,7 @@ class JobBoard(object):
             o = self.createOffer(d)
             if o:
                 o.cleanFields()
-                utilities.db_add_offer(self.configs, o)
+                utilities.db_add_offer(self.configs.globals, o)
 
     def createTable(self,):
         """Create Jobboard table"""
@@ -183,7 +184,7 @@ class JobBoard(object):
         raise NotImplementedError(mess)
 
     def fetchAllOffersFromDB(self):
-        conn = lite.connect(self.configs['global']['database'])
+        conn = lite.connect(self.configs.globals['database'])
         cursor = conn.cursor()
         sql = "SELECT * FROM offers WHERE source='%s' ORDER BY date_pub DESC" %(self.name)
         cursor.execute(sql)
@@ -191,12 +192,174 @@ class JobBoard(object):
         return data
 
 
+class Page(object):
+    """A page class"""
+    def __init__(self, configs=[], jobboardname="", feedid="", pagename=""):
+        self._wwwdir = configs.globals['wwwdir']
+        self._p2pdir = configs.globals['p2pdir']
+        self._rootdir = configs.globals['rootdir']
+        self._configs = configs
+        # Page information
+        self._downloaded = False
+        self._jobboardname = jobboardname
+        self._feedid = feedid
+        self._pagename = pagename
+        self._pageid = ""
+        self._url = ""
+        self._content = ""
+
+    def load(self):
+        filename = "%s/%s/pages/%s/%s" % (
+            self.rootdir,
+            self.jobboardname,
+            self.feedid,
+            self.pagename
+        )
+        webpage = utilities.openPage(filename)
+        self._feedid = webpage.pageid
+        self._url = webpage.url
+        self._content = webpage.content
+        self._downloaded = True
+
+    @property
+    def wwwdir(self):
+        return self._wwwdir
+
+    @wwwdir.setter  
+    def wwwdir(self, value):
+        self._wwwdir = value
+
+    @property
+    def rootdir(self):
+        return self._rootdir
+
+    @rootdir.setter  
+    def rootdir(self, value):
+        self._rootdir = value
+
+
+    @property
+    def p2pdir(self):
+        return self._p2pdir
+
+    @p2pdir.setter  
+    def p2pdir(self, value):
+        self._p2pdir = value
+
+    @property
+    def configs(self):
+        return self._configs
+
+    @configs.setter
+    def configs(self, value):
+        self._configs = value
+
+    @property
+    def jobboardname(self):
+        return self._jobboardname
+
+    @property
+    def feedid(self):
+        return self._feedid
+
+    @property
+    def pagename(self):
+        return self._pagename
+
+    @property
+    def pageid(self):
+        return self._pageid
+
+    @property
+    def url(self):
+        return self._url
+
+    @property
+    def content(self):
+        return self._content
+
+    @property
+    def downloaded(self):
+        return self._downloaded
+
+class Pages(object):
+    """Download jobboard via static P2P"""
+    def __init__(self, configs=[]):
+        self._wwwdir = configs.globals['wwwdir']
+        self._p2pdir = configs.globals['p2pdir']
+        self._rootdir = configs.globals['rootdir']
+        self._configs = configs
+        self._pages = list()
+
+    @property
+    def wwwdir(self):
+        return self._wwwdir
+
+    @wwwdir.setter  
+    def wwwdir(self, value):
+        self._wwwdir = value
+
+    @property
+    def rootdir(self):
+        return self._rootdir
+
+    @rootdir.setter  
+    def rootdir(self, value):
+        self._rootdir = value
+
+
+    @property
+    def p2pdir(self):
+        return self._p2pdir
+
+    @p2pdir.setter  
+    def p2pdir(self, value):
+        self._p2pdir = value
+
+
+    @property
+    def configs(self):
+        return self._configs
+
+    @configs.setter
+    def configs(self, value):
+        self._configs = value
+
+    @property
+    def pages(self):
+        return self._pages
+
+    def searchPagesForJobboard(self, jobboardname):
+        srcdir = "%s/%s" % (self.configs.globals['rootdir'], jobboardname)
+        files = utilities.findFiles(srcdir, '*.page')
+        for f in files:
+            m = re.match(r'.*/pages/([a-z0-9]+)/(.*\.page)', f)
+            if m:
+                feedid = m.group(1)
+                pagename  = m.group(2)
+                page = Page(self.configs, jobboardname, feedid, pagename)
+                self._pages.append(page)
+
+
+    def downloadPage(self, jobboardname):
+        """Download a jobboard pages"""
+        plugin = utilities.loadJobBoard(jobboardname, configs)
+        urls = plugin.getUrls()
+        plugin.downloadPages(urls)
+
+    def downloadPages(self):
+        """Download all jobboard pages"""
+        jobboardlist = self.configs.getJobboardList()
+        for jobboardname in jobboardlist:
+            self.downloadPage(jobboardname)
+
+
 class P2PDownloader(object):
     """Download jobboard via static P2P"""
     def __init__(self, configs=[]):
-        self._wwwdir = configs['global']['wwwdir']
-        self._p2pdir = configs['global']['p2pdir']
-        self._rootdir = configs['global']['rootdir']
+        self._wwwdir = configs.globals['wwwdir']
+        self._p2pdir = configs.globals['p2pdir']
+        self._rootdir = configs.globals['rootdir']
         self._configs = configs
         self._pages = dict()
 
@@ -236,7 +399,7 @@ class P2PDownloader(object):
 
     # def listServers(self):
     #     names = list()
-    #     for name, url in self.configs['global']['p2pservers']:
+    #     for name, url in self.configs.globals['p2pservers']:
     #         if 'name' in s:
     #             names.append(s['name'])
 
@@ -246,7 +409,7 @@ class P2PDownloader(object):
         #p2plist = self.listServers()
         plugins = getjobboardlist(self.configs)
 
-        for name, url in self.configs['global']['p2pservers'].iteritems():
+        for name, url in self.configs.globals['p2pservers'].iteritems():
             # Download feed ifnormations
             print 'Search for %s' % name
             destdir = "%s/%s" % (self.p2pdir, name)
@@ -275,7 +438,7 @@ class P2PDownloader(object):
                     if feeddir in feeds:
                         local = "%s/%s/pages/%s" % (self.rootdir, jobboardname, u)
                         remote = "%s/dl/%s/pages/%s" % (
-                            self.configs['global']['p2pservers'][p2psite],
+                            self.configs.globals['p2pservers'][p2psite],
                             jobboardname, u
                         )
 
@@ -283,11 +446,90 @@ class P2PDownloader(object):
                             utilities.downloadFile(remote, None, local, False)
 
 
+class Config(object):
+    """A class config"""
+    def __init__(self):
+        self._globals = None
+        self._users = {}
+
+    @property
+    def globals(self):
+        return self._globals
+
+    @globals.setter
+    def globals(self, value):
+        self._globals = value
+
+    @property
+    def users(self):
+        return self._users
+
+    @users.setter
+    def users(self, value):
+        self._users = value
+
+    def getUsers(self):
+        """Get users list"""
+        pos = -1
+
+        # Search user config
+        users = utilities.findFiles('./users', '*.py')
+        for i in range(len(users)):
+            if '__init__.py' in users[i]:
+                pos = i
+            users[i] = re.sub(r'.*/(.*?)\.py', r'\1', users[i])
+
+        # Delete __init__.py
+        if pos > 0:
+            del users[pos]
+
+        return users
+
+    def getFeedsInfo(self):
+        """Get feeds list info"""
+        feedslist = {}
+        users = self.getUsers()
+        for u in users:
+            for jobboardname in configs.users[u]:
+                if 'feeds' in configs.users[u][jobboardname]:
+                    for f in configs.users[u][jobboardname]['feeds']:
+                        if 'datas' not in f:
+                            f['datas'] = None
+                        feedid = utilities.getEncodedURL(f['url'], f['datas'])
+                        if jobboardname not in feedslist:
+                            feedslist[jobboardname] = {}
+                        if feedid not in feedslist[jobboardname]:
+                            feedslist[jobboardname][feedid] = f
+
+        return feedslist
+
+    def getJobboardList(self):
+        jobboardlist = []
+        feedlist = self.getFeedsInfo()
+        for jobboardname, feedinfo in feedlist.iteritems():
+            if jobboardname not in jobboardlist:
+                jobboardlist.append(jobboardname)
+
+        return jobboardlist
+
+    def addGlobalconfig(self, config):
+        self.globals = config
+
+    def addForUser(self, username, modulename):
+        module = importlib.import_module(modulename)
+        self._users[username] = module.configs
+
+    def loadUsersConfig(self):
+        users = self.getUsers()
+        for u in users:
+            self.addForUser(u, 'users.%s' % u)
+
+
 class ReportGenerator(object):
     """Generic Class forcreate new jobboard"""
-    def __init__(self, configs=[]):
-        self._rootdir = configs['global']['rootdir']
-        self._wwwdir = configs['global']['wwwdir']
+    def __init__(self, configs=None):
+        self._rootdir = configs.globals['rootdir']
+        self._wwwdir = configs.globals['wwwdir']
         self._configs = configs
 
     @property
@@ -334,7 +576,7 @@ class ReportGenerator(object):
         fhandle.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
         fhandle.write('\t<link rel="stylesheet" href="css/bootstrap.css" />\n')
         fhandle.write('\t<link rel="stylesheet" href="css/bootstrap-responsive.css" />\n')
-        if self.configs['report']['dynamic']:
+        if self.configs.globals['report']['dynamic']:
             fhandle.write('\t<link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css" />\n')
             fhandle.write('\t<link rel="stylesheet" href="css/simplePagination.css" />\n')
             fhandle.write('\t<link rel="stylesheet" href="css/dynamic.css" />\n')
@@ -344,7 +586,7 @@ class ReportGenerator(object):
             fhandle.write('\t<script type="text/javascript" src="js/jquery.simplePagination.js"></script>\n')
             fhandle.write('\t<script type="text/javascript" src="js/persist-min.js"></script>\n')
             fhandle.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
-            fhandle.write('\t<script type="text/javascript">var offers_per_page = %s;</script>\n' %self.configs['report']['offer_per_page'])
+            fhandle.write('\t<script type="text/javascript">var offers_per_page = %s;</script>\n' %self.configs.globals['report']['offer_per_page'])
             fhandle.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
         else:
             fhandle.write('\t<link rel="stylesheet" href="css/static.css" />\n')
@@ -374,7 +616,7 @@ class ReportGenerator(object):
     def generateStatistics(self):
         html_dir = self.wwwdir
 
-        conn = lite.connect(self.configs['global']['database'])
+        conn = lite.connect(self.configs.globals['database'])
         cursor = conn.cursor()
 
         stat = open(os.path.join(html_dir, 'statistics.html'), 'w')
@@ -402,7 +644,7 @@ class ReportGenerator(object):
         stat.write("</tr>")
         stat.write("</thead>")
 
-        jobboardlist = getjobboardlist(self.configs)
+        jobboardlist = self.configs.getJobboardList()
         for jobboardname in jobboardlist:
             plugin = utilities.loadJobBoard(jobboardname, self.configs)
             data = plugin.fetchAllOffersFromDB()
@@ -425,7 +667,7 @@ class ReportGenerator(object):
             os.makedirs(html_dir)
 
         # Query
-        conn = lite.connect(self.configs['global']['database'])
+        conn = lite.connect(self.configs.globals['database'])
         cursor = conn.cursor()
         data = None
 
@@ -470,7 +712,7 @@ class ReportGenerator(object):
         report.write('\t\t\t\t<th class="salary">Salary</th>\n')
         report.write('\t\t\t\t<th class="source">Source</th>\n')
         report.write('\t\t\t</tr>\n')
-        if self.configs['report']['dynamic']:
+        if self.configs.globals['report']['dynamic']:
             report.write('\t\t\t<tr id="lineFilters">\n')
             report.write('\t\t\t\t<td class="pubdate"></td>\n')
             report.write('\t\t\t\t<td class="type"></td>\n')
@@ -494,7 +736,7 @@ class ReportGenerator(object):
                 row[13], row[14]
             )
 
-            if (not self.configs['report']['dynamic'] and s_date != offer.date_pub.strftime('%Y-%m-%d')):
+            if (not self.configs.globals['report']['dynamic'] and s_date != offer.date_pub.strftime('%Y-%m-%d')):
                 s_date = offer.date_pub.strftime('%Y-%m-%d')
                 report.write('\t\t\t<tr class="error">\n');
                 report.write('\t\t\t\t<td colspan="8" />\n')
@@ -632,26 +874,13 @@ class Offer():
         print "Company : " + self.company
 
 
-def getjobboardlist(configs):
-    """Return the jobboard list"""
-    jobboardlist = list()
-    for jobboardname in configs:
-        if 'feeds' in configs[jobboardname]:
-            if len(configs[jobboardname]['feeds']) > 0:
-                module = 'jobboards/%s.py' % jobboardname
-                if os.path.exists(module):
-                    jobboardlist.append(jobboardname)
-
-    return jobboardlist
-
-
-def executeall(conf):
+def executeall(conf, selecteduser):
     initblacklist(conf)
-    downloadfeeds(conf)
-    downloadpages(conf)
-    insertpages(conf)
-    movepages(conf)
-    generatereport(conf)
+    downloadfeeds(conf, selecteduser)
+    downloadpages(conf, selecteduser)
+    insertpages(conf, selecteduser)
+    movepages(conf, selecteduser)
+    generatereport(conf, selecteduser)
 
 
 def generatereport(conf):
@@ -660,23 +889,26 @@ def generatereport(conf):
 
 
 def initblacklist(conf):
-    utilities.db_checkandcreate(conf)
-    utilities.blacklist_flush(conf)
-    utilities.blocklist_load(conf)
+    utilities.db_checkandcreate(conf.globals)
+    utilities.blacklist_flush(conf.globals)
+    utilities.blocklist_load(conf.globals)
 
 
-def downloadfeed(conf, jobboardname):
+def downloadfeed(conf, jobboardname, feedinfo):
     """Download a jobboard feeds"""
     plugin = utilities.loadJobBoard(jobboardname, conf)
-    feeds = conf[jobboardname]['feeds']
-    plugin.downloadFeeds(feeds)
+    plugin.downloadFeed(feedinfo)
 
 
-def downloadfeeds(conf):
+def downloadfeeds(conf, selecteduser):
     """Download all jobboard feeds"""
-    jobboardlist = getjobboardlist(conf)
-    for jobboardname in jobboardlist:
-        downloadfeed(conf, jobboardname)
+
+    # Get all users feeds
+    feedsinfo = conf.getFeedsInfo()
+
+    for jobboardname, jobboardfeeds in feedsinfo.iteritems():
+        for feedid, feedinfo in jobboardfeeds.iteritems():
+            downloadfeed(conf, jobboardname, feedinfo)
 
 
 def downloadpage(conf, jobboardname):
@@ -687,33 +919,42 @@ def downloadpage(conf, jobboardname):
 
 
 def downloadpages(conf):
-    """Download all jobboard pages"""
-    jobboardlist = getjobboardlist(conf)
-    for jobboardname in jobboardlist:
-        downloadpage(conf, jobboardname)
+    pages = Pages(conf)
+    pages.downloadPages()
+    # """Download all jobboard pages"""
+    # jobboardlist = conf.getJobboardList()
+    # for jobboardname in jobboardlist:
+    #     downloadpage(conf, jobboardname)
 
 
 def insertpage(conf, jobboardname):
-    """Insert pages in jobboard table"""
-    utilities.db_checkandcreate(conf)
-
-    destdir = "%s/%s/pages" % (conf['global']['rootdir'], jobboardname)
     plugin = utilities.loadJobBoard(jobboardname, conf)
-    for p in glob.glob("%s/*.page" % destdir):
-        page = utilities.openPage(p)
+
+    # Search page for jobboard
+    pages = Pages(conf)
+    pages.searchPagesForJobboard(jobboardname)
+    plugin = utilities.loadJobBoard(jobboardname, conf)
+
+    for page in pages.pages:
+        # Load page content if needed
+        if not page.downloaded:
+            page.load()
+
+        # Analyse page
         plugin.analyzePage(page.url, page.content)
 
 
 def insertpages(conf):
     """Insert all pages from all jobboard"""
-    jobboardlist = getjobboardlist(conf)
+    jobboardlist = conf.getJobboardList()
+
     for jobboardname in jobboardlist:
         insertpage(conf, jobboardname)
 
 
 def movepage(conf, jobboardname):
     """Move jobboard pages to offers"""
-    utilities.db_checkandcreate(conf)
+    utilities.db_checkandcreate(conf.globals)
 
     plugin = utilities.loadJobBoard(jobboardname, conf)
     plugin.moveToOffers()
@@ -721,7 +962,8 @@ def movepage(conf, jobboardname):
 
 def movepages(conf):
     """Move all pages from all jobboard"""
-    jobboardlist = getjobboardlist(conf)
+    jobboardlist = conf.getJobboardList()
+
     for jobboardname in jobboardlist:
         movepage(conf, jobboardname)
 
@@ -748,12 +990,26 @@ def reimports(conf, jobboardname):
     imports(conf)
 
 if __name__ == '__main__':
-    from config import configs
 
-    parser = OptionParser(usage = 'syntax: %prog [options] <from> [to]')
+    # Load configs
+    from config import configs as globalconfig
+    configs = Config()
+    configs.addGlobalconfig(globalconfig)
+    configs.loadUsersConfig()
+
+    parser = OptionParser(usage='syntax: %prog [options] <from> [to]')
     args = sys.argv[1:]
+    selecteduser = configs.getUsers()
 
-    parser.set_defaults(version = False)
+    parser.set_defaults(version=False)
+    parser.add_option('--user',
+                      action='store',
+                      metavar='USERNAME',
+                      dest='user',
+                      help='download feed only for the USERNAME'
+    )
+
+
     parser.add_option('--all',
                       action='store_true',
                       dest='all',
@@ -869,6 +1125,10 @@ if __name__ == '__main__':
         )
         sys.exit(0)
 
+    if options.user:
+        selecteduser = [options.user]
+
+
     if options.report:
         print "Report generation..."
         generatereport(configs)
@@ -876,12 +1136,12 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if options.all:
-        executeall(configs)
+        executeall(configs, selecteduser)
         sys.exit(0)
 
     #Feeds
     if options.feeds:
-        downloadfeeds(configs)
+        downloadfeeds(configs, selecteduser)
         sys.exit(0)
 
     if options.feed:
@@ -923,3 +1183,4 @@ if __name__ == '__main__':
         p = P2PDownloader(configs)
         p.initcache()
         p.sync()
+        

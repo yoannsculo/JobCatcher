@@ -186,7 +186,7 @@ def db_checkandcreate(configs):
 
 def db_istableexists(configs, tablename):
     """Check if tablename exist"""
-    conn = lite.connect(configs['global']['database'])
+    conn = lite.connect(configs['database'])
     cursor = conn.cursor()
     sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='%s';" % tablename
     cursor.execute(sql)
@@ -196,10 +196,10 @@ def db_istableexists(configs, tablename):
 def db_create(configs):
     """Create the offers table"""
     conn = None
-    conn = lite.connect(configs['global']['database'])
+    conn = lite.connect(configs['database'])
     cursor = conn.cursor()
 
-    # create a table
+    # create a offers table
     cursor.execute("""CREATE TABLE offers( \
                         source TEXT, \
                         ref TEXT, \
@@ -217,13 +217,18 @@ def db_create(configs):
                         url TEXT, \
                         content TEXT, \
                         PRIMARY KEY(source, ref))""")
+    # create a offers table
+    cursor.execute("""CREATE TABLE feeds( \
+                        feedid TEXT, \
+                        ref TEXT, \
+                        PRIMARY KEY(feedid, ref))""")
     cursor.execute("""CREATE TABLE blacklist(company TEXT, PRIMARY KEY(company))""")
 
 
 def db_delete_jobboard_datas(configs, jobboardname):
     """Delete jobboard datas from offers table"""
     conn = None
-    conn = lite.connect(configs['global']['database'])
+    conn = lite.connect(configs['database'])
     cursor = conn.cursor()
 
     # create a table
@@ -233,7 +238,7 @@ def db_delete_jobboard_datas(configs, jobboardname):
 
 
 def db_add_offer(configs, offer):
-    conn = lite.connect(configs['global']['database'])
+    conn = lite.connect(configs['database'])
     try:
         conn.text_factory = str
         cursor = conn.cursor()
@@ -267,7 +272,7 @@ def db_add_offer(configs, offer):
 
 
 def blacklist_flush(configs):
-    conn = lite.connect(configs['global']['database'])
+    conn = lite.connect(configs['database'])
     cursor = conn.cursor()
     sql = "DELETE FROM blacklist"
     cursor.execute(sql)
@@ -283,7 +288,7 @@ def blocklist_load(configs):
         list.append([company])
 
     try:
-        conn = lite.connect(configs['global']['database'])
+        conn = lite.connect(configs['database'])
         conn.text_factory = str
         cursor = conn.cursor()
         cursor.executemany("INSERT INTO blacklist VALUES(?)", list)
