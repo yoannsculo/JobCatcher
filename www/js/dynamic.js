@@ -431,17 +431,99 @@ var PubdateFilter = AbstractFilter.extend({
         return this._super(id, options);
     },
     /**
+     * \property priv_selected_button_class_name
+     * \brief Name of CSS class for the selected button.
+     */
+    priv_selected_button_class_name: "ui-my-selected-button",
+    /**
      * \fn init(classname, master_filter)
      * \brief Constructor.
      */
     init: function(classname, master_filter) {
         this._super(classname, master_filter);
         var self = this;
-        var $filter_pubdate_combobox = this.priv_select_from_array(
-            "filter_pubdate_pivot", ["All", "Before", "At", "After"]
+        /* button creation
+         * <div id="filter_pubdate_box">
+         *      <a id="filter_pubdate_before" class="filter_pubdate_buttons">Before</a>
+         *      <a id="filter_pubdate_at" class="filter_pubdate_buttons">At</a>
+         *      <a id="filter_pubdate_after" class="filter_pubdate_buttons">After</a>
+         *      <div id="filter_pubdate_datepicker" />
+         *  </div>
+         */
+        var $filter_pubdate_box = $("<div>", {id: "filter_pubdate_box"});
+        var $filter_pubdate_before = $("<a>", {
+            id: "filter_pubdate_before",
+            class: "filter_pubdate_buttons"
+        });
+        var $filter_pubdate_at = $("<a>", {
+            id: "filter_pubdate_at",
+            class: "filter_pubdate_buttons"
+        });
+        var $filter_pubdate_after = $("<a>", {
+            id: "filter_pubdate_after",
+            class: "filter_pubdate_buttons"
+        });
+        var $filter_pubdate_datepicker = $("<div>", {id: "filter_pubdate_datepicker"});
+
+        $filter_pubdate_before
+            .text("Before")
+            .button({
+                icons: {primary: "ui-icon-circle-triangle-w"},
+                text: false,
+            })
+            .appendTo($filter_pubdate_box);
+        $filter_pubdate_at
+            .text("At")
+            .button()
+            .appendTo($filter_pubdate_box);
+        $filter_pubdate_after
+            .text("After")
+            .button({
+                icons: {primary: "ui-icon-circle-triangle-e"},
+                text: false,
+            })
+            .appendTo($filter_pubdate_box);
+        $filter_pubdate_datepicker
+            .appendTo($filter_pubdate_box);
+
+        /* datepicker creation */
+        $filter_pubdate_datepicker.datepicker({
+            dateFormat: "yy-mm-dd",
+            defaultDate: 0,
+            onSelect: function(date_text, sender) {
+                $filter_pubdate_at.find("span").text(date_text);
+                $(this).hide();
+                self.apply();
+            }
+        });
+        var date_current = $.datepicker.formatDate(
+            $filter_pubdate_datepicker.datepicker("option", "dateFormat"),
+            $filter_pubdate_datepicker.datepicker("getDate")
         );
-        var $filter_pubdate_root = $("<input>", {id: "filter_pubdate_root"});
-        priv_elements = [$filter_pubdate_combobox, $filter_pubdate_root];
+        $filter_pubdate_at.find("span").text(date_current);
+        $filter_pubdate_at.mouseenter(function() {
+            $filter_pubdate_datepicker.show();
+        });
+        $("#lineFilters ." + classname).mouseleave(function() {
+            $filter_pubdate_datepicker.hide();
+        });
+
+        /* button picking */
+        $filter_pubdate_box.find("a").click(function(e) {
+            var class_checked = self.priv_selected_button_class_name;
+            var $button = $("#" + e.currentTarget.id);
+            $filter_pubdate_datepicker.hide();
+            if ($button.hasClass(class_checked)) {
+                $button.removeClass(class_checked)
+            } else {
+                $filter_pubdate_box.find("a").each(function(key, val) {
+                    $(val).removeClass(class_checked);
+                });
+                $button.addClass(class_checked);
+            }
+            self.apply();
+        });
+        priv_elements = [$filter_pubdate_box];
     },
     /**
      * \fn apply()
@@ -460,23 +542,9 @@ var PubdateFilter = AbstractFilter.extend({
      * \brief Attaches the DOM elements the given \a $parent.
      */
     attach: function($parent) {
-        var filter = this;
+        var self = this;
         $.each(priv_elements, function(key, val) {
             $parent.append(val);
-        });
-        priv_elements[0].change(function() {
-            filter.apply();
-        });
-        $("#filter_pubdate_root").datepicker({
-            autoSize: true,
-            buttonText: "Calendar",
-            buttonImage: "img/calendar-16.png",
-            dateFormat: "yy-mm-dd",
-            defaultDate: 0,
-            showOn: "button",
-            onSelect: function(date_text, sender) {
-                filter.apply();
-            }
         });
         return true;
     },
@@ -486,24 +554,39 @@ var PubdateFilter = AbstractFilter.extend({
      * \returns Either \c true of \c false.
      */
     test: function(value)  {
-        if ("" == $("#filter_pubdate_root").val())
+        /* Find the selected button */
+        var $selected_button = $(
+            "#filter_pubdate_box a.filter_pubdate_buttons."
+            + this.priv_selected_button_class_name
+        );
+        /* If there is no selected button, return true */
+        if (undefined === $selected_button || null === $selected_button)
             return true;
-        var date_format = $("#filter_pubdate_root").datepicker("option", "dateFormat");
-        var row_date = $.datepicker.parseDate(date_format, value);
-        var pivot_date = $("#filter_pubdate_root").datepicker("getDate");
-        var pivot_type = $("#filter_pubdate_pivot :selected").text();
-        switch(pivot_type)
+        
+        /* Get the selected button text */
+        var text = $selected_button.text();
+        if (undefined === text || null === text || "" === text)
+            return true;
+                
+        /* Else, compare selected pubdate and offer pubdate */
+        var date_format = $("#filter_pubdate_datepicker").datepicker("option", "dateFormat");
+        var date_selected = $("#filter_pubdate_datepicker").datepicker("getDate");
+        var date_selected_text = $.datepicker.formatDate(date_format, date_selected);
+        if (undefined === date_selected || null == date_selected)
+            return true;
+        var date_offer = $.datepicker.parseDate(date_format, value);
+        if (undefined === date_offer || null == date_offer)
+            return true;
+        switch(text)
         {
-        case "All":
-            return true;
         case "Before":
-            return pivot_date >= row_date;
-        case "At":
-            return Math.abs(pivot_date - row_date) < 1000*86400-1;
+            return date_selected >= date_offer;
+        case date_selected_text:
+            return Math.abs(date_selected - date_offer) < 1000*86400-1;
         case "After":
-            return pivot_date <= row_date;
+            return date_selected <= date_offer;
         default:
-            console.error("Inconsistancy here. Must match <select> creation on init().");
+            console.error("Inconsistancy here. `text' value is `" + text + "'.");
             return true;
         }
     }
