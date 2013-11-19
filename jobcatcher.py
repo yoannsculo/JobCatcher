@@ -883,7 +883,7 @@ def executeall(conf, selecteduser):
     generatereport(conf, selecteduser)
 
 
-def generatereport(conf):
+def generatereport(conf, selecteduser):
     r = ReportGenerator(conf)
     r.generate()
 
@@ -918,7 +918,7 @@ def downloadpage(conf, jobboardname):
     plugin.downloadPages(urls)
 
 
-def downloadpages(conf):
+def downloadpages(conf, selecteduser):
     pages = Pages(conf)
     pages.downloadPages()
     # """Download all jobboard pages"""
@@ -944,7 +944,7 @@ def insertpage(conf, jobboardname):
         plugin.analyzePage(page.url, page.content)
 
 
-def insertpages(conf):
+def insertpages(conf, selecteduser):
     """Insert all pages from all jobboard"""
     jobboardlist = conf.getJobboardList()
 
@@ -960,7 +960,7 @@ def movepage(conf, jobboardname):
     plugin.moveToOffers()
 
 
-def movepages(conf):
+def movepages(conf, selecteduser):
     """Move all pages from all jobboard"""
     jobboardlist = conf.getJobboardList()
 
