@@ -745,7 +745,7 @@ class ReportGenerator(object):
             report.write('\t\t\t<tr>\n')
             report.write('\t\t\t\t<td class="pubdate">' + offer.date_pub.strftime('%Y-%m-%d') + '</td>\n')
             report.write('\t\t\t\t<td class="type"><span class="label label-success">noSSII</span></td>\n')
-            report.write('\t\t\t\t<td class="title"><a href="'+offer.url+'">' + offer.title + '</a></td>\n')
+            report.write('\t\t\t\t<td class="title"><a href="'+re.sub('&', '&amp;' offer.url)+'">' + offer.title + '</a></td>\n')
             report.write('\t\t\t\t<td class="company">' + offer.company + '</td>\n')
             # Location
             report.write('\t\t\t\t<td class="location">')
