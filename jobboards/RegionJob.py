@@ -83,10 +83,10 @@ class JBRegionJob(JobBoard):
 
         return res
 
-    def analyzePage(self, url, html):
+    def analyzePage(self, page):
         """Analyze page and extract datas"""
 
-        soup = BeautifulSoup(html, fromEncoding=self.encoding['page'])
+        soup = BeautifulSoup(page.content, fromEncoding=self.encoding['page'])
         item = soup.body.find('div', attrs={'id': 'annonce'})
 
         if not item:
@@ -99,7 +99,7 @@ class JBRegionJob(JobBoard):
 
         # Title & Url
         self.datas['title'] = utilities.htmltotext(h1.text).strip()
-        self.datas['url'] = url
+        self.datas['url'] = page.url
 
         # Date & Ref
         p = item.find('p', attrs={'class': 'date_ref'})
@@ -107,6 +107,7 @@ class JBRegionJob(JobBoard):
             return 1
 
         self.datas['ref'] = self._regexExtract(ur'Réf :(.*)', p)
+        self.datas['feedid'] = page.feedid
         self.datas['date_add'] = int(time.time())
         self.datas['date_pub'] = datetime.strptime(
             self._regexExtract(ur'publié le(.*?)<br />', p),
@@ -165,6 +166,7 @@ class JBRegionJob(JobBoard):
         # create a table
         cursor.execute("""CREATE TABLE jb_%s( \
                        ref TEXT, \
+                       feedid TEXT, \
                        url TEXT, \
                        date_pub INTEGER, \
                        date_add INTEGER, \
@@ -182,9 +184,10 @@ class JBRegionJob(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?)" %
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
                                self.datas['ref'],
+                               self.datas['feedid'],
                                self.datas['url'],
                                self.datas['date_pub'],
                                self.datas['date_add'],
@@ -215,6 +218,7 @@ class JBRegionJob(JobBoard):
         o.src = self.name
         o.url = data['url']
         o.ref = data['ref']
+        o.feedid = data['feedid']
         o.title = data['title']
         o.company = data['company']
         o.contract = data['contract']

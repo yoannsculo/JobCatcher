@@ -88,10 +88,10 @@ class JBApec(JobBoard):
         return res
 
 
-    def analyzePage(self, url, html):
+    def analyzePage(self, page):
         """Analyze page and extract datas"""
 
-        soup = BeautifulSoup(html, fromEncoding=self.encoding['page'])
+        soup = BeautifulSoup(page.content, fromEncoding=self.encoding['page'])
         item = soup.body.find('div', attrs={'class': 'boxMain boxOffres box'})
 
         if not item:
@@ -111,8 +111,9 @@ class JBApec(JobBoard):
         if not table:
             return 1
 
-        self.datas['url'] = url
         self.datas['ref'] = self._extractItem(u"Référence Apec", table)
+        self.datas['feedid'] = page.feedid
+        self.datas['url'] = page.url
         self.datas['refsoc'] = self._extractItem(u"Référence société", table)
 
         # Dates
@@ -144,6 +145,7 @@ class JBApec(JobBoard):
         # create a table
         cursor.execute("""CREATE TABLE jb_%s( \
                        ref TEXT, \
+                       feedid TEXT, \
                        refsoc TEXT, \
                        url TEXT, \
                        date_pub INTEGER, \
@@ -161,9 +163,10 @@ class JBApec(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?)" % 
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?)" % 
                            self.name, (
                                self.datas['ref'],
+                               self.datas['feedid'],
                                self.datas['refsoc'],
                                self.datas['url'],
                                self.datas['date_pub'],
@@ -194,6 +197,7 @@ class JBApec(JobBoard):
         o.src = self.name
         o.url = data['url']
         o.ref = data['ref']
+        o.feedid = data['feedid']
         o.title = data['title']
         o.company = data['company']
         o.contract = data['contract']

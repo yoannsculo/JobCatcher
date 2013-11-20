@@ -70,10 +70,10 @@ class JBPoleEmploi(JobBoard):
 
         return res
 
-    def analyzePage(self, url, html):
+    def analyzePage(self, page):
         """Analyze page and extract datas"""
 
-        soup = BeautifulSoup(html, fromEncoding=self.encoding['page'])
+        soup = BeautifulSoup(page.content, fromEncoding=self.encoding['page'])
         item = soup.body.find('div', attrs={'class': 'block-content'})
 
         if not item:
@@ -86,11 +86,12 @@ class JBPoleEmploi(JobBoard):
 
         # Title & Url
         self.datas['title'] = utilities.htmltotext(h4.text).strip()
-        self.datas['url'] = url
+        self.datas['url'] = page.url
 
         # Ref
         li = item.find('li', attrs={'class': 'primary'})
         self.datas['ref'] = self._regexExtract(u'Numéro de l\'offre', li)
+        self.datas['feedid'] = page.feedid
 
         li = item.find('li', attrs={'class': 'secondary'})
         if not li:
@@ -142,6 +143,7 @@ class JBPoleEmploi(JobBoard):
         # create a table
         cursor.execute("""CREATE TABLE jb_%s( \
                        ref TEXT, \
+                       feedid TEXT, \
                        url TEXT, \
                        date_pub INTEGER, \
                        date_add INTEGER, \
@@ -158,9 +160,10 @@ class JBPoleEmploi(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?)" %
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
                                self.datas['ref'],
+                               self.datas['feedid'],
                                self.datas['url'],
                                self.datas['date_pub'],
                                self.datas['date_add'],
@@ -190,6 +193,7 @@ class JBPoleEmploi(JobBoard):
         o.src = self.name
         o.url = data['url']
         o.ref = data['ref']
+        o.feedid = data['feedid']
         o.title = data['title']
         o.company = data['company']
         o.contract = data['contract']

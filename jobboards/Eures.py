@@ -68,35 +68,36 @@ class JBEures(JobBoard):
 
         return res
 
-    def analyzePage(self, url, html):
+    def analyzePage(self, page):
         """Analyze page and extract datas"""
         # Refs
-        self.datas['url'] = url
-        self.datas['ref'] = self._extractItem("Référence nationale", html)
-        self.datas['nace'] = self._extractItem("Code Nace", html)
+        self.datas['url'] = page.url
+        self.datas['ref'] = self._extractItem("Référence nationale", page.content)
+        self.datas['feedid'] = page.feedid
+        self.datas['nace'] = self._extractItem("Code Nace", page.content)
 
         # Dates
         self.datas['date_add'] = int(time.time())
 
-        self.datas['date_pub'] = self._extractItem("Date de publication", html)
+        self.datas['date_pub'] = self._extractItem("Date de publication", page.content)
         if self.datas['date_pub']:
             self.datas['date_pub'] = datetime.strptime(
                 self.datas['date_pub'],
                 "%d/%m/%Y").strftime('%s')
 
         # Job informations
-        self.datas['title'] = self._extractItem("Titre", html)
-        self.datas['location'] = self._extractItem("Région", html)
-        self.datas['company'] = self._extractItem("Nom", html)
-        self.datas['contract'] = self._extractItem("Type de contrat", html)
+        self.datas['title'] = self._extractItem("Titre", page.content)
+        self.datas['location'] = self._extractItem("Région", page.content)
+        self.datas['company'] = self._extractItem("Nom", page.content)
+        self.datas['contract'] = self._extractItem("Type de contrat", page.content)
         # Salary
-        self.datas['salary_min'] = self._extractItem("Salaire minimum", html)
-        self.datas['salary_max'] = self._extractItem("Salaire maximum", html)
-        self.datas['salary_period'] = self._extractItem("Période de rémunération", html)
-        self.datas['nb_hours'] = self._extractItem("Horaire hebdomadaire", html)
+        self.datas['salary_min'] = self._extractItem("Salaire minimum", page.content)
+        self.datas['salary_max'] = self._extractItem("Salaire maximum", page.content)
+        self.datas['salary_period'] = self._extractItem("Période de rémunération", page.content)
+        self.datas['nb_hours'] = self._extractItem("Horaire hebdomadaire", page.content)
         # Experiences
-        self.datas['qualification'] = self._extractItem("Qualifications en formation exigées", html)
-        self.datas['experience'] = self._extractItem("Expérience requise", html)
+        self.datas['qualification'] = self._extractItem("Qualifications en formation exigées", page.content)
+        self.datas['experience'] = self._extractItem("Expérience requise", page.content)
 
         # Insert to jobboard table
         self.insertToJBTable()
@@ -112,6 +113,7 @@ class JBEures(JobBoard):
         # create a table
         cursor.execute("""CREATE TABLE jb_%s( \
                        ref TEXT, \
+                       feedid TEXT, \
                        nace TEXT, \
                        url TEXT, \
                        date_pub INTEGER, \
@@ -133,9 +135,10 @@ class JBEures(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
                            self.name, (
                                self.datas['ref'],
+                               self.datas['feedid'],
                                self.datas['nace'],
                                self.datas['url'],
                                self.datas['date_pub'],
@@ -168,6 +171,7 @@ class JBEures(JobBoard):
         o.src = self.name
         o.url = data['url']
         o.ref = data['ref']
+        o.feedid = data['feedid']
         o.title = data['title']
         o.company = data['company']
         o.contract = data['contract']
