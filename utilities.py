@@ -203,6 +203,7 @@ def db_create(configs):
     cursor.execute("""CREATE TABLE offers( \
                         source TEXT, \
                         ref TEXT, \
+                        feedid TEXT, \
                         date_pub INTEGER, \
                         date_add INTEGER, \
                         title TEXT, \
@@ -242,9 +243,9 @@ def db_add_offer(configs, offer):
     try:
         conn.text_factory = str
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                        (
-                           offer.src, offer.ref,
+                           offer.src, offer.ref, offer.feedid,
                            offer.date_pub, offer.date_add,
                            offer.title, offer.company, offer.contract,
                            offer.duration, offer.location, offer.department,

@@ -208,6 +208,14 @@ class Page(object):
         self._url = ""
         self._content = ""
 
+    def _extractFeedidFromFilename(self, filename):
+        feedid = None
+        m = re.match(r'.*/pages/([a-z0-9]+)/(.*\.page)', filename)
+        if m:
+            feedid = m.group(1)
+
+        return feedid
+
     def load(self):
         filename = "%s/%s/pages/%s/%s" % (
             self.rootdir,
@@ -216,7 +224,8 @@ class Page(object):
             self.pagename
         )
         webpage = utilities.openPage(filename)
-        self._feedid = webpage.pageid
+        self._feedid = self._extractFeedidFromFilename(filename)
+        self._pageid = webpage.pageid
         self._url = webpage.url
         self._content = webpage.content
         self._downloaded = True
@@ -480,15 +489,19 @@ class Config(object):
             users[i] = re.sub(r'.*/(.*?)\.py', r'\1', users[i])
 
         # Delete __init__.py
-        if pos > 0:
+        if pos >= 0:
             del users[pos]
 
         return users
 
-    def getFeedsInfo(self):
+    def getFeedsInfo(self, users=None):
         """Get feeds list info"""
         feedslist = {}
-        users = self.getUsers()
+
+        # Users
+        if not users:
+            users = self.getUsers()
+
         for u in users:
             for jobboardname in configs.users[u]:
                 if 'feeds' in configs.users[u][jobboardname]:
@@ -503,9 +516,9 @@ class Config(object):
 
         return feedslist
 
-    def getJobboardList(self):
+    def getJobboardList(self, selecteduser=None):
         jobboardlist = []
-        feedlist = self.getFeedsInfo()
+        feedlist = self.getFeedsInfo(selecteduser)
         for jobboardname, feedinfo in feedlist.iteritems():
             if jobboardname not in jobboardlist:
                 jobboardlist.append(jobboardname)
@@ -806,6 +819,7 @@ class Location():
 class Offer():
     def __init__(self):
         self.ref = u""
+        self.feddid = u""
         self.title = u""
         self.company = u""
 
@@ -826,13 +840,14 @@ class Offer():
         self.lon = u""
 
     def load(
-            self, src, ref, date_pub, date_add, title, company,
+            self, src, ref, feedid, date_pub, date_add, title, company,
             contract, duration, location, department, lat, lon,
             salary, url, content
     ):
 
         self.src = src
         self.ref = ref
+        self.feedid = feedid
 
         self.date_pub = datetime.datetime.fromtimestamp(int(date_pub))
         self.date_add = datetime.datetime.fromtimestamp(int(date_add))
@@ -877,7 +892,7 @@ class Offer():
 def executeall(conf, selecteduser):
     initblacklist(conf)
     downloadfeeds(conf, selecteduser)
-    downloadpages(conf, selecteduser)
+    downloadpages(conf)
     insertpages(conf, selecteduser)
     movepages(conf, selecteduser)
     generatereport(conf, selecteduser)
@@ -894,31 +909,33 @@ def initblacklist(conf):
     utilities.blocklist_load(conf.globals)
 
 
-def downloadfeed(conf, jobboardname, feedinfo):
-    """Download a jobboard feeds"""
-    plugin = utilities.loadJobBoard(jobboardname, conf)
-    plugin.downloadFeed(feedinfo)
+# def downloadfeed(conf, jobboardname, feedinfo):
+#     """Download a jobboard feeds"""
+#     plugin = utilities.loadJobBoard(jobboardname, conf)
+#     plugin.downloadFeed(feedinfo)
 
 
 def downloadfeeds(conf, selecteduser):
     """Download all jobboard feeds"""
 
     # Get all users feeds
-    feedsinfo = conf.getFeedsInfo()
+    feedsinfo = conf.getFeedsInfo(selecteduser)
 
     for jobboardname, jobboardfeeds in feedsinfo.iteritems():
         for feedid, feedinfo in jobboardfeeds.iteritems():
-            downloadfeed(conf, jobboardname, feedinfo)
+            plugin = utilities.loadJobBoard(jobboardname, conf)
+            plugin.downloadFeed(feedinfo)
 
 
-def downloadpage(conf, jobboardname):
-    """Download a jobboard pages"""
-    plugin = utilities.loadJobBoard(jobboardname, conf)
-    urls = plugin.getUrls()
-    plugin.downloadPages(urls)
+
+# def downloadpage(conf, jobboardname):
+#     """Download a jobboard pages"""
+#     plugin = utilities.loadJobBoard(jobboardname, conf)
+#     urls = plugin.getUrls()
+#     plugin.downloadPages(urls)
 
 
-def downloadpages(conf, selecteduser):
+def downloadpages(conf):
     pages = Pages(conf)
     pages.downloadPages()
     # """Download all jobboard pages"""
@@ -928,8 +945,6 @@ def downloadpages(conf, selecteduser):
 
 
 def insertpage(conf, jobboardname):
-    plugin = utilities.loadJobBoard(jobboardname, conf)
-
     # Search page for jobboard
     pages = Pages(conf)
     pages.searchPagesForJobboard(jobboardname)
@@ -941,7 +956,7 @@ def insertpage(conf, jobboardname):
             page.load()
 
         # Analyse page
-        plugin.analyzePage(page.url, page.content)
+        plugin.analyzePage(page)
 
 
 def insertpages(conf, selecteduser):
@@ -999,7 +1014,7 @@ if __name__ == '__main__':
 
     parser = OptionParser(usage='syntax: %prog [options] <from> [to]')
     args = sys.argv[1:]
-    selecteduser = configs.getUsers()
+    selecteduser = None
 
     parser.set_defaults(version=False)
     parser.add_option('--user',
@@ -1022,12 +1037,12 @@ if __name__ == '__main__':
                       help='download the all feeds in the config'
     )
 
-    parser.add_option('--feed',
-                      action='store',
-                      metavar='JOBBOARD',
-                      dest='feed',
-                      help='download only the feed from JOBBOARD in the config',
-    )
+    # parser.add_option('--feed',
+    #                   action='store',
+    #                   metavar='JOBBOARD',
+    #                   dest='feed',
+    #                   help='download only the feed from JOBBOARD in the config',
+    # )
 
     parser.add_option('--pages',
                       action='store_true',
@@ -1035,12 +1050,12 @@ if __name__ == '__main__':
                       help='download the all pages in the config'
     )
 
-    parser.add_option('--page',
-                      action='store',
-                      metavar='JOBBOARD',
-                      dest='page',
-                      help='download only the pages from JOBBOARD in the config'
-    )
+    # parser.add_option('--page',
+    #                   action='store',
+    #                   metavar='JOBBOARD',
+    #                   dest='page',
+    #                   help='download only the pages from JOBBOARD in the config'
+    # )
     
     parser.add_option('--inserts',
                       action='store_true',
@@ -1128,10 +1143,9 @@ if __name__ == '__main__':
     if options.user:
         selecteduser = [options.user]
 
-
     if options.report:
         print "Report generation..."
-        generatereport(configs)
+        generatereport(configs, selecteduser)
         print "Done."
         sys.exit(0)
 
@@ -1144,29 +1158,29 @@ if __name__ == '__main__':
         downloadfeeds(configs, selecteduser)
         sys.exit(0)
 
-    if options.feed:
-        downloadfeed(configs, options.feed)
-        sys.exit(0)
+    # if options.feed:
+    #     downloadfeed(configs, options.feed)
+    #     sys.exit(0)
 
     # Pages
     if options.pages:
         downloadpages(configs)
         sys.exit(0)
 
-    if options.page:
-        downloadpage(configs, options.page)
-        sys.exit(0)
+    # if options.page:
+    #     downloadpage(configs, options.page)
+    #     sys.exit(0)
 
     # Inserts
     if options.inserts:
-        insertpages(configs)
+        insertpages(configs, selecteduser)
 
     if options.insert:
         insertpage(configs, options.insert)
 
     # Moves
     if options.moves:
-        movepages(configs)
+        movepages(configs, selecteduser)
 
     if options.move:
         movepage(configs, options.move)
