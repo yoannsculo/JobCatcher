@@ -822,7 +822,7 @@ class ReportGenerator(object):
             report.write('\t\t<thead>\n')
             report.write('\t\t\t<tr id="lineHeaders">\n')
             report.write('\t\t\t\t<th class="pubdate">Pubdate</th>\n')
-            report.write('\t\t\t\t<th class="type">Type</th>\n')
+            # report.write('\t\t\t\t<th class="type">Type</th>\n')
             report.write('\t\t\t\t<th class="title">Title</th>\n')
             report.write('\t\t\t\t<th class="company">Company</th>\n')
             report.write('\t\t\t\t<th class="location">Location</th>\n')
@@ -833,7 +833,7 @@ class ReportGenerator(object):
             if self.configs.globals['report']['dynamic']:
                 report.write('\t\t\t<tr id="lineFilters">\n')
                 report.write('\t\t\t\t<td class="pubdate"></td>\n')
-                report.write('\t\t\t\t<td class="type"></td>\n')
+                # report.write('\t\t\t\t<td class="type"></td>\n')
                 report.write('\t\t\t\t<td class="title"></td>\n')
                 report.write('\t\t\t\t<td class="company"></td>\n')
                 report.write('\t\t\t\t<td class="location"></td>\n')
@@ -862,7 +862,7 @@ class ReportGenerator(object):
 
                 report.write('\t\t\t<tr>\n')
                 report.write('\t\t\t\t<td class="pubdate">' + offer.date_pub.strftime('%Y-%m-%d') + '</td>\n')
-                report.write('\t\t\t\t<td class="type"><span class="label label-success">noSSII</span></td>\n')
+                #report.write('\t\t\t\t<td class="type"><span class="label label-success">noSSII</span></td>\n')
                 report.write('\t\t\t\t<td class="title"><a href="'+re.sub('&', '&amp;', offer.url)+'">' + offer.title + '</a></td>\n')
                 report.write('\t\t\t\t<td class="company">' + offer.company + '</td>\n')
                 # Location
