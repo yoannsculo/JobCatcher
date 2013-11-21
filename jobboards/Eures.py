@@ -89,6 +89,9 @@ class JBEures(JobBoard):
         self.datas['title'] = self._extractItem("Titre", page.content)
         self.datas['location'] = self._extractItem("Région", page.content)
         self.datas['company'] = self._extractItem("Nom", page.content)
+        if not self.datas['company']:
+            self.datas['company'] = "NA"
+
         self.datas['contract'] = self._extractItem("Type de contrat", page.content)
         # Salary
         self.datas['salary_min'] = self._extractItem("Salaire minimum", page.content)
