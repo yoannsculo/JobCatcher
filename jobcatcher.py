@@ -157,6 +157,8 @@ class JobBoard(object):
             if o:
                 o.cleanFields()
                 utilities.db_add_offer(self.configs.globals, o)
+            else:
+                print "Error moving to offers of %s" % d['url']
 
     def createTable(self,):
         """Create Jobboard table"""
@@ -1061,7 +1063,8 @@ def insertpage(conf, jobboardname):
             page.load()
 
         # Analyse page
-        plugin.analyzePage(page)
+        if plugin.analyzePage(page):
+            print "Analyse error page %s" % page.url
 
 
 def insertpages(conf, selecteduser):
