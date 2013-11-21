@@ -516,6 +516,21 @@ class Config(object):
 
         return feedslist
 
+    def getFeedIdsForUser(self, user):
+        """Get feeds list info"""
+        feedidslist = list()
+
+        for jobboardname in configs.users[user]:
+            if 'feeds' in configs.users[user][jobboardname]:
+                for f in configs.users[user][jobboardname]['feeds']:
+                    if 'datas' not in f:
+                        f['datas'] = None
+                    feedid = utilities.getEncodedURL(f['url'], f['datas'])
+                    if feedid not in feedidslist:
+                        feedidslist.append(feedid)
+
+        return feedidslist
+
     def getJobboardList(self, selecteduser=None):
         jobboardlist = []
         feedlist = self.getFeedsInfo(selecteduser)
@@ -569,11 +584,23 @@ class ReportGenerator(object):
     def configs(self, value):
         self._configs = value
 
-    def generate(self):
-        self.generateReport(True)
-        self.generateReport(False)
+    def generate(self, selecteduser):
+        self.generateReport(selecteduser, True)
+        self.generateReport(selecteduser, False)
         self.generateStatistics()
+        self.generateIndex(selecteduser)
         self.generateDownloadedFile()
+
+    def _getSQLFilterFeedid(self, feedidslist):
+        sql = "feedid in ("
+        for idx in range(len(feedidslist)):
+            sql += "'%s'" % feedidslist[idx]
+            if idx != len(feedidslist) - 1:
+                sql += ', '
+
+        sql += ")"
+
+        return sql
 
     def box(self, style, text):
         css = ""
@@ -582,27 +609,29 @@ class ReportGenerator(object):
 
         return '<span class="label%s">%s</span>' % (css, text)
 
-    def header(self, fhandle):
+    def header(self, fhandle, rpath="..", showNav=True):
         fhandle.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n')
         fhandle.write('<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">\n')
         fhandle.write('<head>\n')
         fhandle.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
-        fhandle.write('\t<link rel="stylesheet" href="css/bootstrap.css" />\n')
-        fhandle.write('\t<link rel="stylesheet" href="css/bootstrap-responsive.css" />\n')
-        if self.configs.globals['report']['dynamic']:
-            fhandle.write('\t<link rel="stylesheet" href="css/jquery-ui-1.10.3.custom.min.css" />\n')
-            fhandle.write('\t<link rel="stylesheet" href="css/simplePagination.css" />\n')
-            fhandle.write('\t<link rel="stylesheet" href="css/dynamic.css" />\n')
-            fhandle.write('\t<script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>\n')
-            fhandle.write('\t<script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>\n')
-            fhandle.write('\t<script type="text/javascript" src="js/jquery.tablesorter.js"></script>\n')
-            fhandle.write('\t<script type="text/javascript" src="js/jquery.simplePagination.js"></script>\n')
-            fhandle.write('\t<script type="text/javascript" src="js/persist-min.js"></script>\n')
-            fhandle.write('\t<script type="text/javascript" src="js/class.js"></script>\n')
-            fhandle.write('\t<script type="text/javascript">var offers_per_page = %s;</script>\n' %self.configs.globals['report']['offer_per_page'])
-            fhandle.write('\t<script type="text/javascript" src="js/dynamic.js"></script>\n')
-        else:
-            fhandle.write('\t<link rel="stylesheet" href="css/static.css" />\n')
+        fhandle.write('\t<link rel="stylesheet" href="%s/css/bootstrap.css" />\n' % rpath)
+        fhandle.write('\t<link rel="stylesheet" href="%s/css/bootstrap-responsive.css" />\n' % rpath)
+
+        if showNav:
+            if self.configs.globals['report']['dynamic']:
+                fhandle.write('\t<link rel="stylesheet" href="%s/css/jquery-ui-1.10.3.custom.min.css" />\n' % rpath)
+                fhandle.write('\t<link rel="stylesheet" href="%s/css/simplePagination.css" />\n' % rpath)
+                fhandle.write('\t<link rel="stylesheet" href="%s/css/dynamic.css" />\n' % rpath)
+                fhandle.write('\t<script type="text/javascript" src="%s/js/jquery-2.0.3.min.js"></script>\n' % rpath)
+                fhandle.write('\t<script type="text/javascript" src="%s/js/jquery-ui-1.10.3.custom.min.js"></script>\n' % rpath)
+                fhandle.write('\t<script type="text/javascript" src="%s/js/jquery.tablesorter.js"></script>\n' % rpath)
+                fhandle.write('\t<script type="text/javascript" src="%s/js/jquery.simplePagination.js"></script>\n' % rpath)
+                fhandle.write('\t<script type="text/javascript" src="%s/js/persist-min.js"></script>\n' % rpath)
+                fhandle.write('\t<script type="text/javascript" src="%s/js/class.js"></script>\n' % rpath)
+                fhandle.write('\t<script type="text/javascript">var offers_per_page = %s;</script>\n' %self.configs.globals['report']['offer_per_page'])
+                fhandle.write('\t<script type="text/javascript" src="%s/js/dynamic.js"></script>\n' % rpath)
+            else:
+                fhandle.write('\t<link rel="stylesheet" href="%s/css/static.css" />\n' % rpath)
         fhandle.write('</head>\n')
 
     def generateDownloadedFile(self):
@@ -637,8 +666,8 @@ class ReportGenerator(object):
         stat.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n')
         stat.write('<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">\n')
         stat.write("<head>\n")
-        stat.write("<link href=\"./css/bootstrap.css\" rel=\"stylesheet\" />\n")
-        stat.write("<link href=\"./css/bootstrap-responsive.css\" rel=\"stylesheet\" />\n")
+        stat.write("<link href=\"./../css/bootstrap.css\" rel=\"stylesheet\" />\n")
+        stat.write("<link href=\"./../css/bootstrap-responsive.css\" rel=\"stylesheet\" />\n")
         stat.write("<style>table{font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>\n")
         stat.write("<meta http-equiv=\"Content-type\" content=\"text/html; charset=utf-8\"></head>\n")
         stat.write("<body>\n")
@@ -672,125 +701,201 @@ class ReportGenerator(object):
         stat.write("</html>")
         stat.close()
 
-    def generateReport(self, filtered=True):
-
-        # Directory
+    def generateIndex(self, users):
         html_dir = self.wwwdir
-        if not os.path.exists(html_dir):
-            os.makedirs(html_dir)
+        report = open(os.path.join(html_dir, 'index.html'), 'w')
 
-        # Query
-        conn = lite.connect(self.configs.globals['database'])
-        cursor = conn.cursor()
-        data = None
+        if not users:
+            users = self.configs.getUsers()
 
-        sql_filtered = "SELECT * FROM offers WHERE company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC"
-        sql_full = "SELECT * FROM offers ORDER BY date_pub DESC"
-        cursor.execute(sql_filtered)
-        data_filtered = cursor.fetchall()
-        cursor.execute(sql_full)
-        data_full = cursor.fetchall()
-        count_filtered = len(data_filtered)
-        count_full = len(data_full)
-        if (filtered):
-            report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
-            data = data_filtered
-        else:
-            report = open(os.path.join(html_dir, 'report_full.html'), 'w')
-            data = data_full
+        # report.write('<!DOCTYPE html>')
+        # report.write('<html lang="en">')
+        # report.write('<head>')
+        # report.write('<meta charset="utf-8" />')
+        # report.write('<meta http-equiv="X-UA-Compatible" content="IE=edge" />')
+        # report.write('<meta name="viewport" content="width=device-width, initial-scale=1.0" />')
+        # report.write('<meta name="description" content="" />')
+        # report.write('<meta name="author" content="" />')
+        # report.write('<link rel="shortcut icon" href="../../docs-assets/ico/favicon.png" />')
 
-        self.header(report)
+        # report.write('<title>Family jobcatcher</title>')
+
+        # report.write('<!-- Bootstrap core CSS -->')
+        # report.write('<link href="css/bootstrap.css" rel="stylesheet" />')
+
+        # report.write('<!-- Custom styles for this template -->')
+        # report.write('<link href="jumbotron-narrow.css" rel="stylesheet" />')
+
+        # report.write('<!-- Just for debugging purposes. Don\'t actually copy this line! -->')
+        # report.write('<!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->')
+
+        # report.write('<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->')
+        # report.write('<!--[if lt IE 9]>')
+        # report.write('<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>')
+        # report.write('<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>')
+        # report.write('<![endif]-->')
+        # report.write('</head>')
+
+        self.header(report, '.', False)
 
         report.write('<body>\n')
-        # page header
-        if count_full:
-            report.write('\t<ul class="nav nav-pills nav-justified">\n')
-            report.write('\t\t<li class="%s"><a href="report_full.html">All %s offers</a></li>\n' %("" if filtered else "active", count_full))
-            report.write('\t\t<li class="%s"><a href="report_filtered.html">%s filtered offers (%.2f%%)</a></li>\n' %("active" if filtered else "", count_filtered, 100*(float)(count_filtered)/count_full))
-            report.write('\t\t<li><a href="statistics.html">Statistics</a></li>\n')
-            report.write('\t\t<li class="disabled"><a href="#">%s blacklisted offers (%.2f%%)</a></li>\n' %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full))
-            report.write('\t</ul>\n')
+        report.write('<div class="container">\n')
+        report.write('<div class="header">\n')
+        report.write('<ul class="nav nav-pills pull-right">\n')
+        report.write('<li class="active"><a href="#">Home</a></li>\n')
+        report.write('<li><a href="#">About</a></li>\n')
+        report.write('<li><a href="#">Contact</a></li>\n')
+        report.write('</ul>\n')
+        report.write('<h3 class="text-muted">Family jobcatcher</h3>\n')
+        report.write('</div>\n')
 
-        # page body
-        report.write('\t<table id="offers" class="table table-condensed">\n')
-        # table header
-        report.write('\t\t<thead>\n')
-        report.write('\t\t\t<tr id="lineHeaders">\n')
-        report.write('\t\t\t\t<th class="pubdate">Pubdate</th>\n')
-        report.write('\t\t\t\t<th class="type">Type</th>\n')
-        report.write('\t\t\t\t<th class="title">Title</th>\n')
-        report.write('\t\t\t\t<th class="company">Company</th>\n')
-        report.write('\t\t\t\t<th class="location">Location</th>\n')
-        report.write('\t\t\t\t<th class="contract">Contract</th>\n')
-        report.write('\t\t\t\t<th class="salary">Salary</th>\n')
-        report.write('\t\t\t\t<th class="source">Source</th>\n')
-        report.write('\t\t\t</tr>\n')
-        if self.configs.globals['report']['dynamic']:
-            report.write('\t\t\t<tr id="lineFilters">\n')
-            report.write('\t\t\t\t<td class="pubdate"></td>\n')
-            report.write('\t\t\t\t<td class="type"></td>\n')
-            report.write('\t\t\t\t<td class="title"></td>\n')
-            report.write('\t\t\t\t<td class="company"></td>\n')
-            report.write('\t\t\t\t<td class="location"></td>\n')
-            report.write('\t\t\t\t<td class="contract"></td>\n')
-            report.write('\t\t\t\t<td class="salary"></td>\n')
-            report.write('\t\t\t\t<td class="source"></td>\n')
-            report.write('\t\t\t</tr>\n')
-        report.write('\t\t</thead>\n')
-        # table body
-        report.write('\t\t<tbody>\n')
+        report.write('<div class="jumbotron">\n')
+        report.write('<h1>Jobcatcher Community</h1>\n')
+        report.write('<p class="lead">Find the job in colaborative mode</p>\n')
+        report.write('<p>\n')
 
-        s_date = ''
-        for row in data:
-            offer = Offer()
-            offer.load(
-                row[0], row[1], row[2], row[3], row[4], row[5], row[6],
-                row[7], row[8], row[9], row[10], row[11], row[12],
-                row[13], row[14]
-            )
+        for user in users:
+            print user
+            report.write('<a class="btn btn-lg btn-success" href="./%s/report_full.html" role="button">%s</a>' % (user, user))
 
-            if (not self.configs.globals['report']['dynamic'] and s_date != offer.date_pub.strftime('%Y-%m-%d')):
-                s_date = offer.date_pub.strftime('%Y-%m-%d')
-                report.write('\t\t\t<tr class="error">\n');
-                report.write('\t\t\t\t<td colspan="8" />\n')
-                report.write('\t\t\t</tr>\n')
+        report.write('</p>\n')
+        report.write('</div>\n')
+        report.write('<div class="footer">\n')
+        report.write('<p>&copy; JobCatcher</p>\n')
+        report.write('</div>\n')
+        
+        report.write('</div> <!-- /container -->\n')
 
-            report.write('\t\t\t<tr>\n')
-            report.write('\t\t\t\t<td class="pubdate">' + offer.date_pub.strftime('%Y-%m-%d') + '</td>\n')
-            report.write('\t\t\t\t<td class="type"><span class="label label-success">noSSII</span></td>\n')
-            report.write('\t\t\t\t<td class="title"><a href="'+re.sub('&', '&amp;', offer.url)+'">' + offer.title + '</a></td>\n')
-            report.write('\t\t\t\t<td class="company">' + offer.company + '</td>\n')
-            # Location
-            report.write('\t\t\t\t<td class="location">')
-            if offer.department:
-                report.write("%s&nbsp;" % self.box('primary', offer.department))
-            report.write(offer.location)
-            report.write('</td>\n')
-
-            # contract
-            duration = ""
-            report.write('\t\t\t\t<td class="contract">')
-            if offer.duration:
-                duration = "&nbsp;%s mois" % self.box('info', offer.duration)
-            if ('CDI' in offer.contract):
-                report.write(self.box('success', offer.contract))
-                report.write(duration)
-            elif ('CDD' in offer.contract):
-                report.write(self.box('warning', offer.contract))
-                report.write(duration)
-            else:
-                report.write(self.box('', offer.contract))
-                report.write(duration)
-            report.write('</td>\n')
-            report.write('\t\t\t\t<td class="salary">' + offer.salary + '</td>\n')
-            report.write('\t\t\t\t<td class="source">' + offer.src + '</td>\n')
-            report.write('\t\t\t</tr>\n')
-
-        # closure
-        report.write('\t</table>\n')
         report.write('</body>\n')
         report.write('</html>\n')
         report.close()
+
+
+
+    def generateReport(self, users, filtered=True):
+        if not users:
+            users = self.configs.getUsers()
+
+        for user in users:
+            feedidslist = self.configs.getFeedIdsForUser(user)
+            # Directory
+            html_dir = "%s/%s" % (self.wwwdir, user)
+            if not os.path.exists(html_dir):
+                os.makedirs(html_dir)
+
+            # Query
+            conn = lite.connect(self.configs.globals['database'])
+            cursor = conn.cursor()
+            data = None
+
+            feedidfilter = self._getSQLFilterFeedid(feedidslist)
+            sql_filtered = "SELECT * FROM offers WHERE %s and company not IN (SELECT company FROM blacklist) ORDER BY date_pub DESC" % feedidfilter
+            sql_full = "SELECT * FROM offers where %s ORDER BY date_pub DESC" % feedidfilter
+            cursor.execute(sql_filtered)
+            data_filtered = cursor.fetchall()
+            cursor.execute(sql_full)
+            data_full = cursor.fetchall()
+            count_filtered = len(data_filtered)
+            count_full = len(data_full)
+            if (filtered):
+                report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
+                data = data_filtered
+            else:
+                report = open(os.path.join(html_dir, 'report_full.html'), 'w')
+                data = data_full
+
+            self.header(report)
+
+            report.write('<body>\n')
+            # page header
+            if count_full:
+                report.write('\t<ul class="nav nav-pills nav-justified">\n')
+                report.write('\t\t<li class="%s"><a href="report_full.html">All %s offers</a></li>\n' %("" if filtered else "active", count_full))
+                report.write('\t\t<li class="%s"><a href="report_filtered.html">%s filtered offers (%.2f%%)</a></li>\n' %("active" if filtered else "", count_filtered, 100*(float)(count_filtered)/count_full))
+                report.write('\t\t<li><a href="statistics.html">Statistics</a></li>\n')
+                report.write('\t\t<li class="disabled"><a href="#">%s blacklisted offers (%.2f%%)</a></li>\n' %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full))
+                report.write('\t</ul>\n')
+
+            # page body
+            report.write('\t<table id="offers" class="table table-condensed">\n')
+            # table header
+            report.write('\t\t<thead>\n')
+            report.write('\t\t\t<tr id="lineHeaders">\n')
+            report.write('\t\t\t\t<th class="pubdate">Pubdate</th>\n')
+            report.write('\t\t\t\t<th class="type">Type</th>\n')
+            report.write('\t\t\t\t<th class="title">Title</th>\n')
+            report.write('\t\t\t\t<th class="company">Company</th>\n')
+            report.write('\t\t\t\t<th class="location">Location</th>\n')
+            report.write('\t\t\t\t<th class="contract">Contract</th>\n')
+            report.write('\t\t\t\t<th class="salary">Salary</th>\n')
+            report.write('\t\t\t\t<th class="source">Source</th>\n')
+            report.write('\t\t\t</tr>\n')
+            if self.configs.globals['report']['dynamic']:
+                report.write('\t\t\t<tr id="lineFilters">\n')
+                report.write('\t\t\t\t<td class="pubdate"></td>\n')
+                report.write('\t\t\t\t<td class="type"></td>\n')
+                report.write('\t\t\t\t<td class="title"></td>\n')
+                report.write('\t\t\t\t<td class="company"></td>\n')
+                report.write('\t\t\t\t<td class="location"></td>\n')
+                report.write('\t\t\t\t<td class="contract"></td>\n')
+                report.write('\t\t\t\t<td class="salary"></td>\n')
+                report.write('\t\t\t\t<td class="source"></td>\n')
+                report.write('\t\t\t</tr>\n')
+            report.write('\t\t</thead>\n')
+            # table body
+            report.write('\t\t<tbody>\n')
+
+            s_date = ''
+            for row in data:
+                offer = Offer()
+                offer.load(
+                    row[0], row[1], row[2], row[3], row[4], row[5], row[6],
+                    row[7], row[8], row[9], row[10], row[11], row[12],
+                    row[13], row[14], row[15]
+                )
+
+                if (not self.configs.globals['report']['dynamic'] and s_date != offer.date_pub.strftime('%Y-%m-%d')):
+                    s_date = offer.date_pub.strftime('%Y-%m-%d')
+                    report.write('\t\t\t<tr class="error">\n');
+                    report.write('\t\t\t\t<td colspan="8" />\n')
+                    report.write('\t\t\t</tr>\n')
+
+                report.write('\t\t\t<tr>\n')
+                report.write('\t\t\t\t<td class="pubdate">' + offer.date_pub.strftime('%Y-%m-%d') + '</td>\n')
+                report.write('\t\t\t\t<td class="type"><span class="label label-success">noSSII</span></td>\n')
+                report.write('\t\t\t\t<td class="title"><a href="'+re.sub('&', '&amp;', offer.url)+'">' + offer.title + '</a></td>\n')
+                report.write('\t\t\t\t<td class="company">' + offer.company + '</td>\n')
+                # Location
+                report.write('\t\t\t\t<td class="location">')
+                if offer.department:
+                    report.write("%s&nbsp;" % self.box('primary', offer.department))
+                report.write(offer.location)
+                report.write('</td>\n')
+
+                # contract
+                duration = ""
+                report.write('\t\t\t\t<td class="contract">')
+                if offer.duration:
+                    duration = "&nbsp;%s mois" % self.box('info', offer.duration)
+                if ('CDI' in offer.contract):
+                    report.write(self.box('success', offer.contract))
+                    report.write(duration)
+                elif ('CDD' in offer.contract):
+                    report.write(self.box('warning', offer.contract))
+                    report.write(duration)
+                else:
+                    report.write(self.box('', offer.contract))
+                    report.write(duration)
+                report.write('</td>\n')
+                report.write('\t\t\t\t<td class="salary">' + offer.salary + '</td>\n')
+                report.write('\t\t\t\t<td class="source">' + offer.src + '</td>\n')
+                report.write('\t\t\t</tr>\n')
+
+            # closure
+            report.write('\t</table>\n')
+            report.write('</body>\n')
+            report.write('</html>\n')
+            report.close()
 
 
 class Location():
@@ -900,7 +1005,7 @@ def executeall(conf, selecteduser):
 
 def generatereport(conf, selecteduser):
     r = ReportGenerator(conf)
-    r.generate()
+    r.generate(selecteduser)
 
 
 def initblacklist(conf):
