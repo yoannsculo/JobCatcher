@@ -79,11 +79,13 @@ class JBApec(JobBoard):
         html = unicode.join(u'\n', map(unicode, soup))
 
         res = None
-        regex = u'<th valign="top">Société :</th>.*?<td>.*?<br />(.*?)<br />.*?</td>'
-
+        regex = u'<tr>.*?<th valign="top">Société :</th>(.*?)</tr>'
         m = re.search(regex, html, flags=re.MULTILINE | re.DOTALL)
         if m:
-            res = utilities.htmltotext(m.group(1)).strip()
+            company = re.sub(r'<img.*?/>','', m.group(1), flags=re.MULTILINE | re.DOTALL)
+            company = re.sub(r'<a href.*?</a>','', company, flags=re.MULTILINE | re.DOTALL)
+            company = utilities.htmltotext(company)
+            res = utilities.htmltotext(company.strip())
 
         return res
 
