@@ -23,7 +23,7 @@ show me mistakes I could have made or improvements I could do.
 
 ## Dependencies
 
-	python-html2text, python-requests, python-beautifulsoup
+	python-html2text python-requests python-beautifulsoup python-importlib
 
 ## Usage (mainly development options for now)
 
