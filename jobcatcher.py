@@ -587,7 +587,7 @@ class ReportGenerator(object):
     def generate(self, selecteduser):
         self.generateReport(selecteduser, True)
         self.generateReport(selecteduser, False)
-        self.generateStatistics()
+        # self.generateStatistics()
         self.generateIndex(selecteduser)
         self.generateDownloadedFile()
 
@@ -655,51 +655,51 @@ class ReportGenerator(object):
             pl.close()
 
 
-    def generateStatistics(self):
-        html_dir = self.wwwdir
+    # def generateStatistics(self):
+    #     html_dir = self.wwwdir
 
-        conn = lite.connect(self.configs.globals['database'])
-        cursor = conn.cursor()
+    #     conn = lite.connect(self.configs.globals['database'])
+    #     cursor = conn.cursor()
 
-        stat = open(os.path.join(html_dir, 'statistics.html'), 'w')
+    #     stat = open(os.path.join(html_dir, 'statistics.html'), 'w')
 
-        stat.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n')
-        stat.write('<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">\n')
-        stat.write("<head>\n")
-        stat.write("<link href=\"./../css/bootstrap.css\" rel=\"stylesheet\" />\n")
-        stat.write("<link href=\"./../css/bootstrap-responsive.css\" rel=\"stylesheet\" />\n")
-        stat.write("<style>table{font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>\n")
-        stat.write("<meta http-equiv=\"Content-type\" content=\"text/html; charset=utf-8\"></head>\n")
-        stat.write("<body>\n")
-        stat.write('\t<ul class="nav nav-pills nav-justified">\n')
-        stat.write('\t\t<li><a href="report_full.html">All offers</a></li>\n')
-        stat.write('\t\t<li><a href="report_filtered.html">Filtered offers</a></li>\n')
-        stat.write('\t\t<li class="active"><a href="statistics.html">Statistics</a></li>\n')
-        stat.write('\t</ul>\n')
-        stat.write("<table class=\"table table-condensed\">")
-        stat.write("<thead>")
-        stat.write("<tr>")
-        stat.write("<th>JobBoard</th>")
-        stat.write("<th>Total Offers</th>")
-        stat.write("<th>Offers not from blacklist</th>")
-        stat.write("<th>Offers from blacklist</th>")
-        stat.write("</tr>")
-        stat.write("</thead>")
+    #     stat.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n')
+    #     stat.write('<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">\n')
+    #     stat.write("<head>\n")
+    #     stat.write("<link href=\"./../css/bootstrap.css\" rel=\"stylesheet\" />\n")
+    #     stat.write("<link href=\"./../css/bootstrap-responsive.css\" rel=\"stylesheet\" />\n")
+    #     stat.write("<style>table{font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>\n")
+    #     stat.write("<meta http-equiv=\"Content-type\" content=\"text/html; charset=utf-8\"></head>\n")
+    #     stat.write("<body>\n")
+    #     stat.write('\t<ul class="nav nav-pills nav-justified">\n')
+    #     stat.write('\t\t<li><a href="report_full.html">All offers</a></li>\n')
+    #     stat.write('\t\t<li><a href="report_filtered.html">Filtered offers</a></li>\n')
+    #     stat.write('\t\t<li class="active"><a href="statistics.html">Statistics</a></li>\n')
+    #     stat.write('\t</ul>\n')
+    #     stat.write("<table class=\"table table-condensed\">")
+    #     stat.write("<thead>")
+    #     stat.write("<tr>")
+    #     stat.write("<th>JobBoard</th>")
+    #     stat.write("<th>Total Offers</th>")
+    #     stat.write("<th>Offers not from blacklist</th>")
+    #     stat.write("<th>Offers from blacklist</th>")
+    #     stat.write("</tr>")
+    #     stat.write("</thead>")
 
-        jobboardlist = self.configs.getJobboardList()
-        for jobboardname in jobboardlist:
-            plugin = utilities.loadJobBoard(jobboardname, self.configs)
-            data = plugin.fetchAllOffersFromDB()
-            stat.write("<tr>")
-            stat.write("<td>%s</td>" % plugin.name)
-            stat.write("<td>%s</td>" % len(data))
-            stat.write("<td></td>")
-            stat.write("<td></td>")
-            stat.write("</tr>")
+    #     jobboardlist = self.configs.getJobboardList()
+    #     for jobboardname in jobboardlist:
+    #         plugin = utilities.loadJobBoard(jobboardname, self.configs)
+    #         data = plugin.fetchAllOffersFromDB()
+    #         stat.write("<tr>")
+    #         stat.write("<td>%s</td>" % plugin.name)
+    #         stat.write("<td>%s</td>" % len(data))
+    #         stat.write("<td></td>")
+    #         stat.write("<td></td>")
+    #         stat.write("</tr>")
 
-        stat.write("</table>")
-        stat.write("</html>")
-        stat.close()
+    #     stat.write("</table>")
+    #     stat.write("</html>")
+    #     stat.close()
 
     def generateIndex(self, users):
         html_dir = self.wwwdir
@@ -812,7 +812,7 @@ class ReportGenerator(object):
                 report.write('\t<ul class="nav nav-pills nav-justified">\n')
                 report.write('\t\t<li class="%s"><a href="report_full.html">All %s offers</a></li>\n' %("" if filtered else "active", count_full))
                 report.write('\t\t<li class="%s"><a href="report_filtered.html">%s filtered offers (%.2f%%)</a></li>\n' %("active" if filtered else "", count_filtered, 100*(float)(count_filtered)/count_full))
-                report.write('\t\t<li><a href="statistics.html">Statistics</a></li>\n')
+                # report.write('\t\t<li><a href="statistics.html">Statistics</a></li>\n')
                 report.write('\t\t<li class="disabled"><a href="#">%s blacklisted offers (%.2f%%)</a></li>\n' %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full))
                 report.write('\t</ul>\n')
 
