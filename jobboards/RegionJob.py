@@ -131,6 +131,8 @@ class JBRegionJob(JobBoard):
         self.datas['company'] = self._regexExtract(
             ur'Entreprise :.*?<strong>(.*?)</strong>', p
         )
+        if not self.datas['company']:
+            self.datas['company'] = "NA"
 
         # Contract
         self.datas['duration'] = None
