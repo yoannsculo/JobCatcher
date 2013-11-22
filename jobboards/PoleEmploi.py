@@ -123,7 +123,7 @@ class JBPoleEmploi(JobBoard):
             self.datas['department'] = m.group(1).strip()
             self.datas['location'] = m.group(2).strip()
 
-        # Compagny
+        # Company
         p = item.find('p', attrs={'itemprop': 'hiringOrganization'})
         if p:
             self.datas['company'] = p.text.strip()

@@ -73,7 +73,7 @@ class JBApec(JobBoard):
 
         return res
 
-    def _extractCompagny(self, soup):
+    def _extractCompany(self, soup):
         """Extract a field in html page"""
 
         html = unicode.join(u'\n', map(unicode, soup))
@@ -126,7 +126,7 @@ class JBApec(JobBoard):
 
         # Job informations
         self.datas['location'] = self._extractItem("Lieu", table)
-        self.datas['company'] = self._extractCompagny(table)
+        self.datas['company'] = self._extractCompany(table)
         self.datas['contract'] = self._extractItem("Nombre de postes", table)
         # Salary
         self.datas['salary'] = self._extractItem("Salaire", table)
