@@ -25,9 +25,9 @@ from jobcatcher import Offer
 
 class JBPoleEmploi(JobBoard):
 
-    def __init__(self, configs=None, interval=1200):
+    def __init__(self, configs=None):
         self.name = "PoleEmploi"
-        super(JBPoleEmploi, self).__init__(configs, interval)
+        super(JBPoleEmploi, self).__init__(configs)
         self.encoding = {'feed': 'utf-8', 'page': 'utf-8'}
 
     def getUrls(self):

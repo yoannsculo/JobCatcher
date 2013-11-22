@@ -31,10 +31,9 @@ sys.setdefaultencoding("utf-8")
 
 class JobBoard(object):
     """Generic Class forcreate new jobboard"""
-    def __init__(self, configs=None, interval=3600):
+    def __init__(self, configs=None):
         self._rootdir = configs.globals['rootdir']
         self._configs = configs
-        self._interval = interval
         self._datas = {}
         self._processingDir = "%s/%s" % (
             self.rootdir,
@@ -88,21 +87,11 @@ class JobBoard(object):
     def configs(self, value):
         self._configs = value
 
-    @property
-    def interval(self):
-        """Get interval in minute"""
-        return self._interval
-
-    @interval.setter  
-    def interval(self, value):
-        """Set interval in minute"""
-        self._interval = value
-
     def isTableCreated(self):
         """Check if the table for jobboard exist"""
         return utilities.db_istableexists(self.configs.globals, "jb_%s" % self.name)
 
-    def downloadFeed(self, feed, interval=3600, forcedownload=False):
+    def downloadFeed(self, feed, forcedownload=False):
         """Download feed from jobboard"""
         datas = None
         if 'datas' in feed:
@@ -111,24 +100,31 @@ class JobBoard(object):
         saveto = utilities.getFeedDestination(
             self.rootdir, self.name, feed['url'], datas
         )
-        utilities.downloadFile(feed['url'], datas, saveto, True, interval)
+
+        try:
+            utilities.downloadFile(feed['url'], datas, saveto, True, self.configs.globals['refreshfeeds'])
+        except:
+            print ("Error for download %s feed" % feed['url'])
 
         return saveto
 
-    def downloadFeeds(self, feeds, interval=3600, forcedownload=False):
-        """Download a feeds from jobboard"""
-        for feed in feeds:
-            self.downloadFeed(feed, interval, forcedownload)
+    # def downloadFeeds(self, feeds, interval=3600, forcedownload=False):
+    #     """Download a feeds from jobboard"""
+    #     for feed in feeds:
+    #         self.downloadFeed(feed, interval, forcedownload)
 
     def downloadPage(self, feedid, url):
         """Download pages from url"""
         saveto = utilities.getPageDestination(
             self.rootdir, self.name, feedid, url, None
         )
+
         try:
-            utilities.downloadFile(url, None, saveto, True, self._interval)
+            utilities.downloadFile(url, None, saveto, True, self.configs.globals['refreshpages'])
         except UnicodeDecodeError:
-            pass
+            print ("Error encoding for %s page" % url)
+        except requests.exceptions.ConnectionError:
+            print ("Error for download %s page" % url)
 
         return saveto
 

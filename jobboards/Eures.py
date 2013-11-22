@@ -25,9 +25,9 @@ from jobcatcher import Offer
 
 class JBEures(JobBoard):
 
-    def __init__(self, configs=[], interval=1200):
+    def __init__(self, configs=[]):
         self.name = "Eures"
-        super(JBEures, self).__init__(configs, interval)
+        super(JBEures, self).__init__(configs)
 
     def getUrls(self):
         """Get Urls offers from feed"""

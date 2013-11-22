@@ -26,9 +26,9 @@ from jobcatcher import Offer
 
 class JBRegionJob(JobBoard):
 
-    def __init__(self, configs=[], interval=1200):
+    def __init__(self, configs=[]):
         self.name = "RegionJob"
-        super(JBRegionJob, self).__init__(configs, interval)
+        super(JBRegionJob, self).__init__(configs)
         self.encoding = {'feed': 'utf-8', 'page': 'utf-8'}
 
     def getUrls(self):

@@ -18,6 +18,8 @@ configs = {
     'rootdir': './www/dl',
     'wwwdir': './www',
     'database': 'jobs.db',
+    'refreshfeeds': 3600,  # In seconds
+    'refreshpages': 21600,  # In seconds
     'p2pdir': './p2p',
     'p2pservers': {
         'yankel': 'http://yankee.sierra77.free.fr/jobcatcher',

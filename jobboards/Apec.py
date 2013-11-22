@@ -27,9 +27,9 @@ from jobcatcher import Offer
 
 class JBApec(JobBoard):
 
-    def __init__(self, configs=[], interval=1200):
+    def __init__(self, configs=[]):
         self.name = "Apec"
-        super(JBApec, self).__init__(configs, interval)
+        super(JBApec, self).__init__(configs)
         self.encoding = {'feed': 'utf-8', 'page': 'iso-8859-1'}
 
     def getUrls(self):
