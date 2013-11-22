@@ -142,15 +142,15 @@ def downloadFile(url, datas, filename, withmeta = False, age=0, forcedownload=Fa
         if not forcedownload and t + (age) > now:
             return
 
-    print "Download %s" % url
     destdir = os.path.dirname(filename)
     if (not os.path.isdir(destdir)):
         os.makedirs(destdir)
 
     # Download file
+    print "Download %s(%s)" % (url, filename)
     r = download(url, datas)
 
-    if r.statuscode == 200:
+    if r.statuscode in [200, 404, 410]:
         out = open(filename, 'wb')
         if withmeta:
             pageid = getEncodedURL(url, datas)
