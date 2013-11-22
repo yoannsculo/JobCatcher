@@ -99,19 +99,19 @@ class JBApec(JobBoard):
         if not item:
             content = soup.body.find('p')
             if (content.text == u'L\'offre que vous souhaitez afficher n\'est plus disponible.Cliquer sur le bouton ci-dessous pour revenir à l\'onglet Mes Offres'):
-                return 1
+                return "No offer found"
 
         # Title
         h1 = soup.body.find('h1', attrs={'class': 'detailOffre'})
         if not item:
-            return 1
+            return "No title found"
 
         self.datas['title'] = utilities.htmltotext(h1.text).replace('Détail de l\'offre : ', '').strip()
 
         # Refs
         table = item.find('table', attrs={'class': 'noFieldsTable'})
         if not table:
-            return 1
+            return "No fields found"
 
         self.datas['ref'] = self._extractItem(u"Référence Apec", table)
         self.datas['feedid'] = page.feedid
@@ -135,6 +135,8 @@ class JBApec(JobBoard):
 
         # Insert to jobboard table
         self.insertToJBTable()
+
+        return None
 
     def createTable(self,):
         if self.isTableCreated():
