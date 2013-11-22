@@ -118,7 +118,6 @@ class JBApec(JobBoard):
         self.datas['url'] = page.url
         self.datas['refsoc'] = self._extractItem(u"Référence société", table)
 
-        # Dates
         self.datas['date_add'] = int(time.time())
         self.datas['date_pub'] = datetime.strptime(
             self._extractItem("Date de publication", table),
@@ -128,9 +127,7 @@ class JBApec(JobBoard):
         self.datas['location'] = self._extractItem("Lieu", table)
         self.datas['company'] = self._extractCompany(table)
         self.datas['contract'] = self._extractItem("Nombre de postes", table)
-        # Salary
         self.datas['salary'] = self._extractItem("Salaire", table)
-        # Experiences
         self.datas['experience'] = self._extractItem("Expérience", table)
 
         # Insert to jobboard table
