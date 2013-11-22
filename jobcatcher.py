@@ -992,11 +992,22 @@ class Offer():
 
 
 def executeall(conf, selecteduser):
+    print "Init blacklist"
     initblacklist(conf)
+
+    print "Download feeds"
     downloadfeeds(conf, selecteduser)
+
+    print "Download pages"
     downloadpages(conf)
+
+    print "Insert pages to jobboard"
     insertpages(conf, selecteduser)
+
+    print "Move datas to offers"
     movepages(conf, selecteduser)
+
+    print "Generate reports"
     generatereport(conf, selecteduser)
 
 
