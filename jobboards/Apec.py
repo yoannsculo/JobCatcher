@@ -85,7 +85,7 @@ class JBApec(JobBoard):
             company = re.sub(r'<img.*?/>','', m.group(1), flags=re.MULTILINE | re.DOTALL)
             company = re.sub(r'<a href.*?</a>','', company, flags=re.MULTILINE | re.DOTALL)
             company = utilities.htmltotext(company)
-            res = utilities.htmltotext(company.strip())
+            res = company.strip()
 
         return res
 
