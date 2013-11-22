@@ -90,12 +90,12 @@ class JBRegionJob(JobBoard):
         item = soup.body.find('div', attrs={'id': 'annonce'})
 
         if not item:
-            return 1
+            return "No item found"
 
         # Title
         h1 = item.find('h1')
         if not h1:
-            return 1
+            return "No title found"
 
         # Title & Url
         self.datas['title'] = utilities.htmltotext(h1.text).strip()
@@ -104,7 +104,7 @@ class JBRegionJob(JobBoard):
         # Date & Ref
         p = item.find('p', attrs={'class': 'date_ref'})
         if not p:
-            return 1
+            return "No date section found"
 
         self.datas['ref'] = self._regexExtract(ur'Réf :(.*)', p)
         self.datas['feedid'] = page.feedid
@@ -116,7 +116,7 @@ class JBRegionJob(JobBoard):
         # Job informations
         p = item.find('p', attrs={'class': 'contrat_loc'})
         if not p:
-            return 1
+            return "No job information found"
 
         # Location
         self.datas['department'] = None
@@ -156,6 +156,8 @@ class JBRegionJob(JobBoard):
 
         # Insert to jobboard table
         self.insertToJBTable()
+
+        return None
 
     def createTable(self,):
         if self.isTableCreated():
