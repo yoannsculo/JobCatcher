@@ -329,8 +329,8 @@ def filter_contract_fr(contract):
 def filter_location_fr(location):
     location = re.sub(ur'IDF', "Île-de-France", location)
     location = re.sub(ur'Ile-de-France', "Île-de-France", location)
+    location = re.sub(ur'Ile de France', "Île-de-France", location)
     return location
-
 
 def filter_salary_fr(salary):
     # TODO : use regexp once whe have a better view of possible combinations
