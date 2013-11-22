@@ -90,7 +90,7 @@ class JBRegionJob(JobBoard):
         item = soup.body.find('div', attrs={'id': 'annonce'})
 
         if not item:
-            return "No item found"
+            return ""
 
         # Title
         h1 = item.find('h1')

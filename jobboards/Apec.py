@@ -99,7 +99,7 @@ class JBApec(JobBoard):
         if not item:
             content = soup.body.find('p')
             if (content.text == u'L\'offre que vous souhaitez afficher n\'est plus disponible.Cliquer sur le bouton ci-dessous pour revenir à l\'onglet Mes Offres'):
-                return "No offer found"
+                return ""
 
         # Title
         h1 = soup.body.find('h1', attrs={'class': 'detailOffre'})
