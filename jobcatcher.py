@@ -605,10 +605,10 @@ class ReportGenerator(object):
         return sql
 
     def box(self, style, text):
-        css = ""
-        if style != "":
-            css = " label-%s" % style
+        if style == "":
+            style = "default"
 
+        css = " label-%s" % style
         return '<span class="label%s">%s</span>' % (css, text)
 
     def header(self, fhandle, rpath="..", showNav=True):
@@ -757,7 +757,6 @@ class ReportGenerator(object):
         report.write('<p>\n')
 
         for user in users:
-            print user
             report.write('<a class="btn btn-lg btn-success" href="./%s/report_full.html" role="button">%s</a>' % (user, user))
 
         report.write('</p>\n')
@@ -878,7 +877,7 @@ class ReportGenerator(object):
                 duration = ""
                 report.write('\t\t\t\t<td class="contract">')
                 if offer.duration:
-                    duration = "&nbsp;%s mois" % self.box('info', offer.duration)
+                    duration = "&nbsp;%s" % self.box('info', "%s  mois" % offer.duration)
                 if ('CDI' in offer.contract):
                     report.write(self.box('success', offer.contract))
                     report.write(duration)
