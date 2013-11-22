@@ -1294,7 +1294,7 @@ if __name__ == '__main__':
         movepage(configs, options.move)
 
     if options.blocklist:
-        utilities.blocklist_load(configs)
+        utilities.blocklist_load(configs.globals)
         sys.exit(0)
 
     if options.flush:
