@@ -1062,8 +1062,9 @@ def insertpage(conf, jobboardname):
             page.load()
 
         # Analyse page
-        if plugin.analyzePage(page):
-            print "Analyse error page %s" % page.url
+        error = plugin.analyzePage(page)
+        if error:
+            print "Analyse error page %s(%s)" % (page.url, error)
 
 
 def insertpages(conf, selecteduser):
