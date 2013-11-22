@@ -14,6 +14,7 @@ import os
 import re
 import sys
 import glob
+import time
 import codecs
 import datetime
 import requests
@@ -890,6 +891,13 @@ class ReportGenerator(object):
 
             # closure
             report.write('\t</table>\n')
+
+            # Last generated
+            lastupdate = datetime.datetime.fromtimestamp(int(time.time()))
+            report.write('<div class="footer">\n')
+            report.write('<p>&copy; JobCatcher / last generated %s</p>\n' % lastupdate)
+            report.write('</div>\n')
+
             report.write('</body>\n')
             report.write('</html>\n')
             report.close()
