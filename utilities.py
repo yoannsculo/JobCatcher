@@ -284,9 +284,13 @@ def blacklist_flush(configs):
 def blocklist_load(configs):
     fp = open('blacklist_company.txt', 'r')
     list = []
+
     for line in fp:
         company = unicode(line.rstrip('\n'))
         list.append([company])
+
+    fp.close()
+    conn = None
 
     try:
         conn = lite.connect(configs['database'])
@@ -301,7 +305,6 @@ def blocklist_load(configs):
     finally:
         if conn:
             conn.close()
-
 
 def filter_contract_fr(contract):
     contract = re.sub(ur'Perm', "CDI", contract)
