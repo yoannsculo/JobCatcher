@@ -325,6 +325,10 @@ def filter_contract_fr(contract):
 
     return contract
 
+def filter_company_fr(company):
+    company = re.sub(ur'^\(confidentiel\)$', 'NA', company, re.IGNORECASE)
+    company = re.sub(ur'^confidentiel$', 'NA', company, re.IGNORECASE)
+    return company
 
 def filter_location_fr(location):
     location = re.sub(ur'IDF', "Île-de-France", location)

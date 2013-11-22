@@ -976,8 +976,13 @@ class Offer():
 
     def cleanFields(self):
         self.cleanContract()
+        self.cleanCompany()
         self.cleanLocation()
         self.cleanSalary()
+
+    def cleanCompany(self):
+        self.company = utilities.filter_company_fr(self.company)
+        return
 
     def cleanContract(self):
         self.contract = utilities.filter_contract_fr(self.contract)
