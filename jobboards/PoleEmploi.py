@@ -77,12 +77,12 @@ class JBPoleEmploi(JobBoard):
         item = soup.body.find('div', attrs={'class': 'block-content'})
 
         if not item:
-            return 1
+            return "Not block content foound"
 
         # Title
         h4 = item.find('h4', attrs={'itemprop': 'title'})
         if not h4:
-            return 1
+            return "Title not found"
 
         # Title & Url
         self.datas['title'] = utilities.htmltotext(h4.text).strip()
@@ -95,7 +95,7 @@ class JBPoleEmploi(JobBoard):
 
         li = item.find('li', attrs={'class': 'secondary'})
         if not li:
-            return 1
+            return "No seconday section found"
 
         # Date
         self.datas['date_add'] = int(time.time())
@@ -114,7 +114,7 @@ class JBPoleEmploi(JobBoard):
         # Location
         li = item.find('li', attrs={'itemprop': 'addressRegion'})
         if not li:
-            return 1
+            return "No region section found"
 
         self.datas['department'] = None
         self.datas['location'] = li.text.strip()
@@ -125,12 +125,15 @@ class JBPoleEmploi(JobBoard):
 
         # Compagny
         p = item.find('p', attrs={'itemprop': 'hiringOrganization'})
-        if not p:
-            return 1
-        self.datas['company'] = p.text.strip()
+        if p:
+            self.datas['company'] = p.text.strip()
+        else:
+            self.datas['company'] = "NA"
 
         # Insert to jobboard table
         self.insertToJBTable()
+
+        return None
 
     def createTable(self,):
         if self.isTableCreated():
