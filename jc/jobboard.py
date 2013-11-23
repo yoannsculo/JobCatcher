@@ -78,7 +78,7 @@ class JobBoard(object):
     def isTableCreated(self):
         """Check if the table for jobboard exist"""
         return utilities.db_istableexists(
-            self.configs.globals,
+            self.configs,
             "jb_%s" % self.name
         )
 
@@ -149,7 +149,7 @@ class JobBoard(object):
             o = self.createOffer(d)
             if o:
                 o.cleanFields()
-                utilities.db_add_offer(self.configs.globals, o)
+                utilities.db_add_offer(self.configs, o)
             else:
                 print "Error moving to offers of %s" % d['url']
 

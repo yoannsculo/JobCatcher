@@ -53,9 +53,9 @@ def generatereport(conf, selecteduser):
 
 
 def initblacklist(conf):
-    utilities.db_checkandcreate(conf.globals)
-    utilities.blacklist_flush(conf.globals)
-    utilities.blocklist_load(conf.globals)
+    utilities.db_checkandcreate(conf)
+    utilities.blacklist_flush(conf)
+    utilities.blocklist_load(conf)
 
 
 def downloadfeeds(conf, selecteduser):
@@ -106,7 +106,7 @@ def insertpages(conf, selecteduser):
 
 def movepage(conf, jobboardname):
     """Move jobboard pages to offers"""
-    utilities.db_checkandcreate(conf.globals)
+    utilities.db_checkandcreate(conf)
 
     plugin = utilities.loadJobBoard(jobboardname, conf)
     plugin.moveToOffers()
@@ -322,7 +322,7 @@ if __name__ == '__main__':
         movepage(configs, options.move)
 
     if options.blocklist:
-        utilities.blocklist_load(configs.globals)
+        utilities.blocklist_load(configs)
         sys.exit(0)
 
     if options.flush:
