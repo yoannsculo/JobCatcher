@@ -11,26 +11,16 @@ __license__ = 'GPLv2'
 __version__ = '1.0'
 
 # System
-import os
-import re
 import sys
-import glob
-import time
-import codecs
-import datetime
-import requests
-import importlib
-import pprint
 
 # Third party
 from optparse import OptionParser
-from xml.dom import minidom
-import sqlite3 as lite
 
 # Jobcatcher
 import utilities
 from jc.page import Pages
 from jc.config import Config
+from jc.p2p import P2PDownloader
 from jc.report import ReportGenerator
 
 reload(sys)
@@ -68,12 +58,6 @@ def initblacklist(conf):
     utilities.blocklist_load(conf.globals)
 
 
-# def downloadfeed(conf, jobboardname, feedinfo):
-#     """Download a jobboard feeds"""
-#     plugin = utilities.loadJobBoard(jobboardname, conf)
-#     plugin.downloadFeed(feedinfo)
-
-
 def downloadfeeds(conf, selecteduser):
     """Download all jobboard feeds"""
 
@@ -84,14 +68,6 @@ def downloadfeeds(conf, selecteduser):
         for feedid, feedinfo in jobboardfeeds.iteritems():
             plugin = utilities.loadJobBoard(jobboardname, conf)
             plugin.downloadFeed(feedinfo)
-
-
-
-# def downloadpage(conf, jobboardname):
-#     """Download a jobboard pages"""
-#     plugin = utilities.loadJobBoard(jobboardname, conf)
-#     urls = plugin.getUrls()
-#     plugin.downloadPages(urls)
 
 
 def downloadpages(conf):
@@ -149,21 +125,21 @@ def clean(conf, jobboardname):
     utilities.db_delete_jobboard_datas(conf, jobboardname)
 
 
-def importjobboard(conf, jobboardname):
-    utilities.db_checkandcreate(conf)
-    pagesinsert(conf)
-    pagesmove(conf)
+# def importjobboard(conf, jobboardname):
+#     utilities.db_checkandcreate(conf)
+#     pagesinsert(conf)
+#     pagesmove(conf)
 
 
-def imports(conf):
-    jobboardlist = getjobboardlist(conf)
-    for jobboardname in jobboardlist:
-        importjobboard(conf, jobboardname)
+# def imports(conf):
+#     jobboardlist = getjobboardlist(conf)
+#     for jobboardname in jobboardlist:
+#         importjobboard(conf, jobboardname)
 
 
-def reimports(conf, jobboardname):
-    clean(conf, jobboardname)
-    imports(conf)
+# def reimports(conf, jobboardname):
+#     clean(conf, jobboardname)
+#     imports(conf)
 
 if __name__ == '__main__':
 
@@ -184,7 +160,6 @@ if __name__ == '__main__':
                       dest='user',
                       help='download feed only for the USERNAME'
     )
-
 
     parser.add_option('--all',
                       action='store_true',
@@ -358,4 +333,3 @@ if __name__ == '__main__':
         p = P2PDownloader(configs)
         p.initcache()
         p.sync()
-        
