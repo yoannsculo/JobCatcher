@@ -102,34 +102,6 @@ class JobBoard(object):
 
         return saveto
 
-    # def downloadFeeds(self, feeds, interval=3600, forcedownload=False):
-    #     """Download a feeds from jobboard"""
-    #     for feed in feeds:
-    #         self.downloadFeed(feed, interval, forcedownload)
-
-    def downloadPage(self, feedid, url):
-        """Download pages from url"""
-        saveto = utilities.getPageDestination(
-            self.rootdir, self.name, feedid, url, None
-        )
-
-        try:
-            utilities.downloadFile(
-                saveto, url, None, True,
-                self.configs.globals['refreshpages']
-            )
-        except UnicodeDecodeError:
-            print ("Error encoding for %s page" % url)
-        except requests.exceptions.ConnectionError:
-            print ("Error for download %s page" % url)
-
-        return saveto
-
-    def downloadPages(self, urls):
-        """Download all pages from urls list"""
-        for feedid, url in urls:
-            self.downloadPage(feedid, url)
-
     def getAllJBDatas(self):
         """Get all jobboard datas"""
         conn = lite.connect(self.configs.globals['database'])

@@ -13,6 +13,9 @@ __version__ = '1.0'
 # System
 import re
 
+# Third party
+import requests
+
 # Jobcatcher
 import utilities
 
@@ -163,6 +166,24 @@ class Pages(object):
     def pages(self):
         return self._pages
 
+    def downloadPage(self, jobboardname, feedid, url):
+        """Download pages from url"""
+        saveto = utilities.getPageDestination(
+            self.rootdir, jobboardname, feedid, url, None
+        )
+
+        try:
+            utilities.downloadFile(
+                saveto, url, None, True,
+                self.configs.globals['refreshpages']
+            )
+        except UnicodeDecodeError:
+            print ("Error encoding for %s page" % url)
+        except requests.exceptions.ConnectionError:
+            print ("Error for download %s page" % url)
+
+        return saveto
+
     def searchPagesForJobboard(self, jobboardname):
         srcdir = "%s/%s" % (self.configs.globals['rootdir'], jobboardname)
         files = utilities.findFiles(srcdir, '*.page')
@@ -174,14 +195,15 @@ class Pages(object):
                 page = Page(self.configs, jobboardname, feedid, pagename)
                 self._pages.append(page)
 
-    def downloadPage(self, jobboardname):
-        """Download a jobboard pages"""
+    def downloadPagesFromJobboardFeeds(self, jobboardname):
+        """Download pages from jobboard"""
         plugin = utilities.loadJobBoard(jobboardname, self.configs)
         urls = plugin.getUrls()
-        plugin.downloadPages(urls)
+        for feedid, url in urls:
+            self.downloadPage(jobboardname, feedid, url)
 
-    def downloadPages(self):
+    def downloadPagesFromJobboards(self):
         """Download all jobboard pages"""
         jobboardlist = self.configs.getJobboardList()
         for jobboardname in jobboardlist:
-            self.downloadPage(jobboardname)
+            self.downloadPagesFromJobboardFeeds(jobboardname)
