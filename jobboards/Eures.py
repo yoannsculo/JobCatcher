@@ -19,8 +19,8 @@ import sqlite3 as lite
 
 # Jobcatcher
 import utilities
+from jc.data import Offer
 from jc.jobboard import JobBoard
-from jobcatcher import Offer
 
 
 class JBEures(JobBoard):

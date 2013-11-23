@@ -19,8 +19,8 @@ from BeautifulSoup import BeautifulSoup
 
 # Jobcatcher
 import utilities
+from jc.data import Offer
 from jc.jobboard import JobBoard
-from jobcatcher import Offer
 
 
 class JBPoleEmploi(JobBoard):

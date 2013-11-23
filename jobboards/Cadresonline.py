@@ -14,17 +14,19 @@ import re
 import time
 
 from jobcatcher import JobCatcher
-from jobcatcher import Jobboard
-from jobcatcher import Offer
 from jobcatcher import Location
 from config import configs
 
 from xml.dom import minidom
 import datetime
-import utilities
 
 from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
+
+# Jobcatcher
+import utilities
+from jc.data import Offer
+from jc.jobboard import JobBoard
 
 class Cadresonline(Jobboard):
 

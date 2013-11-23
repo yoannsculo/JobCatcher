@@ -11,16 +11,19 @@ import time
 import codecs
 
 from jobcatcher import JobCatcher
-from jobcatcher import Jobboard
-from jobcatcher import Offer
 from jobcatcher import Location
 
 from xml.dom import minidom
 import datetime
-import utilities
 
 from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
+
+# Jobcatcher
+import utilities
+from jc.data import Offer
+from jc.jobboard import JobBoard
+
 
 class Progressive(Jobboard):
 

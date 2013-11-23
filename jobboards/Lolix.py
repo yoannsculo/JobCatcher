@@ -4,12 +4,16 @@
 import os
 
 from jobcatcher import JobCatcher
-from jobcatcher import Jobboard
-from jobcatcher import Offer
+from jc.data import Offer
 
 from xml.dom import minidom
 import datetime
+
+# Jobcatcher
 import utilities
+from jc.data import Offer
+from jc.jobboard import JobBoard
+
 
 class Lolix(Jobboard):
 
