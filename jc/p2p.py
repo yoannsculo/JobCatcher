@@ -11,6 +11,11 @@ __license__ = 'GPLv2'
 __version__ = '1.0'
 
 # System
+import os
+
+# Jobcatcher
+import utilities
+
 
 class P2PDownloader(object):
     """Download jobboard via static P2P"""
@@ -72,12 +77,14 @@ class P2PDownloader(object):
             print 'Search for %s' % name
             destdir = "%s/%s" % (self.p2pdir, name)
             saveto = "%s/feeds.txt" % destdir
-            utilities.downloadFile('%s/feeds.txt' % url, None, saveto, False)
+            utilities.downloadFile(saveto, '%s/feeds.txt' % url)
 
             # Search pages for jobboards
             for jobboardname in plugins:
                 saveto = "%s/%s.txt" % (destdir, jobboardname)
-                page = utilities.downloadFile('%s/%s.txt' % (url, jobboardname), None, saveto, False)
+                page = utilities.downloadFile(
+                    saveto, '%s/%s.txt' % (url, jobboardname)
+                )
                 if page and page.statuscode == 200:
                     if name not in self._pages:
                         self._pages[name] = dict()
@@ -101,4 +108,4 @@ class P2PDownloader(object):
                         )
 
                         if not os.path.exists(local):
-                            utilities.downloadFile(remote, None, local, False)
+                            utilities.downloadFile(local, remote)

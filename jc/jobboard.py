@@ -94,7 +94,7 @@ class JobBoard(object):
 
         try:
             utilities.downloadFile(
-                feed['url'], datas, saveto, True,
+                saveto, feed['url'], datas, True,
                 self.configs.globals['refreshfeeds']
             )
         except:
@@ -115,7 +115,7 @@ class JobBoard(object):
 
         try:
             utilities.downloadFile(
-                url, None, saveto, True,
+                saveto, url, None, True,
                 self.configs.globals['refreshpages']
             )
         except UnicodeDecodeError:
