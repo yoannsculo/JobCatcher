@@ -20,7 +20,7 @@ from BeautifulSoup import BeautifulSoup
 
 # Jobcatcher
 import utilities
-from jobcatcher import JobBoard
+from jc.jobboard import JobBoard
 from jobcatcher import Offer
 
 
