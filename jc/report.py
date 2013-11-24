@@ -331,7 +331,11 @@ class ReportGenerator(object):
                     report.write('\t\t\t</tr>\n')
 
                 report.write('\t\t\t<tr>\n')
-                report.write('\t\t\t\t<td class="pubdate">' + offer.date_pub.strftime('%Y-%m-%d') + '</td>\n')
+                if offer.state == "DISABLED":
+                    cssstate = "danger"
+                else:
+                    cssstate = "success"
+                report.write('\t\t\t\t<td class="pubdate">%s</td>\n' % self.box(cssstate, offer.date_pub.strftime('%Y-%m-%d')))
                 #report.write('\t\t\t\t<td class="type"><span class="label label-success">noSSII</span></td>\n')
                 report.write('\t\t\t\t<td class="title"><a href="'+re.sub('&', '&amp;', offer.url)+'">' + offer.title + '</a></td>\n')
                 report.write('\t\t\t\t<td class="company">' + offer.company + '</td>\n')

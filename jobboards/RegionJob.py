@@ -105,6 +105,7 @@ class JBRegionJob(JobBoard):
         item = soup.body.find('div', attrs={'id': 'annonce'})
 
         if not item:
+            self.disableOffer(self.datas['offerid'])
             return ""
 
         # Title
