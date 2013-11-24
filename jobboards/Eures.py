@@ -68,10 +68,23 @@ class JBEures(JobBoard):
 
         return res
 
+    def extractOfferId(self, page):
+        offerid = None
+        m = re.search(
+            ur'.*?uniqueJvId=(.*?)&.*',
+            page.url,
+            flags=re.MULTILINE | re.DOTALL
+        )
+        if m:
+            offerid = m.group(1)
+
+        return offerid
+
     def analyzePage(self, page):
         """Analyze page and extract datas"""
         # Refs
         self.datas['url'] = page.url
+        self.datas['offerid'] = self.extractOfferId(page)
         self.datas['ref'] = self._extractItem("Référence nationale", page.content)
         self.datas['feedid'] = page.feedid
         self.datas['nace'] = self._extractItem("Code Nace", page.content)
@@ -115,6 +128,7 @@ class JBEures(JobBoard):
 
         # create a table
         cursor.execute("""CREATE TABLE jb_%s( \
+                       offerid TEXT, \
                        ref TEXT, \
                        feedid TEXT, \
                        nace TEXT, \
@@ -138,8 +152,9 @@ class JBEures(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
                            self.name, (
+                               self.datas['offerid'],
                                self.datas['ref'],
                                self.datas['feedid'],
                                self.datas['nace'],
@@ -172,6 +187,7 @@ class JBEures(JobBoard):
 
         o = Offer()
         o.src = self.name
+        o.offerid = data['offerid']
         o.url = data['url']
         o.ref = data['ref']
         o.feedid = data['feedid']
@@ -183,7 +199,7 @@ class JBEures(JobBoard):
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
 
-        if o.ref and o.company:
+        if o.offerid and o.ref and o.company:
             return o
 
         return None

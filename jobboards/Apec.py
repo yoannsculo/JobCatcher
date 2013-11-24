@@ -92,6 +92,17 @@ class JBApec(JobBoard):
 
         return res
 
+    def extractOfferId(self, page):
+        offerid = None
+        m = re.search(
+            ur'.*?/.*?_([0-9]+W)_.*',
+            page.url,
+            flags=re.MULTILINE | re.DOTALL
+        )
+        if m:
+            offerid = m.group(1)
+
+        return offerid
 
     def analyzePage(self, page):
         """Analyze page and extract datas"""
@@ -116,6 +127,7 @@ class JBApec(JobBoard):
         if not table:
             return "No fields found"
 
+        self.datas['offerid'] = self.extractOfferId(page)
         self.datas['ref'] = self._extractItem(u"Référence Apec", table)
         self.datas['feedid'] = page.feedid
         self.datas['url'] = page.url
@@ -148,6 +160,7 @@ class JBApec(JobBoard):
 
         # create a table
         cursor.execute("""CREATE TABLE jb_%s( \
+                       offerid TEXT, \
                        ref TEXT, \
                        feedid TEXT, \
                        refsoc TEXT, \
@@ -167,8 +180,9 @@ class JBApec(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?)" % 
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
                            self.name, (
+                               self.datas['offerid'],
                                self.datas['ref'],
                                self.datas['feedid'],
                                self.datas['refsoc'],
@@ -200,6 +214,7 @@ class JBApec(JobBoard):
         o = Offer()
         o.src = self.name
         o.url = data['url']
+        o.offerid = data['offerid']
         o.ref = data['ref']
         o.feedid = data['feedid']
         o.title = data['title']
@@ -210,7 +225,7 @@ class JBApec(JobBoard):
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
 
-        if o.ref and o.company:
+        if o.offerid and o.ref and o.company:
             return o
 
         return None

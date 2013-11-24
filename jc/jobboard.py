@@ -135,6 +135,11 @@ class JobBoard(object):
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
         raise NotImplementedError(mess)
 
+    def extractOfferId(self, page):
+        """Extract offerid from url"""
+        mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
+        raise NotImplementedError(mess)
+
     def analyzePage(self, url, html):
         """Analyze page and extract datas"""
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
@@ -147,6 +152,11 @@ class JobBoard(object):
 
     def createOffer(self, data):
         """Create Offer object with jobboard data"""
+        mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
+        raise NotImplementedError(mess)
+
+    def deleteOffer(self, ref):
+        """Delete Offer & jobboard data"""
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
         raise NotImplementedError(mess)
 

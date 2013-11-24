@@ -226,6 +226,7 @@ def db_create(configs):
     # create a offers table
     cursor.execute("""CREATE TABLE offers( \
                         source TEXT, \
+                        offerid TEXT, \
                         ref TEXT, \
                         feedid TEXT, \
                         date_pub INTEGER, \
@@ -258,7 +259,23 @@ def db_delete_jobboard_datas(configs, jobboardname):
 
     # create a table
     sql = "delete from offers where source='%s'" % jobboardname
-    cursor.execute("delete from offers where source='%s'" % jobboardname)
+    cursor.execute(sql)
+    conn.commit()
+
+
+def db_delete_offer(configs, source, offerid):
+    """Delete offer"""
+    conn = None
+    conn = lite.connect(configs.globals['database'])
+    cursor = conn.cursor()
+
+    # create a table
+    sql = "delete from offers where source='%s' and offerid='%s'" % \
+          (
+              source,
+              offerid
+          )
+    cursor.execute(sql)
     conn.commit()
 
 
@@ -267,15 +284,16 @@ def db_add_offer(configs, offer):
     try:
         conn.text_factory = str
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                       (
-                           offer.src, offer.ref, offer.feedid,
-                           offer.date_pub, offer.date_add,
-                           offer.title, offer.company, offer.contract,
-                           offer.duration, offer.location, offer.department,
-                           offer.lat, offer.lon, offer.salary,
-                           offer.url, offer.content
-                       )
+        cursor.execute(
+            "INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                offer.src, offer.offerid, offer.ref, offer.feedid,
+                offer.date_pub, offer.date_add,
+                offer.title, offer.company, offer.contract,
+                offer.duration, offer.location, offer.department,
+                offer.lat, offer.lon, offer.salary,
+                offer.url, offer.content
+            )
         )
         conn.commit()
         return 0

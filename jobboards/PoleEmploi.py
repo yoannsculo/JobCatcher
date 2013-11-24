@@ -70,6 +70,18 @@ class JBPoleEmploi(JobBoard):
 
         return res
 
+    def extractOfferId(self, page):
+        offerid = None
+        m = re.search(
+            ur'.*?/detail/(.*)',
+            page.url,
+            flags=re.MULTILINE | re.DOTALL
+        )
+        if m:
+            offerid = m.group(1)
+
+        return offerid
+
     def analyzePage(self, page):
         """Analyze page and extract datas"""
 
@@ -77,7 +89,7 @@ class JBPoleEmploi(JobBoard):
         item = soup.body.find('div', attrs={'class': 'block-content'})
 
         if not item:
-            return "Not block content foound"
+            return "Not block content found"
 
         # Title
         h4 = item.find('h4', attrs={'itemprop': 'title'})
@@ -90,6 +102,7 @@ class JBPoleEmploi(JobBoard):
 
         # Ref
         li = item.find('li', attrs={'class': 'primary'})
+        self.datas['offerid'] = self.extractOfferId(page)
         self.datas['ref'] = self._regexExtract(u'Numéro de l\'offre', li)
         self.datas['feedid'] = page.feedid
 
@@ -145,6 +158,7 @@ class JBPoleEmploi(JobBoard):
 
         # create a table
         cursor.execute("""CREATE TABLE jb_%s( \
+                       offerid TEXT, \
                        ref TEXT, \
                        feedid TEXT, \
                        url TEXT, \
@@ -163,8 +177,9 @@ class JBPoleEmploi(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?)" %
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
+                               self.datas['offerid'],
                                self.datas['ref'],
                                self.datas['feedid'],
                                self.datas['url'],
@@ -195,6 +210,7 @@ class JBPoleEmploi(JobBoard):
         o = Offer()
         o.src = self.name
         o.url = data['url']
+        o.offerid = data['offerid']
         o.ref = data['ref']
         o.feedid = data['feedid']
         o.title = data['title']
@@ -206,7 +222,7 @@ class JBPoleEmploi(JobBoard):
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
 
-        if o.ref and o.company:
+        if o.offerid and o.ref and o.company:
             return o
 
         return None

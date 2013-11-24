@@ -83,6 +83,18 @@ class JBRegionJob(JobBoard):
 
         return res
 
+    def extractOfferId(self, page):
+        offerid = None
+        m = re.search(
+            ur'.*?numoffre=([0-9]+)&amp;.*',
+            page.url,
+            flags=re.MULTILINE | re.DOTALL
+        )
+        if m:
+            offerid = m.group(1)
+
+        return offerid
+
     def analyzePage(self, page):
         """Analyze page and extract datas"""
 
@@ -106,6 +118,7 @@ class JBRegionJob(JobBoard):
         if not p:
             return "No date section found"
 
+        self.datas['offerid'] = self.extractOfferId(page)
         self.datas['ref'] = self._regexExtract(ur'Réf :(.*)', p)
         self.datas['feedid'] = page.feedid
         self.datas['date_add'] = int(time.time())
@@ -169,6 +182,7 @@ class JBRegionJob(JobBoard):
 
         # create a table
         cursor.execute("""CREATE TABLE jb_%s( \
+                       offerid TEXT, \
                        ref TEXT, \
                        feedid TEXT, \
                        url TEXT, \
@@ -188,8 +202,9 @@ class JBRegionJob(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?)" %
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
+                               self.datas['offerid'],
                                self.datas['ref'],
                                self.datas['feedid'],
                                self.datas['url'],
@@ -221,6 +236,7 @@ class JBRegionJob(JobBoard):
         o = Offer()
         o.src = self.name
         o.url = data['url']
+        o.offerid = data['offerid']
         o.ref = data['ref']
         o.feedid = data['feedid']
         o.title = data['title']
@@ -233,7 +249,7 @@ class JBRegionJob(JobBoard):
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
 
-        if o.ref and o.company:
+        if o.offerid and o.ref and o.company:
             return o
 
         return None

@@ -42,6 +42,7 @@ class Location():
 
 class Offer():
     def __init__(self):
+        self.offerid = u""
         self.ref = u""
         self.feddid = u""
         self.title = u""
@@ -64,12 +65,13 @@ class Offer():
         self.lon = u""
 
     def load(
-            self, src, ref, feedid, date_pub, date_add, title, company,
-            contract, duration, location, department, lat, lon,
+            self, src, offerid, ref, feedid, date_pub, date_add, title,
+            company, contract, duration, location, department, lat, lon,
             salary, url, content
     ):
 
         self.src = src
+        self.offerid = offerid
         self.ref = ref
         self.feedid = feedid
 
