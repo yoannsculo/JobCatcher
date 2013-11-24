@@ -172,6 +172,7 @@ class JBRegionJob(JobBoard):
         self.datas['salary'] = self._extractRubrique("Salaire", item)
 
         # Insert to jobboard table
+        self.datas['state'] = 'ACTIVE'
         self.insertToJBTable()
 
         return None
@@ -200,14 +201,15 @@ class JBRegionJob(JobBoard):
                        location TEXT, \
                        department TEXT, \
                        salary TEXT, \
-                       PRIMARY KEY(ref))""" % self.name)
+                       state TEXT, \
+                       PRIMARY KEY(offerid))""" % self.name)
 
     def insertToJBTable(self):
         conn = lite.connect(self.configs.globals['database'])
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)" %
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
                                self.datas['offerid'],
                                self.datas['lastupdate'],
@@ -223,6 +225,8 @@ class JBRegionJob(JobBoard):
                                self.datas['location'],
                                self.datas['department'],
                                self.datas['salary'],
+                               self.datas['state'],
+
                            )
             )
 
@@ -255,6 +259,7 @@ class JBRegionJob(JobBoard):
         o.salary = data['salary']
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
+        o.state = data['state']
 
         if o.offerid and o.ref and o.company:
             return o

@@ -243,12 +243,13 @@ def db_create(configs):
                         salary TEXT, \
                         url TEXT, \
                         content TEXT, \
-                        PRIMARY KEY(source, ref))""")
+                        state TEXT, \
+                        PRIMARY KEY(source, offerid))""")
     # create a offers table
-    cursor.execute("""CREATE TABLE feeds( \
-                        feedid TEXT, \
-                        ref TEXT, \
-                        PRIMARY KEY(feedid, ref))""")
+    # cursor.execute("""CREATE TABLE feeds( \
+    #                     feedid TEXT, \
+    #                     ref TEXT, \
+    #                     PRIMARY KEY(feedid, ref))""")
     cursor.execute("""CREATE TABLE blacklist(company TEXT, PRIMARY KEY(company))""")
 
 
@@ -286,14 +287,14 @@ def db_add_offer(configs, offer):
         conn.text_factory = str
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
-                offer.src, offer.offerid, offer.ref, offer.feedid,
+                offer.src, offer.offerid, offer.lastupdate, offer.ref, offer.feedid,
                 offer.date_pub, offer.date_add,
                 offer.title, offer.company, offer.contract,
                 offer.duration, offer.location, offer.department,
                 offer.lat, offer.lon, offer.salary,
-                offer.url, offer.content
+                offer.url, offer.content,offer.state
             )
         )
         conn.commit()
@@ -306,9 +307,10 @@ def db_add_offer(configs, offer):
             In the meantime, let's do something realy dirty. let's catch errors
             by string ! ugh
         """
-        if (e.args[0] == "columns source, ref are not unique"):
+        if (e.args[0] == "columns source, offerid are not unique"):
             return 0
         else:
+            print e
             return 1
     finally:
         if conn:

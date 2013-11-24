@@ -103,6 +103,8 @@ def insertpage(conf, jobboardname):
 
 def insertpages(conf, selecteduser):
     """Insert all pages from all jobboard"""
+    utilities.db_checkandcreate(conf)
+
     jobboardlist = conf.getJobboardList()
 
     for jobboardname in jobboardlist:

@@ -121,6 +121,7 @@ class JBEures(JobBoard):
         self.datas['experience'] = self._extractItem("Expérience requise", page.content)
 
         # Insert to jobboard table
+        self.datas['state'] = 'ACTIVE'
         self.insertToJBTable()
 
     def createTable(self,):
@@ -151,14 +152,15 @@ class JBEures(JobBoard):
                        nb_hours TEXT, \
                        qualification TEXT, \
                        experience TEXT, \
-                       PRIMARY KEY(ref))""" % self.name)
+                       state TEXT, \
+                       PRIMARY KEY(offerid))""" % self.name)
 
     def insertToJBTable(self):
         conn = lite.connect(self.configs.globals['database'])
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
                            self.name, (
                                self.datas['offerid'],
                                self.datas['lastupdate'],
@@ -178,6 +180,8 @@ class JBEures(JobBoard):
                                self.datas['nb_hours'],
                                self.datas['qualification'],
                                self.datas['experience'],
+                               self.datas['state'],
+
                            )
                        )
             conn.commit()
@@ -195,7 +199,7 @@ class JBEures(JobBoard):
         o = Offer()
         o.src = self.name
         o.offerid = data['offerid']
-        o.lastupdate = data['offerid']
+        o.lastupdate = data['lastupdate']
         o.url = data['url']
         o.ref = data['ref']
         o.feedid = data['feedid']
@@ -206,6 +210,7 @@ class JBEures(JobBoard):
         o.salary = data['salary']
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
+        o.state = data['state']
 
         if o.offerid and o.ref and o.company:
             return o

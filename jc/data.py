@@ -65,10 +65,12 @@ class Offer():
         self.lat = u""
         self.lon = u""
 
+        self.state = u"ACTIVE"
+
     def load(
             self, src, offerid, lastupdate, ref, feedid, date_pub, date_add,
             title, company, contract, duration, location, department, lat, lon,
-            salary, url, content
+            salary, url, content, state
     ):
 
         self.src = src
@@ -88,6 +90,8 @@ class Offer():
         self.salary = salary
         self.url = url
         self.content = content
+
+        self.state = state
 
     def loadFromHtml(self, filename):
         ""

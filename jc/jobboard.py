@@ -178,10 +178,29 @@ class JobBoard(object):
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
         raise NotImplementedError(mess)
 
-    def deleteOffer(self, ref):
-        """Delete Offer & jobboard data"""
-        mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)
-        raise NotImplementedError(mess)
+    def disableOffer(self, offerid):
+        """Delete jobboard datas from offers table"""
+        conn = None
+        conn = lite.connect(self.configs.globals['database'])
+        cursor = conn.cursor()
+
+        # Disable from offers table
+        sql = "update offers set state='DISABLED' where source='%s' and offerid='%s'" %  \
+              (
+                  self.name,
+                  offerid
+              )
+        cursor.execute(sql)
+        conn.commit()
+
+        # Disable from jobboard table
+        sql = "update jb_%s set state='DISABLED' where offerid='%s'" %  \
+              (
+                  self.name,
+                  offerid
+              )
+        cursor.execute(sql)
+        conn.commit()
 
     def fetchAllOffersFromDB(self):
         conn = lite.connect(self.configs.globals['database'])

@@ -88,10 +88,12 @@ class JBPoleEmploi(JobBoard):
         if not self.isMustAnalyze(page):
             return ""
 
+        self.datas['offerid'] = self.extractOfferId(page)
         soup = BeautifulSoup(page.content, fromEncoding=self.encoding['page'])
         item = soup.body.find('div', attrs={'class': 'block-content'})
 
         if not item:
+            self.disableOffer(self.datas['offerid'])
             return "Not block content found"
 
         # Title
@@ -105,7 +107,6 @@ class JBPoleEmploi(JobBoard):
 
         # Ref
         li = item.find('li', attrs={'class': 'primary'})
-        self.datas['offerid'] = self.extractOfferId(page)
         self.datas['lastupdate'] = page.lastupdate
 
         self.datas['ref'] = self._regexExtract(u'Numéro de l\'offre', li)
@@ -149,6 +150,7 @@ class JBPoleEmploi(JobBoard):
             self.datas['company'] = "NA"
 
         # Insert to jobboard table
+        self.datas['state'] = 'ACTIVE'
         self.insertToJBTable()
 
         return None
@@ -176,14 +178,15 @@ class JBPoleEmploi(JobBoard):
                        location TEXT, \
                        department TEXT, \
                        salary TEXT, \
-                       PRIMARY KEY(ref))""" % self.name)
+                       state TEXT, \
+                       PRIMARY KEY(offerid))""" % self.name)
 
     def insertToJBTable(self):
         conn = lite.connect(self.configs.globals['database'])
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)" %
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
                                self.datas['offerid'],
                                self.datas['lastupdate'],
@@ -198,6 +201,8 @@ class JBPoleEmploi(JobBoard):
                                self.datas['location'],
                                self.datas['department'],
                                self.datas['salary'],
+                               self.datas['state'],
+
                            )
             )
 
@@ -229,6 +234,7 @@ class JBPoleEmploi(JobBoard):
         o.salary = data['salary']
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
+        o.state = data['state']
 
         if o.offerid and o.ref and o.company:
             return o
