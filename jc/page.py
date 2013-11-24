@@ -12,9 +12,11 @@ __version__ = '1.0'
 
 # System
 import re
+import random
 
 # Third party
 import requests
+import sqlite3 as lite
 
 # Jobcatcher
 import utilities
@@ -166,16 +168,21 @@ class Pages(object):
     def pages(self):
         return self._pages
 
-    def downloadPage(self, jobboardname, feedid, url):
+    def downloadPage(self, jobboardname, feedid, url, forcedownload=False):
         """Download pages from url"""
         saveto = utilities.getPageDestination(
             self.rootdir, jobboardname, feedid, url, None
         )
 
         try:
+
             utilities.downloadFile(
-                saveto, url, None, True,
-                self.configs.globals['refreshpages']
+                saveto,
+                url,
+                None,
+                True,
+                self.configs.globals['refreshpages'],
+                forcedownload
             )
         except UnicodeDecodeError:
             print ("Error encoding for %s page" % url)
@@ -195,6 +202,21 @@ class Pages(object):
                 page = Page(self.configs, jobboardname, feedid, pagename)
                 self._pages.append(page)
 
+    def getUrlsFromOffers(self, reorder=False):
+        conn = lite.connect(self.configs.globals['database'])
+        conn.row_factory = lite.Row
+        cursor = conn.cursor()
+
+        sql = "SELECT source, feedid, url FROM offers"
+
+        cursor.execute(sql)
+        urls = cursor.fetchall()
+
+        if reorder:
+            random.shuffle(urls)
+
+        return urls
+
     def downloadPagesFromJobboardFeeds(self, jobboardname):
         """Download pages from jobboard"""
         plugin = utilities.loadJobBoard(jobboardname, self.configs)
@@ -207,3 +229,10 @@ class Pages(object):
         jobboardlist = self.configs.getJobboardList()
         for jobboardname in jobboardlist:
             self.downloadPagesFromJobboardFeeds(jobboardname)
+
+    def redownloadFromOffers(self):
+        """Redownload all web pages from url list offers table"""
+        urls = self.getUrlsFromOffers(reorder=True)
+
+        for jobboardname, feedid, url in urls:
+            self.downloadPage(jobboardname, feedid, url, True)

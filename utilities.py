@@ -23,7 +23,17 @@ import requests
 
 
 from collections import namedtuple
-PageResult = namedtuple('PageResult', ['pageid', 'url', 'content'])
+PageResult = namedtuple(
+    'PageResult',
+    [
+        'version',
+        'statuscode',
+        'pageid',
+        'url',
+        'content'
+    ]
+)
+
 DownloadResult = namedtuple('DownloadResult', ['url', 'statuscode', 'content'])
 
 
@@ -103,12 +113,20 @@ def getNow():
 
 def openPage(filename):
     fd = open(filename, 'rb')
+    version = fd.readline().strip()
+    statuscode = fd.readline().strip()
     pageid = fd.readline().strip()
     url = fd.readline().strip()
     content = fd.read()
     fd.close()
 
-    return PageResult(pageid=pageid, url=url, content=content)
+    return PageResult(
+        version=version,
+        statuscode=statuscode,
+        pageid=pageid,
+        url=url,
+        content=content
+    )
 
 
 def download(url, datas):
@@ -155,7 +173,11 @@ def downloadFile(
     if r.statuscode in [200, 404, 410]:
         out = open(filename, 'wb')
         if withmeta:
+            version = '1.0'
+            statuscode = r.statuscode
             pageid = getEncodedURL(url, datas)
+            out.write("%s\n" % version)
+            out.write("%s\n" % statuscode)
             out.write("%s\n" % pageid)
             out.write("%s\n" % url)
         out.write(r.content)

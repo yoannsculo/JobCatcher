@@ -72,11 +72,16 @@ def downloadfeeds(conf, selecteduser):
 
 def downloadpages(conf):
     pages = Pages(conf)
-    pages.downloadPages()
+    pages.downloadPagesFromJobboards()
     # """Download all jobboard pages"""
     # jobboardlist = conf.getJobboardList()
     # for jobboardname in jobboardlist:
     #     downloadpage(conf, jobboardname)
+
+
+def redownload(conf):
+    pages = Pages(conf)
+    pages.redownloadFromOffers()
 
 
 def insertpage(conf, jobboardname):
@@ -186,13 +191,12 @@ if __name__ == '__main__':
                       help='download the all pages in the config'
     )
 
-    # parser.add_option('--page',
-    #                   action='store',
-    #                   metavar='JOBBOARD',
-    #                   dest='page',
-    #                   help='download only the pages from JOBBOARD in the config'
-    # )
-    
+    parser.add_option('--redownload',
+                      action='store_true',
+                      dest='redownload',
+                      help='Redownload all web pages from url field offers table'
+    )
+
     parser.add_option('--inserts',
                       action='store_true',
                       dest='inserts',
@@ -303,9 +307,9 @@ if __name__ == '__main__':
         downloadpages(configs)
         sys.exit(0)
 
-    # if options.page:
-    #     downloadpage(configs, options.page)
-    #     sys.exit(0)
+    if options.redownload:
+        redownload(configs)
+        sys.exit(0)
 
     # Inserts
     if options.inserts:
