@@ -38,6 +38,7 @@ class Page(object):
         self._pagename = pagename
         self._pageid = ""
         self._url = ""
+        self._statuscode = 0
         self._content = ""
 
     def _extractFeedidFromFilename(self, filename):
@@ -61,6 +62,7 @@ class Page(object):
         self._feedid = self._extractFeedidFromFilename(filename)
         self._pageid = webpage.pageid
         self._url = webpage.url
+        self._statuscode = webpage.statuscode
         self._content = webpage.content
         self._downloaded = True
 
@@ -120,6 +122,10 @@ class Page(object):
     @property
     def pageid(self):
         return self._pageid
+
+    @property
+    def statuscode(self):
+        return self._statuscode
 
     @property
     def url(self):
