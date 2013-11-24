@@ -82,9 +82,14 @@ class JBEures(JobBoard):
 
     def analyzePage(self, page):
         """Analyze page and extract datas"""
+
+        if not self.isMustAnalyze(page):
+            return ""
+
         # Refs
         self.datas['url'] = page.url
         self.datas['offerid'] = self.extractOfferId(page)
+        self.datas['lastupdate'] = page.lastupdate
         self.datas['ref'] = self._extractItem("Référence nationale", page.content)
         self.datas['feedid'] = page.feedid
         self.datas['nace'] = self._extractItem("Code Nace", page.content)
@@ -129,6 +134,7 @@ class JBEures(JobBoard):
         # create a table
         cursor.execute("""CREATE TABLE jb_%s( \
                        offerid TEXT, \
+                       lastupdate INTEGER, \
                        ref TEXT, \
                        feedid TEXT, \
                        nace TEXT, \
@@ -152,9 +158,10 @@ class JBEures(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
                            self.name, (
                                self.datas['offerid'],
+                               self.datas['lastupdate'],
                                self.datas['ref'],
                                self.datas['feedid'],
                                self.datas['nace'],
@@ -188,6 +195,7 @@ class JBEures(JobBoard):
         o = Offer()
         o.src = self.name
         o.offerid = data['offerid']
+        o.lastupdate = data['offerid']
         o.url = data['url']
         o.ref = data['ref']
         o.feedid = data['feedid']

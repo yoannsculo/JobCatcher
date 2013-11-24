@@ -227,6 +227,7 @@ def db_create(configs):
     cursor.execute("""CREATE TABLE offers( \
                         source TEXT, \
                         offerid TEXT, \
+                        lastupdate INTEGER, \
                         ref TEXT, \
                         feedid TEXT, \
                         date_pub INTEGER, \

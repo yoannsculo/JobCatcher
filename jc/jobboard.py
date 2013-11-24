@@ -125,6 +125,29 @@ class JobBoard(object):
             else:
                 print "Error moving to offers of %s" % d['url']
 
+    def isMustAnalyze(self, page):
+        doAnalyze = True
+
+        conn = lite.connect(self.configs.globals['database'])
+        conn.row_factory = lite.Row
+        cursor = conn.cursor()
+
+        offerid = self.extractOfferId(page)
+        sql = "SELECT lastupdate FROM jb_%s where offerid='%s'" %\
+              (
+                  self.name, offerid
+              )
+
+        cursor.execute(sql)
+        data = cursor.fetchall()
+
+        dblastupdate = 0
+        if len(data) > 0:
+            dblastupdate = data[0][0]
+            doAnalyze = page.lastupdate > dblastupdate
+
+        return doAnalyze
+
     def createTable(self,):
         """Create Jobboard table"""
         mess = "%s.%s" % (self.__class__, sys._getframe().f_code.co_name)

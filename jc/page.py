@@ -32,6 +32,8 @@ class Page(object):
         # Page information
         self._downloaded = False
         self._jobboardname = jobboardname
+        self._lastupdate = 0
+        self._filename = ""
         self._feedid = feedid
         self._pagename = pagename
         self._pageid = ""
@@ -54,6 +56,8 @@ class Page(object):
             self.pagename
         )
         webpage = utilities.openPage(filename)
+        self._filename = filename
+        self._lastupdate = utilities.getModificationFile(filename)
         self._feedid = self._extractFeedidFromFilename(filename)
         self._pageid = webpage.pageid
         self._url = webpage.url
@@ -96,6 +100,14 @@ class Page(object):
     @property
     def jobboardname(self):
         return self._jobboardname
+
+    @property
+    def filename(self):
+        return self._filename
+
+    @property
+    def lastupdate(self):
+        return self._lastupdate
 
     @property
     def feedid(self):

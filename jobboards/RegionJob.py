@@ -98,6 +98,9 @@ class JBRegionJob(JobBoard):
     def analyzePage(self, page):
         """Analyze page and extract datas"""
 
+        if not self.isMustAnalyze(page):
+            return ""
+
         soup = BeautifulSoup(page.content, fromEncoding=self.encoding['page'])
         item = soup.body.find('div', attrs={'id': 'annonce'})
 
@@ -119,6 +122,7 @@ class JBRegionJob(JobBoard):
             return "No date section found"
 
         self.datas['offerid'] = self.extractOfferId(page)
+        self.datas['lastupdate'] = page.lastupdate
         self.datas['ref'] = self._regexExtract(ur'Réf :(.*)', p)
         self.datas['feedid'] = page.feedid
         self.datas['date_add'] = int(time.time())
@@ -183,6 +187,7 @@ class JBRegionJob(JobBoard):
         # create a table
         cursor.execute("""CREATE TABLE jb_%s( \
                        offerid TEXT, \
+                       lastupdate INTEGER, \
                        ref TEXT, \
                        feedid TEXT, \
                        url TEXT, \
@@ -202,9 +207,10 @@ class JBRegionJob(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)" %
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
                                self.datas['offerid'],
+                               self.datas['lastupdate'],
                                self.datas['ref'],
                                self.datas['feedid'],
                                self.datas['url'],
@@ -237,6 +243,7 @@ class JBRegionJob(JobBoard):
         o.src = self.name
         o.url = data['url']
         o.offerid = data['offerid']
+        o.lastupdate = data['lastupdate']
         o.ref = data['ref']
         o.feedid = data['feedid']
         o.title = data['title']
