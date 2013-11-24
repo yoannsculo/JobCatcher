@@ -83,7 +83,7 @@ class JBEures(JobBoard):
     def analyzePage(self, page):
         """Analyze page and extract datas"""
 
-        if not self.isMustAnalyze(page):
+        if not self.requireAnalyse(page):
             return ""
 
         # Refs

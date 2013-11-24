@@ -98,9 +98,10 @@ class JBRegionJob(JobBoard):
     def analyzePage(self, page):
         """Analyze page and extract datas"""
 
-        if not self.isMustAnalyze(page):
+        if not self.requireAnalyse(page):
             return ""
 
+        self.datas['offerid'] = self.extractOfferId(page)
         soup = BeautifulSoup(page.content, fromEncoding=self.encoding['page'])
         item = soup.body.find('div', attrs={'id': 'annonce'})
 

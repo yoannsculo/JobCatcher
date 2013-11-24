@@ -107,9 +107,10 @@ class JBApec(JobBoard):
     def analyzePage(self, page):
         """Analyze page and extract datas"""
 
-        if not self.isMustAnalyze(page):
+        if not self.requireAnalyse(page):
             return ""
 
+        self.datas['offerid'] = self.extractOfferId(page)
         soup = BeautifulSoup(page.content, fromEncoding=self.encoding['page'])
         item = soup.body.find('div', attrs={'class': 'boxMain boxOffres box'})
 
@@ -131,7 +132,6 @@ class JBApec(JobBoard):
         if not table:
             return "No fields found"
 
-        self.datas['offerid'] = self.extractOfferId(page)
         self.datas['lastupdate'] = page.lastupdate
         self.datas['ref'] = self._extractItem(u"Référence Apec", table)
         self.datas['feedid'] = page.feedid

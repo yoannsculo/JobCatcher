@@ -125,7 +125,7 @@ class JobBoard(object):
             else:
                 print "Error moving to offers of %s" % d['url']
 
-    def isMustAnalyze(self, page):
+    def requireAnalyse(self, page):
         doAnalyze = True
 
         conn = lite.connect(self.configs.globals['database'])
