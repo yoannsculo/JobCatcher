@@ -246,6 +246,9 @@ class ReportGenerator(object):
         if not users:
             users = self.configs.getUsers()
 
+        feedsinfo = self.configs.getFeedsInfo(users)
+
+
         for user in users:
             feedidslist = self.configs.getFeedIdsForUser(user)
             # Directory
@@ -361,7 +364,15 @@ class ReportGenerator(object):
                     report.write(duration)
                 report.write('</td>\n')
                 report.write('\t\t\t\t<td class="salary">' + offer.salary + '</td>\n')
-                report.write('\t\t\t\t<td class="source">' + offer.src + '</td>\n')
+
+                # Source
+                feedurl = feedsinfo[offer.src][offer.feedid]['url']
+                report.write('\t\t\t\t<td class="source"><a href="%s">%s</a></td>\n' % \
+                             (
+                                 feedurl,
+                                 offer.src,
+                             )
+                )
                 report.write('\t\t\t</tr>\n')
 
             # closure
