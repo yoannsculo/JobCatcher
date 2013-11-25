@@ -81,11 +81,12 @@ class ReportGenerator(object):
         return '<span class="label%s">%s</span>' % (css, text)
 
     def header(self, fhandle, rpath="..", showNav=True):
-        fhandle.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n')
-        fhandle.write('<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">\n')
+        fhandle.write('<!doctype html>\n')
+        fhandle.write('<html dir="ltr" lang="en">\n')
         fhandle.write('<head>\n')
         fhandle.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
-        fhandle.write('\t<link rel="stylesheet" href="%s/css/bootstrap.css" />\n' % rpath)
+        fhandle.write('\t<link rel="stylesheet" href="%s/css/bootstrap.min.css" />\n' % rpath)
+        fhandle.write('\t<script type="text/javascript" src="%s/js/bootstrap.min.js"></script>\n' % rpath)
 
         if showNav:
             if self.configs.globals['report']['dynamic']:
