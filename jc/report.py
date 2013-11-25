@@ -86,7 +86,6 @@ class ReportGenerator(object):
         fhandle.write('<head>\n')
         fhandle.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
         fhandle.write('\t<link rel="stylesheet" href="%s/css/bootstrap.css" />\n' % rpath)
-        fhandle.write('\t<link rel="stylesheet" href="%s/css/bootstrap-responsive.css" />\n' % rpath)
 
         if showNav:
             if self.configs.globals['report']['dynamic']:
@@ -138,7 +137,6 @@ class ReportGenerator(object):
     #     stat.write('<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">\n')
     #     stat.write("<head>\n")
     #     stat.write("<link href=\"./../css/bootstrap.css\" rel=\"stylesheet\" />\n")
-    #     stat.write("<link href=\"./../css/bootstrap-responsive.css\" rel=\"stylesheet\" />\n")
     #     stat.write("<style>table{font: 10pt verdana, geneva, lucida, 'lucida grande', arial, helvetica, sans-serif;}</style>\n")
     #     stat.write("<meta http-equiv=\"Content-type\" content=\"text/html; charset=utf-8\"></head>\n")
     #     stat.write("<body>\n")
