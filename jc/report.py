@@ -105,6 +105,30 @@ class ReportGenerator(object):
                 fhandle.write('\t<link rel="stylesheet" href="%s/css/static.css" />\n' % rpath)
         fhandle.write('</head>\n')
 
+    def navbar(self, fhandle, pagename, offers_count=None, filtered_count=None):
+        offers_text = "All offers" if offers_count is None else\
+            ("All %s offers" % offers_count)
+        filtered_text = "Filtered offers" if filtered_count is None else\
+            ("%s filtered offers" % filtered_count)
+        filtered_ratio_text = "" if\
+            (offers_count is None or filtered_count is None) else\
+            "%s blacklisted offers (%.0f%%)" % (\
+                offers_count - filtered_count,\
+                100*(float) (offers_count - filtered_count) / offers_count\
+            )
+        fhandle.write('\t<nav class="navbar navbar-default" role="navigation">\n')
+        fhandle.write('\t\t<div class="collapse navbar-collapse">\n')
+        fhandle.write('\t\t\t<ul class="nav navbar-nav nav-pills">\n')
+        fhandle.write('\t\t\t\t<li class="%s"><a href="report_full.html">%s</a></li>\n'\
+            % (("active" if "full" == pagename else ""), offers_text))
+        fhandle.write('\t\t\t\t<li class="%s"><a href="report_full.html">%s</a></li>\n'\
+            % (("active" if "filtered" == pagename else ""), filtered_text))
+        fhandle.write('\t\t\t\t<li><p class="navbar-text">%s</p></li>\n'\
+            % filtered_ratio_text)
+        fhandle.write('\t\t\t</ul>\n')
+        fhandle.write('\t\t</div>\n')
+        fhandle.write('\t</nav>\n')
+
     def generateDownloadedFile(self):
         # Search feeds
         feeds = utilities.findFiles(self.rootdir, '*.feed')
@@ -279,14 +303,9 @@ class ReportGenerator(object):
             self.header(report)
 
             report.write('<body>\n')
-            # page header
-            if count_full:
-                report.write('\t<ul class="nav nav-pills">\n')
-                report.write('\t\t<li class="%s"><a href="report_full.html">All %s offers</a></li>\n' %("" if filtered else "active", count_full))
-                report.write('\t\t<li class="%s"><a href="report_filtered.html">%s filtered offers (%.2f%%)</a></li>\n' %("active" if filtered else "", count_filtered, 100*(float)(count_filtered)/count_full))
-                # report.write('\t\t<li><a href="statistics.html">Statistics</a></li>\n')
-                report.write('\t\t<li class="disabled"><a href="#">%s blacklisted offers (%.2f%%)</a></li>\n' %(count_full-count_filtered, 100*(float)(count_full-count_filtered)/count_full))
-                report.write('\t</ul>\n')
+            # page header def navbar(self, fhandle, pagename, offers_count=None, filtered_count=None):
+            pagename = "filtered" if filtered else "full"
+            self.navbar(report, pagename, count_full, count_filtered)
 
             # page body
             report.write('\t<table id="offers" class="table table-condensed">\n')
