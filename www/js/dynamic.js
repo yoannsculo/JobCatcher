@@ -333,16 +333,13 @@ var AbstractFilter = Class.extend({
      * \brief Creates detached text box width buttons.
      */
     priv_textbox: function(id, filigran, callbacks, buttons) {
-        var $span = $("<span>")
-            .addClass("input-append")
-            .addClass("row-fluid");
-        var $edit = $("<input>", {id: id})
+        /* container */
+        var $div = $('<div class="input-group">');
+        /* text bar */
+        var $edit = $('<input type="text" class="form-control">')
+            .prop("id", id)
             .attr("placeholder", filigran)
-            .attr("type", "text")
-            .addClass("span9")
-            .addClass("form-control")
-            .addClass("search-query")
-            .appendTo($span);
+            .appendTo($div);
         var cbs = $.extend({
             click: function() {},
             keyup: function() {},
@@ -353,18 +350,20 @@ var AbstractFilter = Class.extend({
         $edit.keyup(cbs.keyup);
         $edit.keydown(cbs.keydown);
         $edit.change(cbs.change);
+        /* buttons */
+        var $span = $('<span class="input-group-btn">')
+            .appendTo($div);
         $.each(buttons, function(key, val) {
             var button = $.extend({
                 text: "OK",
                 click: function() {}
             }, val || {});
-            var $button = $("<button>", {type: "button"})
-                .addClass("btn")
+            var $button = $('<button class="btn btn-default" type="button">')
                 .appendTo($span)
                 .text(button.text)
                 .click(button.click);
         });
-        return $span;
+        return $div;
     },
     /**
      * \fn init(classname, master_filter)
