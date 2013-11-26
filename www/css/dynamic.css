@@ -130,7 +130,8 @@ thead .contract {
 
 /* salary */
 .salary {
-    min-width: 10%;
+    min-width: 14em;
+    width: 10%;
 }
 #filter_salary_feedback {
     float: left;
@@ -151,7 +152,7 @@ thead .contract {
     clear: both;
 }
 #filter_salary_root {
-    margin-top: -15px;
+    margin-top: 0px;
     margin-left: 0.75em;
     margin-right: 0.75em;
     min-width: 5em;
