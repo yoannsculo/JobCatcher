@@ -322,9 +322,11 @@ var AbstractFilter = Class.extend({
         if (undefined === multiple)
             multiple=false;
         var $result = $("<select>", {id: id})
-            .addClass("selectpicker")
+            .addClass("selectpicker");
         if (multiple)
-            $result.prop("multiple", "multiple");
+            $result
+                .prop("multiple", "multiple")
+                .attr("data-selected-text-format", "count > 1");
         $.each(options, function(key, val) {
             var $elt = $("<option>");
             $elt.append(val);
@@ -948,8 +950,8 @@ var ContractFilter = AbstractFilter.extend({
         var self = this;
         $parent.append(priv_elements[0]);
         var $select = priv_elements[0].find("select");
-        $select.change(function() {self.apply();});
-        $select.selectpicker();
+        $select.change(function() { self.apply(); });
+        $select.selectpicker("selectAll");
         return true;
     },
     /**
@@ -1205,12 +1207,12 @@ var SourceFilter = AbstractFilter.extend({
                 sources.push(source);
         });
         sources.sort();
-        sources = (new Array("All")).concat(sources);
 
+        var $form = $("<form>").prop("role", "form");
         $filter_source_combobox = this.priv_select_from_array(
-            "filter_source_combobox", sources
-        );
-        priv_elements = [$filter_source_combobox];
+            "filter_source_combobox", sources, true
+        ).appendTo($form);
+        priv_elements = [$form];
     },
     /**
      * \fn apply()
@@ -1231,7 +1233,9 @@ var SourceFilter = AbstractFilter.extend({
     attach: function($parent) {
         var self = this;
         $parent.append(priv_elements[0]);
-        priv_elements[0].change(function() { self.apply(); });
+        var $select = priv_elements[0].find("select");
+        $select.change(function() { self.apply(); });
+        $select.selectpicker("selectAll");
         return true;
     },
     /**
@@ -1240,8 +1244,17 @@ var SourceFilter = AbstractFilter.extend({
      * \returns Either \c true of \c false.
      */
     test: function(value)  {
-        var source = $("#filter_source_combobox :selected").text();
-        return "All" == source || value == source;
+        var contracts = $("#filter_source_combobox").val();
+        if (null === contracts)
+            return true;
+        var result = false;
+        $.each(contracts, function(key, val) {
+            if (val == value) {
+                result = true;
+                return false;
+            }
+        });
+        return result;
     }
 });
 
