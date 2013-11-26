@@ -336,6 +336,10 @@ if __name__ == '__main__':
         sys.exit(0)
 
     if options.p2psync:
+        # Donwload feeds
+        downloadfeeds(configs, selecteduser)
+
+        # Sync p2p
         p = P2PDownloader(configs)
         p.initLocalCache()
         p.sync()
