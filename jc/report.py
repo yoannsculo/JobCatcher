@@ -119,9 +119,11 @@ class ReportGenerator(object):
         fhandle.write('\t<nav class="navbar navbar-default" role="navigation">\n')
         fhandle.write('\t\t<div class="collapse navbar-collapse">\n')
         fhandle.write('\t\t\t<ul class="nav navbar-nav nav-pills">\n')
+        fhandle.write('\t\t\t\t<li><a id="button-github" title="%s" href="%s"></a></li>\n'\
+            % ("Check us on Github!", "https://github.com/yoannsculo/JobCatcher"))
         fhandle.write('\t\t\t\t<li class="%s"><a href="report_full.html">%s</a></li>\n'\
             % (("active" if "full" == pagename else ""), offers_text))
-        fhandle.write('\t\t\t\t<li class="%s"><a href="report_full.html">%s</a></li>\n'\
+        fhandle.write('\t\t\t\t<li class="%s"><a href="report_filtered.html">%s</a></li>\n'\
             % (("active" if "filtered" == pagename else ""), filtered_text))
         fhandle.write('\t\t\t\t<li><p class="navbar-text">%s</p></li>\n'\
             % filtered_ratio_text)
