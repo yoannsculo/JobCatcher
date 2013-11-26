@@ -391,6 +391,7 @@ var AbstractFilter = Class.extend({
         options = $.extend({
             multiple: false,
             liveSearch: false,
+            text: "{0} on {1}",
             width: "auto"
         }, options || {});
         var $result = $("<select>", {id: id})
@@ -400,7 +401,7 @@ var AbstractFilter = Class.extend({
             $result
                 .prop("multiple", "multiple")
                 .attr("data-selected-text-format", "count > 1")
-                .attr("data-count-selected-text", "{0} on {1}");
+                .attr("data-count-selected-text", options.text);
         if (options.liveSearch)
             $result.attr("data-live-search", "true");
         $.each(choices, function(key, val) {
@@ -1004,7 +1005,8 @@ var ContractFilter = AbstractFilter.extend({
                 '<span class="label label-info">Alternance</label>'
             ], {
                 multiple: true,
-                width: "10em"
+                width: "10em",
+                text: "Contract"
             }
         )
             .prop("title", "Contracts")
@@ -1294,7 +1296,8 @@ var SourceFilter = AbstractFilter.extend({
             "filter_source_combobox", sources, {
                 multiple: true,
                 liveSearch: true,
-                width: "8em"
+                width: "8em",
+                text: "Source"
             }
         ).appendTo($form);
         priv_elements = [$form];
