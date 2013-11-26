@@ -56,7 +56,7 @@ table#offers thead tr .headerSortDown, table#offers thead tr .headerSortUp {
 thead .pubdate {
     width: 8%;
     text-align: center;
-    vertical-align: middle;
+    vertical-align: middle !important;
 }
 .ui-my-selected-button {
     background: url(../img/ui-bg_flat_75_ffffff_40x100.png) repeat-x center;
@@ -81,7 +81,7 @@ thead .pubdate {
 }
 thead .type {
     text-align: center;
-    vertical-align: middle;
+    vertical-align: middle !important;
 }
 #filter_type_pivot {
     width: 5em;
@@ -96,7 +96,7 @@ thead .type {
 }
 thead .title {
     text-align: center;
-    vertical-align: bottom;
+    vertical-align: middle !important;
 }
 
 /* company */
@@ -108,7 +108,7 @@ thead .title {
 }
 thead .company {
     text-align: center;
-    vertical-align: bottom;
+    vertical-align: middle !important;
 }
 
 /* location */
@@ -125,7 +125,7 @@ thead .company {
 }
 thead .contract {
     text-align: center;
-    vertical-align: middle;
+    vertical-align: middle !important;
 }
 
 /* salary */
@@ -180,7 +180,7 @@ thead .contract {
     width: 6em;
 }
 thead .source {
-    vertical-align: middle;
+    vertical-align: middle !important;
 }
 
 /*
