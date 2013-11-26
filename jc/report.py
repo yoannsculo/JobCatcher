@@ -86,7 +86,6 @@ class ReportGenerator(object):
         fhandle.write('<head>\n')
         fhandle.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
         fhandle.write('\t<link rel="stylesheet" href="%s/css/bootstrap.min.css" />\n' % rpath)
-        fhandle.write('\t<script type="text/javascript" src="%s/js/bootstrap.min.js"></script>\n' % rpath)
 
         if showNav:
             if self.configs.globals['report']['dynamic']:
@@ -94,6 +93,7 @@ class ReportGenerator(object):
                 fhandle.write('\t<link rel="stylesheet" href="%s/css/simplePagination.css" />\n' % rpath)
                 fhandle.write('\t<link rel="stylesheet" href="%s/css/dynamic.css" />\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/jquery-2.0.3.min.js"></script>\n' % rpath)
+                fhandle.write('\t<script type="text/javascript" src="%s/js/bootstrap.min.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/jquery-ui-1.10.3.custom.min.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/jquery.tablesorter.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/jquery.simplePagination.js"></script>\n' % rpath)
