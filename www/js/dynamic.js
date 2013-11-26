@@ -321,16 +321,15 @@ var AbstractFilter = Class.extend({
     priv_select_from_array: function(id, options, multiple)  {
         if (undefined === multiple)
             multiple=false;
-        var $result = $("<select>", {id: id});
+        var $result = $("<select>", {id: id})
+            .addClass("selectpicker")
         if (multiple)
             $result.prop("multiple", "multiple");
-        $result.addClass("selectpicker");
         $.each(options, function(key, val) {
             var $elt = $("<option>");
             $elt.append(val);
             $result.append($elt);
         });
-        $result.selectpicker().show();
         return $result;
     },
     /**
@@ -431,8 +430,8 @@ var PubdateFilter = AbstractFilter.extend({
      * \brief Creates detached <select> elements from the \a options array.
      * \see \ref AbstractFilter.priv_select_from_array(id, options)
      */
-    priv_select_from_array: function(id, options)  {
-        return this._super(id, options);
+    priv_select_from_array: function(id, options, multiple)  {
+        return this._super(id, options, multiple);
     },
     /**
      * \property priv_selected_button_class_name
@@ -617,8 +616,8 @@ var TypeFilter = AbstractFilter.extend({
      * \brief Creates detached <select> elements from the \a options array.
      * \see \ref AbstractFilter.priv_select_from_array(id, options)
      */
-    priv_select_from_array: function(id, options)  {
-        return this._super(id, options);
+    priv_select_from_array: function(id, options, multiple)  {
+        return this._super(id, options, multiple);
     },
     /**
      * \fn init(classname, master_filter)
@@ -698,8 +697,8 @@ var TitleFilter = AbstractFilter.extend({
      * \brief Creates detached <select> elements from the \a options array.
      * \see \ref AbstractFilter.priv_select_from_array(id, options)
      */
-    priv_select_from_array: function(id, options)  {
-        return this._super(id, options);
+    priv_select_from_array: function(id, options, multiple)  {
+        return this._super(id, options, multiple);
     },
     /**
      * \fn init(classname, master_filter)
@@ -797,8 +796,8 @@ var CompanyFilter = AbstractFilter.extend({
      * \brief Creates detached <select> elements from the \a options array.
      * \see \ref AbstractFilter.priv_select_from_array(id, options)
      */
-    priv_select_from_array: function(id, options)  {
-        return this._super(id, options);
+    priv_select_from_array: function(id, options, multiple)  {
+        return this._super(id, options, multiple);
     },
     /**
      * \fn init(classname, master_filter)
@@ -906,8 +905,8 @@ var ContractFilter = AbstractFilter.extend({
      * \brief Creates detached <select> elements from the \a options array.
      * \see \ref AbstractFilter.priv_select_from_array(id, options)
      */
-    priv_select_from_array: function(id, options)  {
-        return this._super(id, options);
+    priv_select_from_array: function(id, options, multiple)  {
+        return this._super(id, options, multiple);
     },
     /**
      * \fn init(classname, master_filter)
@@ -916,10 +915,18 @@ var ContractFilter = AbstractFilter.extend({
     init: function(classname, master_filter) {
         this._super(classname, master_filter);
         var self = this;
+        var $form = $("<form>").prop("role", "form");
         $filter_contract_combobox = this.priv_select_from_array(
-            "filter_contract_combobox", ["All", "CDI", "CDD", "Training"]
-        );
-        priv_elements = [$filter_contract_combobox];
+            "filter_contract_combobox", [
+                '<span class="label label-success">CDI</label>',
+                '<span class="label label-warning">CDD</label>',
+                '<span class="label label-info">Internship</label>',
+                '<span class="label label-info">Alternace</label>'
+            ], true
+        )
+            .prop("title", "Contracts")
+            .appendTo($form);
+        priv_elements = [$form];
     },
     /**
      * \fn apply()
@@ -940,7 +947,9 @@ var ContractFilter = AbstractFilter.extend({
     attach: function($parent) {
         var self = this;
         $parent.append(priv_elements[0]);
-        priv_elements[0].change(function() {self.apply();});
+        var $select = priv_elements[0].find("select");
+        $select.change(function() {self.apply();});
+        $select.selectpicker();
         return true;
     },
     /**
@@ -949,8 +958,17 @@ var ContractFilter = AbstractFilter.extend({
      * \returns Either \c true of \c false.
      */
     test: function(value)  {
-        var contract = $("#filter_contract_combobox :selected").text();
-        return "All" == contract || value == contract;
+        var contracts = $("#filter_contract_combobox").val();
+        if (null === contracts)
+            return true;
+        var result = false;
+        $.each(contracts, function(key, val) {
+            if (val == value) {
+                result = true;
+                return false;
+            }
+        });
+        return result;
     }
 });
 
@@ -985,8 +1003,8 @@ var SalaryFilter = AbstractFilter.extend({
      * \brief Creates detached <select> elements from the \a options array.
      * \see \ref AbstractFilter.priv_select_from_array(id, options)
      */
-    priv_select_from_array: function(id, options)  {
-        return this._super(id, options);
+    priv_select_from_array: function(id, options, multiple)  {
+        return this._super(id, options, multiple);
     },
     /**
      * \fn priv_range_from_string(salary_description)
@@ -1170,8 +1188,8 @@ var SourceFilter = AbstractFilter.extend({
      * \brief Creates detached <select> elements from the \a options array.
      * \see \ref AbstractFilter.priv_select_from_array(id, options)
      */
-    priv_select_from_array: function(id, options)  {
-        return this._super(id, options);
+    priv_select_from_array: function(id, options, multiple)  {
+        return this._super(id, options, multiple);
     },
     /**
      * \fn init(classname, master_filter)
@@ -1248,8 +1266,8 @@ var LocationFilter = AbstractFilter.extend({
      * \brief Creates detached <select> elements from the \a options array.
      * \see \ref AbstractFilter.priv_select_from_array(id, options)
      */
-    priv_select_from_array: function(id, options)  {
-        return this._super(id, options);
+    priv_select_from_array: function(id, options, multiple)  {
+        return this._super(id, options, multiple);
     },
     /**
      * \property priv_store
