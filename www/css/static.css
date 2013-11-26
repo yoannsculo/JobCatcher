@@ -1,14 +1,20 @@
 body {
 	overflow: hidden;
 }
-
+html, body, .main {
+   height: 97%;
+}
+body > .main {
+   height: auto;
+   min-height: 97%;
+   padding-bottom: 3em;
+}
 #button-github {
     background-image: url(../img/github.png);
     background-size: 48px 48px;
     width: 48px;
     height: 48px;
 }
-
 table#offers > thead > tr {
 	position: relative;
 }
@@ -20,7 +26,7 @@ table#offers > tbody {
 	display: block;
 	position: absolute;
 	overflow: auto;
-	height: 100%;
+	height: 80%;
 }
 td.pubdate, th.pubdate {
 	width: 7%;
@@ -49,4 +55,15 @@ td.salary, th.salary {
 td.source, th.source {
 	width: 10%;
 	text-align: center;
-
+}
+footer {
+   clear: both;
+   position: relative;
+   bottom: 0px;
+   z-index: 10;
+   height: 3em;
+   margin-top: -3em;
+   text-align: center;
+   color: #777;
+   text-shadow: 0.2em 0.2em 0.05em rgba(128, 128, 255, 0.8);
+}
