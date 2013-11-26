@@ -85,6 +85,7 @@ class ReportGenerator(object):
         fhandle.write('<html dir="ltr" lang="en">\n')
         fhandle.write('<head>\n')
         fhandle.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
+        fhandle.write('\t<meta name="generator" content="JobCatcher; github.com/yoannsculo/JobCatcher" />\n')
         fhandle.write('\t<link rel="stylesheet" href="%s/css/bootstrap.min.css" />\n' % rpath)
 
         if showNav:
