@@ -361,7 +361,7 @@ class ReportGenerator(object):
                 else:
                     report.write('\t\t\t\t<td class="pubdate">%s</td>\n' % offer.date_pub.strftime('%Y-%m-%d'))
                 #report.write('\t\t\t\t<td class="type"><span class="label label-success">noSSII</span></td>\n')
-                report.write('\t\t\t\t<td class="title"><a href="'+re.sub('&', '&amp;', offer.url)+'">' + offer.title + '</a></td>\n')
+                report.write('\t\t\t\t<td class="title"><a href="'+offer.url+'">' + offer.title + '</a></td>\n')
                 report.write('\t\t\t\t<td class="company">' + offer.company + '</td>\n')
                 # Location
                 report.write('\t\t\t\t<td class="location">')
@@ -391,7 +391,7 @@ class ReportGenerator(object):
                 feedurl = feedsinfo[offer.src][offer.feedid]['url']
                 report.write('\t\t\t\t<td class="source"><a href="%s">%s</a></td>\n' % \
                              (
-                                 feedurl,
+                                 re.sub('&', '&amp;', feedurl),
                                  offer.src,
                              )
                 )
