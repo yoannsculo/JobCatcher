@@ -280,9 +280,6 @@ class ReportGenerator(object):
                     row[13], row[14], row[15], row[16], row[17], row[18]
                 )
 
-                if offer.ref == '009TVLW':
-                    print offer.title
-
                 if (not self.configs.globals['report']['dynamic'] and s_date != offer.date_pub.strftime('%Y-%m-%d')):
                     s_date = offer.date_pub.strftime('%Y-%m-%d')
                     report.write('\t\t\t<tr class="error">\n');
