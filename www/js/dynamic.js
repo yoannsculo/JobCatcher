@@ -321,16 +321,17 @@ var AbstractFilter = Class.extend({
     priv_select_from_array: function(id, choices, options)  {
         options = $.extend({
             multiple: false,
-            liveSearch: false
+            liveSearch: false,
+            width: "auto"
         }, options || {});
         var $result = $("<select>", {id: id})
-            .addClass("selectpicker");
+            .addClass("selectpicker")
+            .attr("data-width", options.width);
         if (options.multiple)
             $result
                 .prop("multiple", "multiple")
                 .attr("data-selected-text-format", "count > 1")
-                .attr("data-count-selected-text", "{0} on {1}")
-                .attr("data-width", "8em");
+                .attr("data-count-selected-text", "{0} on {1}");
         if (options.liveSearch)
             $result.attr("data-live-search", "true");
         $.each(choices, function(key, val) {
@@ -823,24 +824,14 @@ var CompanyFilter = AbstractFilter.extend({
         companies.sort();
         this.priv_companies = companies;
 
-        var $filter_company_form = $("<form>")
-            .addClass("form-search");
-        var $filter_company = this.priv_textbox(
-            "filter_company_dropdown",
-            "Company",
-            null,
-            [
-                {
-                    text: "Clear",
-                    click: function() {
-                        $("#filter_company_dropdown").val("");
-                        self.apply();
-                    }
-                }
-            ]
-        ).appendTo($filter_company_form);
-
-        self.priv_elements = [$filter_company_form];
+        var $form = $("<form>").prop("role", "form");
+        var $filter_company_combobox = this.priv_select_from_array(
+            "filter_company_dropdown", companies, {
+                multiple: true,
+                liveSearch: true
+            }
+        ).appendTo($form);
+        self.priv_elements = [$form];
     },
     /**
      * \fn apply()
@@ -864,13 +855,8 @@ var CompanyFilter = AbstractFilter.extend({
             $parent.append(val);
         });
         var $filter_company_dropdown = $("#filter_company_dropdown");
-        $filter_company_dropdown.keyup(function() { self.apply(); });
-        $($filter_company_dropdown).autocomplete({
-            source: self.priv_companies,
-            appendTo: $parent,
-            change: function() { self.apply(); },
-            close: function() { self.apply(); }
-        });
+        $filter_company_dropdown.change(function() { self.apply(); });
+        $filter_company_dropdown.selectpicker("selectAll");
         return true;
     },
     /**
@@ -879,16 +865,18 @@ var CompanyFilter = AbstractFilter.extend({
      * \returns Either \c true of \c false.
      */
     test: function(value)  {
-        var result = false;
-        var pattern = $("#filter_company_dropdown").val();
-        if (undefined === pattern || 0 == pattern.length)
+        var companies = $("#filter_company_dropdown").val();
+        if (null === companies)
             return true;
-        var patterns = pattern.split(/,\s*/);
-        $.each(patterns, function(key, val) {
-            if (0 != val.length && (new RegExp(val, "i")).test(value))
-                return result = true;
+        var result = false;
+        $.each(companies, function(key, val) {
+            if (val == value) {
+                result = true;
+                return false;
+            }
         });
         return result;
+
     }
 });
 
@@ -930,7 +918,10 @@ var ContractFilter = AbstractFilter.extend({
                 '<span class="label label-warning">CDD</label>',
                 '<span class="label label-info">Internship</label>',
                 '<span class="label label-info">Alternace</label>'
-            ], { multiple: true }
+            ], {
+                multiple: true,
+                width: "10em"
+            }
         )
             .prop("title", "Contracts")
             .appendTo($form);
@@ -1218,7 +1209,8 @@ var SourceFilter = AbstractFilter.extend({
         $filter_source_combobox = this.priv_select_from_array(
             "filter_source_combobox", sources, {
                 multiple: true,
-                liveSearch: true
+                liveSearch: true,
+                width: "8em"
             }
         ).appendTo($form);
         priv_elements = [$form];
