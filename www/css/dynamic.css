@@ -1,5 +1,17 @@
 /*
- *navbar
+ * main containers
+ ******************************************************************************/
+html, body, .main {
+   height: 95%;
+}
+body > .main {
+   height: auto;
+   min-height: 95%;
+   padding-bottom: 3em;
+}
+
+/*
+ * navbar
  ******************************************************************************/
 #button-github {
     background-image: url(../img/github.png);
@@ -184,15 +196,16 @@ thead .source {
 }
 
 /*
- * Pagination bar
+ * Footer
  ******************************************************************************/
-#pagination_bar_root {
-    /*position: fixed;
-    top: 10px;
-    right: 0px;*/
+footer {
+   clear: both;
+   position: relative;
+   bottom: 0px;
+   z-index: 10;
+   height: 3em;
+   margin-top: -3em;
+   text-align: center;
+   color: #777;
+   text-shadow: 0.2em 0.2em 0.05em rgba(128, 128, 255, 0.8);
 }
-
-/*#pagination_bar_root li:first-child {
-    position: fixed;
-    right: 11.5em;
-}*/

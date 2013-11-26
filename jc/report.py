@@ -134,6 +134,10 @@ class ReportGenerator(object):
         fhandle.write('\t\t</div>\n')
         fhandle.write('\t</nav>\n')
 
+    def footer(self, fhandle):
+        lastupdate = datetime.datetime.fromtimestamp(int(time.time()))
+        fhandle.write('\t<footer>&copy; JobCatcher &mdash; generated %s</footer>\n' % lastupdate)
+
     def generateDownloadedFile(self):
         # Search feeds
         feeds = utilities.findFiles(self.rootdir, '*.feed')
@@ -264,6 +268,8 @@ class ReportGenerator(object):
         
         report.write('</div> <!-- /container -->\n')
 
+        self.footer(report)
+
         report.write('</body>\n')
         report.write('</html>\n')
         report.close()
@@ -313,7 +319,7 @@ class ReportGenerator(object):
             self.navbar(report, pagename, count_full, count_filtered)
 
             # page body
-            report.write('\t<table id="offers" class="table table-condensed">\n')
+            report.write('\t<div class="main"><table id="offers" class="table table-condensed">\n')
             # table header
             report.write('\t\t<thead>\n')
             report.write('\t\t\t<tr id="lineHeaders">\n')
@@ -399,13 +405,10 @@ class ReportGenerator(object):
                 report.write('\t\t\t</tr>\n')
 
             # closure
-            report.write('\t</table>\n')
+            report.write('\t</table></div>\n')
 
-            # Last generated
-            lastupdate = datetime.datetime.fromtimestamp(int(time.time()))
-            report.write('<div class="footer">\n')
-            report.write('<p>&copy; JobCatcher / last generated %s</p>\n' % lastupdate)
-            report.write('</div>\n')
+            # footer
+            self.footer(report)
 
             report.write('</body>\n')
             report.write('</html>\n')
