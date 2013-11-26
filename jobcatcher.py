@@ -250,10 +250,10 @@ if __name__ == '__main__':
                       help = 'flush the blacklist and update it.'
     )
 
-    parser.add_option('--p2pinit',
+    parser.add_option('--p2psync',
                       action='store_true',
-                      dest='p2pinit',
-                      help = 'init P2P'
+                      dest='p2psync',
+                      help = 'sync by P2P'
     )
 
     parser.add_option('--version',
@@ -335,7 +335,7 @@ if __name__ == '__main__':
         initblacklist(configs)
         sys.exit(0)
 
-    if options.p2pinit:
+    if options.p2psync:
         p = P2PDownloader(configs)
-        p.initcache()
+        p.initLocalCache()
         p.sync()

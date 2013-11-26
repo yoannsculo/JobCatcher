@@ -59,7 +59,7 @@ class ReportGenerator(object):
         self.generateReport(selecteduser, False)
         # self.generateStatistics()
         self.generateIndex(selecteduser)
-        self.generateDownloadedFile()
+        self.generateP2PIndex()
 
     def _getSQLFilterFeedid(self, feedidslist):
         sql = "feedid in ("
@@ -138,7 +138,7 @@ class ReportGenerator(object):
         lastupdate = datetime.datetime.fromtimestamp(int(time.time()))
         fhandle.write('\t<footer>&copy; JobCatcher &mdash; generated %s</footer>\n' % lastupdate)
 
-    def generateDownloadedFile(self):
+    def generateP2PIndex(self):
         # Search feeds
         feeds = utilities.findFiles(self.rootdir, '*.feed')
         fl = open(os.path.join(self.wwwdir, 'feeds.txt'), 'w')
@@ -279,6 +279,9 @@ class ReportGenerator(object):
                     row[7], row[8], row[9], row[10], row[11], row[12],
                     row[13], row[14], row[15], row[16], row[17], row[18]
                 )
+
+                if offer.ref == '009TVLW':
+                    print offer.title
 
                 if (not self.configs.globals['report']['dynamic'] and s_date != offer.date_pub.strftime('%Y-%m-%d')):
                     s_date = offer.date_pub.strftime('%Y-%m-%d')

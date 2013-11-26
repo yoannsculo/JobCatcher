@@ -12,6 +12,7 @@ __version__ = '1.0'
 
 # System
 import os
+import re
 
 # Jobcatcher
 import utilities
@@ -68,9 +69,9 @@ class P2PDownloader(object):
 
         return names
 
-    def initcache(self):
+    def initLocalCache(self):
         #p2plist = self.listServers()
-        plugins = getjobboardlist(self.configs)
+        plugins = self.configs.getJobboardList()
 
         for name, url in self.configs.globals['p2pservers'].iteritems():
             # Download feed ifnormations
