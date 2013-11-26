@@ -986,7 +986,7 @@ var ContractFilter = AbstractFilter.extend({
                 '<span class="label label-success">CDI</label>',
                 '<span class="label label-warning">CDD</label>',
                 '<span class="label label-info">Internship</label>',
-                '<span class="label label-info">Alternace</label>'
+                '<span class="label label-info">Alternance</label>'
             ], {
                 multiple: true,
                 width: "10em"
