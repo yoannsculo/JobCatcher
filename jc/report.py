@@ -91,6 +91,7 @@ class ReportGenerator(object):
             if self.configs.globals['report']['dynamic']:
                 fhandle.write('\t<link rel="stylesheet" href="%s/css/jquery-ui-1.10.3.custom.min.css" />\n' % rpath)
                 fhandle.write('\t<link rel="stylesheet" href="%s/css/simplePagination.css" />\n' % rpath)
+                fhandle.write('\t<link rel="stylesheet" href="%s/css/bootstrap-select.min.css" />\n' % rpath)
                 fhandle.write('\t<link rel="stylesheet" href="%s/css/dynamic.css" />\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/jquery-2.0.3.min.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/bootstrap.min.js"></script>\n' % rpath)
@@ -99,6 +100,7 @@ class ReportGenerator(object):
                 fhandle.write('\t<script type="text/javascript" src="%s/js/jquery.simplePagination.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/persist-min.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/class.js"></script>\n' % rpath)
+                fhandle.write('\t<script type="text/javascript" src="%s/js/bootstrap-select.min.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript">var offers_per_page = %s;</script>\n' %self.configs.globals['report']['offer_per_page'])
                 fhandle.write('\t<script type="text/javascript" src="%s/js/dynamic.js"></script>\n' % rpath)
             else:

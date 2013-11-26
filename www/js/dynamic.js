@@ -318,14 +318,19 @@ var AbstractFilter = Class.extend({
      * \fn priv_select_from_array(id, options)
      * \brief Creates detached <select> elements from the \a options array.
      */
-    priv_select_from_array: function(id, options)  {
+    priv_select_from_array: function(id, options, multiple)  {
+        if (undefined === multiple)
+            multiple=false;
         var $result = $("<select>", {id: id});
-        $result.addClass("form-control");
+        if (multiple)
+            $result.prop("multiple", "multiple");
+        $result.addClass("selectpicker");
         $.each(options, function(key, val) {
             var $elt = $("<option>");
             $elt.append(val);
             $result.append($elt);
         });
+        $result.selectpicker().show();
         return $result;
     },
     /**
