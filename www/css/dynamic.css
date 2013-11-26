@@ -32,7 +32,6 @@ table#offers thead tr .header {
 }
 table#offers tbody td {
     color: #3D3D3D;
-    padding: 4px;
     background-color: #FFF;
     vertical-align: top;
 }
