@@ -80,7 +80,7 @@ class ReportGenerator(object):
         css = " label-%s" % style
         return '<span class="label%s">%s</span>' % (css, text)
 
-    def header(self, fhandle, rpath="..", showNav=True):
+    def header(self, fhandle, rpath="..", showNav=True, extra=""):
         fhandle.write('<!doctype html>\n')
         fhandle.write('<html dir="ltr" lang="en">\n')
         fhandle.write('<head>\n')
@@ -106,6 +106,7 @@ class ReportGenerator(object):
                 fhandle.write('\t<script type="text/javascript" src="%s/js/dynamic.js"></script>\n' % rpath)
             else:
                 fhandle.write('\t<link rel="stylesheet" href="%s/css/static.css" />\n' % rpath)
+        fhandle.write(extra)
         fhandle.write('</head>\n')
 
     def navbar(self, fhandle, pagename, offers_count=None, filtered_count=None):
@@ -211,70 +212,41 @@ class ReportGenerator(object):
         if not users:
             users = self.configs.getUsers()
 
-        # report.write('<!DOCTYPE html>')
-        # report.write('<html lang="en">')
-        # report.write('<head>')
-        # report.write('<meta charset="utf-8" />')
-        # report.write('<meta http-equiv="X-UA-Compatible" content="IE=edge" />')
-        # report.write('<meta name="viewport" content="width=device-width, initial-scale=1.0" />')
-        # report.write('<meta name="description" content="" />')
-        # report.write('<meta name="author" content="" />')
-        # report.write('<link rel="shortcut icon" href="../../docs-assets/ico/favicon.png" />')
-
-        # report.write('<title>Family jobcatcher</title>')
-
-        # report.write('<!-- Bootstrap core CSS -->')
-        # report.write('<link href="css/bootstrap.css" rel="stylesheet" />')
-
-        # report.write('<!-- Custom styles for this template -->')
-        # report.write('<link href="jumbotron-narrow.css" rel="stylesheet" />')
-
-        # report.write('<!-- Just for debugging purposes. Don\'t actually copy this line! -->')
-        # report.write('<!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->')
-
-        # report.write('<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->')
-        # report.write('<!--[if lt IE 9]>')
-        # report.write('<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>')
-        # report.write('<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>')
-        # report.write('<![endif]-->')
-        # report.write('</head>')
-
-        self.header(report, '.', False)
-
+        # HTML header
+        footerstyle='\t<link rel="stylesheet" href="./css/index.css" />\n'
+        self.header(report, '.', False, footerstyle)
+        # HTML body
         report.write('<body>\n')
-        report.write('<div class="container">\n')
-        report.write('<div class="header">\n')
-        report.write('<ul class="nav nav-pills pull-right">\n')
-        report.write('<li class="active"><a href="#">Home</a></li>\n')
-        report.write('<li><a href="#">About</a></li>\n')
-        report.write('<li><a href="#">Contact</a></li>\n')
-        report.write('</ul>\n')
-        report.write('<h3 class="text-muted">Family jobcatcher</h3>\n')
-        report.write('</div>\n')
-
-        report.write('<div class="jumbotron">\n')
-        report.write('<h1>Jobcatcher Community</h1>\n')
-        report.write('<p class="lead">Find the job in colaborative mode</p>\n')
-        report.write('<p>\n')
-
+        # special CSS
+        report.write('\t<div class="container">\n')
+        # navigation bar
+        report.write('\t\t<nav role="nav">\n')
+        report.write('\t\t\t<ul class="nav nav-pills pull-right">\n')
+        report.write('\t\t\t\t<li class="active disabled"><a href="#">Home</a></li>\n')
+        report.write('\t\t\t\t<li class="disabled"><a href="#" title="Comming soon">About</a></li>\n')
+        report.write('\t\t\t\t<li class="disabled"><a href="#" title="Comming soon">Contact</a></li>\n')
+        report.write('\t\t\t</ul>\n')
+        report.write('\t\t\t<h3 class="text-muted">Family jobcatcher</h3>\n')
+        report.write('\t\t</nav>\n\n')
+        # central frame
+        report.write('\t\t<div class="jumbotron">\n')
+        report.write('\t\t\t<h1>Jobcatcher Community</h1>\n')
+        report.write('\t\t\t<p class="lead">Find the job in colaborative mode</p>\n')
+        # users
+        report.write('\t\t\t<p>\n')
         for user in users:
-            report.write('<a class="btn btn-lg btn-success" href="./%s/report_full.html" role="button">%s</a>' % (user, user))
-
-        report.write('</p>\n')
-        report.write('</div>\n')
-        report.write('<div class="footer">\n')
-        report.write('<p>&copy; JobCatcher</p>\n')
-        report.write('</div>\n')
-        
-        report.write('</div> <!-- /container -->\n')
-
+            report.write('\t\t\t\t<a class="btn btn-lg btn-info" href="./%s/report_full.html" role="button">%s</a>\n' % (user, user))
+        report.write('\t\t\t</p>\n')
+        # end central frame
+        report.write('\t\t</div><!-- .jumbotron -->\n')
+        # end main container
+        report.write('\t</div><!-- .container -->\n')
+        # footer
         self.footer(report)
 
         report.write('</body>\n')
         report.write('</html>\n')
         report.close()
-
-
 
     def generateReport(self, users, filtered=True):
         if not users:
