@@ -205,7 +205,7 @@ var MasterFilter = Class.extend({
             }
         });
         this.priv_navbar.attach(
-            $("<p>", {id: "pagination_bar_root"}).appendTo("body")
+            $("<p>", {id: "pagination_bar_root"}).appendTo("body > nav > div")
         );
         this.priv_initialized = true;
         this.apply();
@@ -242,29 +242,88 @@ var NavigationBar = Class.extend({
      * \brief Displayed page.
      */
     priv_current_page: 0,
+    priv_total_pages: 1,
     /**
      * \property priv_bar
      * \brief navigation bar as a jQuery object..
      */
     priv_bar: null,
+    priv_nth_link: function(nth) {
+        var $lis = this.priv_bar.children();
+        if (0 <= nth && nth < $lis.length)
+            return $($lis[nth]);
+        console.error("NavigationBar.priv_nth_link(" + nth + "): index out of range.");
+        return null;
+    },
+    priv_on_change: null,
+    redraw: function() {
+        var self = this;
+        /* Prev */
+        var $prev = self.priv_nth_link(0);
+        if (self.priv_current_page <= 0)
+            $prev.addClass("disabled");
+        else
+            $prev.removeClass("disabled");
+        /* current */
+        self.priv_nth_link(1).children("a").text(self.priv_current_page+1);
+        /* Next */
+        var $next = this.priv_nth_link(2);
+        if (self.priv_current_page >= self.priv_total_pages-1)
+            $next.addClass("disabled");
+        else
+            $next.removeClass("disabled");
+        console.debug('redraw(): priv_current_page/priv_total_pages = '
+        + this.priv_current_page + ' / ' + this.priv_total_pages);
+    },
     /**
      * \fn init(options = null)
      * \brief COnstructor.
      */
     init: function(options) {
-		var opt = $.extend({
+        var self = this;
+		var options = $.extend({
 			change: function(page) {}
 		}, options || {} );
-        var self = this;
-        this.priv_bar = $("<p>");
-        this.priv_bar.pagination({
-            pages: 1,
-            displayedPages: 3,
-            edges: 0,
-            onPageClick: function(page) {
-                options.change(page-1);
-            }
-        });
+
+        /* save callback */
+        self.priv_on_change = options.change;
+
+        /* insert pagination bar */
+        this.priv_bar = $("<ul>")
+            .addClass("navbar-right")
+            .addClass("pagination");
+        var mklink = function(key, opt) {
+            var opt = $.extend({
+                html: "-",
+                active: false,
+                disabled: false
+            }, opt || {} );
+            var $link = $("<a>", {href: "#"})
+                .html(opt.html)
+                .click(function() {
+                    opt.click();
+                })
+            var $result = $("<li>")
+                .append($link);
+            if (opt.active)
+                $result.addClass("active");
+            if (opt.disabled)
+                $result.addClass("disabled");
+
+            return $result;
+        }
+        var append_link = function(key, val) {
+            self.priv_bar.append(mklink(key, val));
+        }
+        $.each([
+            {html: "&laquo;", click: function() {
+                self.set_page(self.priv_current_page-1);
+            }},
+            {html: 1, active: true},
+            {html: "&raquo;", click: function() {
+                self.set_page(self.priv_current_page+1);
+            }}
+        ], append_link);
     },
     /**
      * \fn attach(parent)
@@ -278,7 +337,13 @@ var NavigationBar = Class.extend({
      * \brief Change total number of pages.
      */
     set_page_count: function(page_count) {
-        this.priv_bar.pagination("setPagesCount", page_count);
+        if (page_count > 0 )
+            this.priv_total_pages = page_count;
+        else
+            console.error("NavigationBar.set_page_count(" + page_count
+            + "): page_count must be strictly positive.");
+        console.debug('set_page_count(): priv_total_pages = ' + this.priv_total_pages);
+        this.redraw();
     },
     /**
      * \fn acknoledge_page(page_number)
@@ -287,19 +352,23 @@ var NavigationBar = Class.extend({
      * Increase the total number of pages if necessary.
      */
     acknoledge_page: function(page_number) {
-        var page_count = this.priv_bar.pagination("getPagesCount", page_count);
-        if (page_number >= page_count)
-            this.set_page_count(page_count+1);
+        if (page_number >= this.priv_total_pages)
+            this.set_page_count(page_number+1);
+        console.debug('acknoledge_page(): priv_total_pages = ' + this.priv_total_pages);
     },
     /**
-     * \fn set_page(page_number, silent = false)
+     * \fn set_page(page_number)
      * \brief Set the current displayed page number.
-     * \param[in] silent Either or not the callback bind to the "change page" event is to be called.
      */
-    set_page: function(page_number, silent) {
-		if (undefined === silent)
-			silent = false;
-        this.priv_bar.pagination("selectPage", page_number+1, silent);
+    set_page: function(page_number) {
+        if (0 <= page_number && page_number < this.priv_total_pages)
+            this.priv_current_page = page_number;
+        else
+            console.error("NavigationBar.set_page_count(" + page_number
+            + "): page_count must be strictly positive.");
+        this.redraw();
+        this.priv_on_change(this.priv_current_page);
+        console.debug('set_page(): priv_current_page = ' + this.priv_current_page);
     }
 });
 

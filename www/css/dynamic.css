@@ -187,12 +187,12 @@ thead .source {
  * Pagination bar
  ******************************************************************************/
 #pagination_bar_root {
-    position: fixed;
+    /*position: fixed;
     top: 10px;
-    right: 0px;
+    right: 0px;*/
 }
 
-#pagination_bar_root li:first-child {
+/*#pagination_bar_root li:first-child {
     position: fixed;
     right: 11.5em;
-}
+}*/
