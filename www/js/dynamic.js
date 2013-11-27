@@ -272,8 +272,6 @@ var NavigationBar = Class.extend({
             $next.addClass("disabled");
         else
             $next.removeClass("disabled");
-        console.debug('redraw(): priv_current_page/priv_total_pages = '
-        + this.priv_current_page + ' / ' + this.priv_total_pages);
     },
     /**
      * \fn init(options = null)
@@ -342,7 +340,6 @@ var NavigationBar = Class.extend({
         else
             console.error("NavigationBar.set_page_count(" + page_count
             + "): page_count must be strictly positive.");
-        console.debug('set_page_count(): priv_total_pages = ' + this.priv_total_pages);
         this.redraw();
     },
     /**
@@ -354,7 +351,6 @@ var NavigationBar = Class.extend({
     acknoledge_page: function(page_number) {
         if (page_number >= this.priv_total_pages)
             this.set_page_count(page_number+1);
-        console.debug('acknoledge_page(): priv_total_pages = ' + this.priv_total_pages);
     },
     /**
      * \fn set_page(page_number)
@@ -368,7 +364,6 @@ var NavigationBar = Class.extend({
             + "): page_count must be strictly positive.");
         this.redraw();
         this.priv_on_change(this.priv_current_page);
-        console.debug('set_page(): priv_current_page = ' + this.priv_current_page);
     }
 });
 
@@ -1456,7 +1451,6 @@ var LocationFilter = AbstractFilter.extend({
      * \brief Constructor.
      */
     init: function(classname, master_filter) {
-        console.debug("LocationFilter: temporarly removed until improvment."); // FIXME
         return;
         this._super(classname, master_filter);
         var self = this;
