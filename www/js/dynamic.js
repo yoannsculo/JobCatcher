@@ -45,7 +45,7 @@ var MasterFilter = Class.extend({
         this.priv_next_row += this.priv_rows_per_page;
         if (0 == first)
             return $("#offers > tbody > tr:lt(" + this.priv_rows_per_page + ")");
-        return $("#offers > tbody > tr:gt(" + first + "):lt(" + this.priv_rows_per_page + ")");
+        return $("#offers > tbody > tr:gt(" + (first-1) + "):lt(" + this.priv_rows_per_page + ")");
     },
     /**
      * \fn priv_set_visibility(row, show)
