@@ -1017,7 +1017,7 @@ var ContractFilter = AbstractFilter.extend({
             "filter_contract_combobox", contracts, {
                 multiple: true,
                 width: "10em",
-                text: "Contract"
+                text: "Contracts"
             }
         )
             .prop("title", "Contracts")
@@ -1324,7 +1324,7 @@ var SourceFilter = AbstractFilter.extend({
                 multiple: true,
                 liveSearch: true,
                 width: "8em",
-                text: "Source"
+                text: "Sources"
             }
         ).appendTo($form);
         priv_elements = [$form];
