@@ -990,6 +990,16 @@ var ContractFilter = AbstractFilter.extend({
         return this._super(id, choices, options);
     },
     /**
+     * \property priv_contract_types
+     * \brief Array containing all tested contract types.
+     */
+    priv_contract_types: [
+        {name: "CDI", label: "success" },
+        {name: "CDD", label: "warning" },
+        {name: "Internship", label: "info" },
+        {name: "Alternance", label: "info" }
+    ],
+    /**
      * \fn init(classname, master_filter)
      * \brief Constructor.
      */
@@ -997,13 +1007,14 @@ var ContractFilter = AbstractFilter.extend({
         this._super(classname, master_filter);
         var self = this;
         var $form = $("<form>").prop("role", "form");
+        var contracts = new Array();
+        $.each(self.priv_contract_types, function(key, val) {
+            contracts.push(
+                '<span class="label label-' + val.label + '">' + val.name + '</span>'
+            );
+        });
         $filter_contract_combobox = this.priv_select_from_array(
-            "filter_contract_combobox", [
-                '<span class="label label-success">CDI</label>',
-                '<span class="label label-warning">CDD</label>',
-                '<span class="label label-info">Internship</label>',
-                '<span class="label label-info">Alternance</label>'
-            ], {
+            "filter_contract_combobox", contracts, {
                 multiple: true,
                 width: "10em",
                 text: "Contract"
@@ -1043,16 +1054,32 @@ var ContractFilter = AbstractFilter.extend({
      * \returns Either \c true of \c false.
      */
     test: function(value)  {
+        var self = this;
         var contracts = $("#filter_contract_combobox").val();
         if (null === contracts)
-            return true;
+            return true; // no contracts = all contracts.
+
         var result = false;
         $.each(contracts, function(key, val) {
             if (value.match(val)) {
                 result = true;
-                return false;
+                return false; // no futher tests. Got candidate.
             }
         });
+
+        if (!result) {
+            /* The contract description may be complete gibberish. In this
+             * case, we display it. */
+            var gibberish = true;
+            $.each(self.priv_contract_types, function(key, val) {
+                if (value.match(val.name)) {
+                    gibberish = false;
+                    return false;
+                }
+            });
+            if (gibberish)
+                return true;
+        }
         return result;
     }
 });
