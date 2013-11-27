@@ -2,11 +2,11 @@ body {
 	overflow: hidden;
 }
 html, body, .main {
-   height: 97%;
+   height: 100%;
 }
 body > .main {
    height: auto;
-   min-height: 97%;
+   min-height: 100%;
    padding-top: 5em;
    padding-bottom: 3em;
 }
