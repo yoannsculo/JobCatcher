@@ -174,6 +174,8 @@ var MasterFilter = Class.extend({
      */
     init: function() {
         var self = this;
+
+        /* Create filters */
         this.filters = new Array();
         new PubdateFilter("pubdate", this).attach(
             $("#lineFilters > .pubdate")
@@ -204,6 +206,11 @@ var MasterFilter = Class.extend({
         this.priv_navbar.attach(
             $("<p>", {id: "pagination_bar_root"}).appendTo("body > nav > div")
         );
+
+        /* On reorder, reapply filters */
+        $("th").click(function() { self.apply(); });
+
+        /* End of init */
         this.priv_initialized = true;
         this.apply();
     },
