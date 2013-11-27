@@ -178,9 +178,6 @@ var MasterFilter = Class.extend({
         new PubdateFilter("pubdate", this).attach(
             $("#lineFilters > .pubdate")
         );
-        new TypeFilter("type", this).attach(
-            $("#lineFilters > .type")
-        );
         new TitleFilter("title", this).attach(
             $("#lineFilters > .title")
         );
