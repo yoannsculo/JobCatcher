@@ -2,11 +2,11 @@
  * main containers
  ******************************************************************************/
 html, body, .main {
-   height: 95%;
+   height: 100%;
 }
 body > .main {
    height: auto;
-   min-height: 95%;
+   min-height: 100%;
    padding-top: 5em;
    padding-bottom: 3em;
 }
