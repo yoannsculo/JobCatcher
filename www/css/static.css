@@ -7,6 +7,7 @@ html, body, .main {
 body > .main {
    height: auto;
    min-height: 97%;
+   padding-top: 5em;
    padding-bottom: 3em;
 }
 #button-github {
