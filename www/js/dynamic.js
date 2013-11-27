@@ -1048,7 +1048,7 @@ var ContractFilter = AbstractFilter.extend({
             return true;
         var result = false;
         $.each(contracts, function(key, val) {
-            if (val == value) {
+            if (value.match(val)) {
                 result = true;
                 return false;
             }
