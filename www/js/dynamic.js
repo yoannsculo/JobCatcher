@@ -1350,6 +1350,11 @@ var SourceFilter = AbstractFilter.extend({
         var $select = priv_elements[0].find("select");
         $select.change(function() { self.apply(); });
         $select.selectpicker("selectAll");
+        /* Move the dropdown menu left, back inside the screen */
+        var $dropdown = $(".source .dropdown-menu");
+        var w = $dropdown.css("width");
+        $dropdown.css("right", "1px");
+        $dropdown.css("left", "-" + w);
         return true;
     },
     /**
