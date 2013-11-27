@@ -119,7 +119,7 @@ class ReportGenerator(object):
                 offers_count - filtered_count,\
                 100*(float) (offers_count - filtered_count) / offers_count\
             )
-        fhandle.write('\t<nav class="navbar navbar-default" role="navigation">\n')
+        fhandle.write('\t<nav class="navbar navbar-default navbar-fixed-top" role="navigation">\n')
         fhandle.write('\t\t<div class="collapse navbar-collapse">\n')
         fhandle.write('\t\t\t<ul class="nav navbar-nav nav-pills">\n')
         fhandle.write('\t\t\t\t<li><a id="button-github" title="%s" href="%s"></a></li>\n'\
