@@ -35,6 +35,7 @@ PageResult = namedtuple(
 )
 
 DownloadResult = namedtuple('DownloadResult', ['url', 'statuscode', 'content'])
+PAGEVERSION = '1.0'
 
 
 def getEncodedURL(url, datas):
@@ -120,6 +121,15 @@ def openPage(filename):
     content = fd.read()
     fd.close()
 
+    if version != PAGEVERSION:
+        raise Exception("Mauvaise version pour %s=%s attendu %s" %
+                        (
+                            filename,
+                            version,
+                            PAGEVERSION
+                        )
+        )
+
     return PageResult(
         version=version,
         statuscode=statuscode,
@@ -173,7 +183,7 @@ def downloadFile(
     if r.statuscode in [200, 404, 410]:
         out = open(filename, 'wb')
         if withmeta:
-            version = '1.0'
+            version = PAGEVERSION
             statuscode = r.statuscode
             pageid = getEncodedURL(url, datas)
             out.write("%s\n" % version)
