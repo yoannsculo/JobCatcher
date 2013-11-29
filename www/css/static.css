@@ -1,6 +1,9 @@
 /*
  * navbar
  ******************************************************************************/
+nav {
+    background-color: #f4f4f8;
+}
 #button-github {
     background-image: url(../img/github.png);
     background-size: 48px 48px;
