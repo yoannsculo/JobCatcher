@@ -1,33 +1,34 @@
-body {
-	overflow: hidden;
-}
-html, body, .main {
-   height: 100%;
-}
-body > .main {
-   height: auto;
-   min-height: 100%;
-   padding-top: 5em;
-   padding-bottom: 3em;
-}
+/*
+ * navbar
+ ******************************************************************************/
 #button-github {
     background-image: url(../img/github.png);
     background-size: 48px 48px;
     width: 48px;
     height: 48px;
 }
+
+/*
+ * scrollbar on tbody
+ ******************************************************************************/
+body {
+	overflow: hidden;
+}
 table#offers > thead > tr {
 	position: relative;
 }
-#lineHeaders > th {
-	text-align: center;
-}
-
 table#offers > tbody {
 	display: block;
 	position: absolute;
 	overflow: auto;
 	height: 80%;
+}
+
+/*
+ * table style
+ ******************************************************************************/
+#lineHeaders > th {
+	text-align: center;
 }
 td.pubdate, th.pubdate {
 	width: 7%;
@@ -56,6 +57,19 @@ td.salary, th.salary {
 td.source, th.source {
 	width: 10%;
 	text-align: center;
+}
+
+/*
+ * footer fixed position
+ ******************************************************************************/
+html, body, .main {
+   height: 100%;
+}
+body > .main {
+   height: auto;
+   min-height: 100%;
+   padding-top: 5em;
+   padding-bottom: 3em;
 }
 footer {
    clear: both;
