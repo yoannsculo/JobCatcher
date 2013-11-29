@@ -39,21 +39,23 @@ class JBPoleEmploi(JobBoard):
         for feed in glob.glob(searchdir):
             # Load the HTML feed
             page = utilities.openPage(feed)
-            feedid = page.pageid
-            html = page.content
 
-            # Search result
-            res = re.finditer(
-                r'<tr.*?>(.*?)</tr>',
-                html,
-                flags=re.MULTILINE | re.DOTALL
-            )
-            for r in res:
-                # Check if URL is valid
-                m = re.search(r'href="\./resultats\.tableauresultatrechercheoffre:detailOffre/(.*?)"', r.group(1))
-                if m:
-                    url = "http://candidat.pole-emploi.fr/candidat/rechercheoffres/detail/%s" % m.group(1)
-                    urls.append([feedid, url])
+            if page:
+                feedid = page.pageid
+                html = page.content
+
+                # Search result
+                res = re.finditer(
+                    r'<tr.*?>(.*?)</tr>',
+                    html,
+                    flags=re.MULTILINE | re.DOTALL
+                )
+                for r in res:
+                    # Check if URL is valid
+                    m = re.search(r'href="\./resultats\.tableauresultatrechercheoffre:detailOffre/(.*?)"', r.group(1))
+                    if m:
+                        url = "http://candidat.pole-emploi.fr/candidat/rechercheoffres/detail/%s" % m.group(1)
+                        urls.append([feedid, url])
 
         return urls
 

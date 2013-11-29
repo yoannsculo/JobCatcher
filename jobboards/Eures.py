@@ -38,20 +38,22 @@ class JBEures(JobBoard):
         for feed in glob.glob(searchdir):
             # Load the HTML feed
             page = utilities.openPage(feed)
-            feedid = page.pageid
-            html = page.content
 
-            # Search result
-            res = re.finditer(
-                r'<table class="JResult">.*?javascript:popUp\(\'(.*?)\'\);.*?</table>',
-                html,
-                flags=re.MULTILINE | re.DOTALL
-            )
-            for r in res:
-                # Check if URL is valid
-                m = re.match(r'\./ShowJvServlet\?lg=FR&pesId=[0-9]+&uniqueJvId=[0-9A-Z]+&nnImport=false', r.group(1))
-                if m:
-                    url = "http://ec.europa.eu/eures/eures-searchengine/servlet/%s" % r.group(1)
+            if page:
+                feedid = page.pageid
+                html = page.content
+
+                # Search result
+                res = re.finditer(
+                    r'<table class="JResult">.*?javascript:popUp\(\'(.*?)\'\);.*?</table>',
+                    html,
+                    flags=re.MULTILINE | re.DOTALL
+                )
+                for r in res:
+                    # Check if URL is valid
+                    m = re.match(r'\./ShowJvServlet\?lg=FR&pesId=[0-9]+&uniqueJvId=[0-9A-Z]+&nnImport=false', r.group(1))
+                    if m:
+                        url = "http://ec.europa.eu/eures/eures-searchengine/servlet/%s" % r.group(1)
                     urls.append([feedid, url])
 
         return urls

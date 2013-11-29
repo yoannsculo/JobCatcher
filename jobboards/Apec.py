@@ -41,20 +41,22 @@ class JBApec(JobBoard):
         for feed in glob.glob(searchdir):
             # Load the HTML feed
             page = utilities.openPage(feed)
-            feedid = page.pageid
-            html = page.content
 
-            # Search result
-            res = re.finditer(
-                r'<item>(.*?)</item>',
-                html,
-                flags=re.MULTILINE | re.DOTALL
-            )
-            for r in res:
-                # Check if URL is valid
-                m = re.search(r'<link>(http://cadres\.apec\.fr/offres-emploi-cadres/.*?)</link>', r.group(1))
-                if m:
-                    urls.append([feedid, m.group(1)])
+            if page:
+                feedid = page.pageid
+                html = page.content
+
+                # Search result
+                res = re.finditer(
+                    r'<item>(.*?)</item>',
+                    html,
+                    flags=re.MULTILINE | re.DOTALL
+                )
+                for r in res:
+                    # Check if URL is valid
+                    m = re.search(r'<link>(http://cadres\.apec\.fr/offres-emploi-cadres/.*?)</link>', r.group(1))
+                    if m:
+                        urls.append([feedid, m.group(1)])
 
         return urls
 

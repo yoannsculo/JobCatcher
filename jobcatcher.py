@@ -96,9 +96,11 @@ def insertpage(conf, jobboardname):
             page.load()
 
         # Analyse page
-        error = plugin.analyzePage(page)
-        if error:
-            print "Analyse error page %s(%s)" % (page.url, error)
+        if page.downloaded:
+            error = plugin.analyzePage(page)
+            if error:
+                mess = "Analyse error page %s(%s)" % (page.url, error)
+                utilities.showMessage("JobCatcher", mess)
 
 
 def insertpages(conf, selecteduser):
