@@ -1259,16 +1259,24 @@ var SalaryFilter = AbstractFilter.extend({
     /**
      * \fn test(value)
      * \brief Tests the job salary \a value according to the GUI data.
+     *
+     * This filter is based on two parameters. The first one is straight-forward,
+     * the slide gives us a range in which the wages must be. The second one is
+     * based on whether the wages are acquainted or not. It was resolute to
+     * filter out only offers giving strictly "NA" as salary text when the NA
+     * checkbox is unchecked; otherwise, all salary inside the range are
+     * displayed.
+     *
      * \returns Either \c true of \c false.
      */
     test: function(value)  {
+        // NA
+        if ("NA" == value)
+            return this.priv_accept_na;
+        // range
         var min = 0, max = 1;
         var range_slider = $("#filter_salary_root").slider("values");
         var range_row = this.priv_range_from_string(value);
-        // NA
-        if (0 == range_row.length)
-            return this.priv_accept_na;
-        // Values
         return (
             0 == range_row.length
             || null == range_slider[0]
