@@ -21,6 +21,17 @@ import html2text
 import sqlite3 as lite
 import requests
 
+# Class for terminal Color
+class tcolor:
+    DEFAULT = "\033[0m"
+    BOLD = "\033[1m"
+    RED = "\033[91m"
+    GREEN = "\033[92m"
+    BLUE = "\033[96m"
+    ORANGE = "\033[93m"
+    MAGENTA = "\033[95m"
+    RESET = "\033[2J\033[H"
+    BELL = "\a"
 
 from collections import namedtuple
 PageResult = namedtuple(
@@ -38,11 +49,27 @@ DownloadResult = namedtuple('DownloadResult', ['url', 'statuscode', 'content'])
 PAGEVERSION = '1.0'
 
 
-def showMessage(section, text, level="error"):
+def showMessage(text, level="error", section=""):
+    messcolor = tcolor.GREEN
     if level.lower() == "error":
-        text = "** %s **" % text
+        messcolor = tcolor.RED
+    elif level.lower() == "warn":
+        messcolor = tcolor.ORANGE
 
-    print "[%s] %s" % (section, text)
+    if section == "":
+        title = tcolor.DEFAULT
+    else:
+        title = "%s[%s%s%s] " % (
+            tcolor.DEFAULT,
+            messcolor,
+            section,
+            tcolor.DEFAULT
+        )
+
+    print "%s%s" % (
+        title,
+        text
+    )
 
 
 def getEncodedURL(url, datas):
@@ -137,7 +164,7 @@ def openPage(filename):
                    version,
                    PAGEVERSION
                )
-        showMessage("Utilities", mess)
+        showMessage(mess, "warn", "Utilities")
     else:
         pageresult = PageResult(
             version=version,

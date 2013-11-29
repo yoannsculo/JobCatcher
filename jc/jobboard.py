@@ -123,7 +123,11 @@ class JobBoard(object):
                 o.cleanFields()
                 utilities.db_add_offer(self.configs, o)
             else:
-                print "Error moving to offers of %s" % d['url']
+                utilities.showMessage(
+                    "Error moving to offers of %s" % d['url'],
+                    "error",
+                    self.name,
+                )
 
     def requireAnalyse(self, page):
         doAnalyze = True

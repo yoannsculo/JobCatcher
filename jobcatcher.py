@@ -28,22 +28,22 @@ sys.setdefaultencoding("utf-8")
 
 
 def executeall(conf, selecteduser):
-    print "Init blacklist"
+    utilities.showMessage('Init blacklist', 'info', '###')
     initblacklist(conf)
 
-    print "Download feeds"
+    utilities.showMessage('Download feeds', 'info', '###')
     downloadfeeds(conf, selecteduser)
 
-    print "Download pages"
+    utilities.showMessage('Download pages', 'info', '###')
     downloadpages(conf)
 
-    print "Insert pages to jobboard"
+    utilities.showMessage('Insert pages to jobboard', 'info', '###')
     insertpages(conf, selecteduser)
 
-    print "Move datas to offers"
+    utilities.showMessage('Move datas to offers', 'info', '###')
     movepages(conf, selecteduser)
 
-    print "Generate reports"
+    utilities.showMessage('Generate reports', 'info', '###')
     generatereport(conf, selecteduser)
 
 
@@ -100,7 +100,10 @@ def insertpage(conf, jobboardname):
             error = plugin.analyzePage(page)
             if error:
                 mess = "Analyse error page %s(%s)" % (page.url, error)
-                utilities.showMessage("JobCatcher", mess)
+                utilities.showMessage(mess, "warn", "JobCatcher")
+            else:
+                mess = "%s analyzed" % page.url
+                utilities.showMessage(mess, "info", "JobCatcher")
 
 
 def insertpages(conf, selecteduser):
