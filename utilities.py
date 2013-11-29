@@ -38,6 +38,13 @@ DownloadResult = namedtuple('DownloadResult', ['url', 'statuscode', 'content'])
 PAGEVERSION = '1.0'
 
 
+def showMessage(section, text, level="error"):
+    if level.lower() == "error":
+        text = "** %s **" % text
+
+    print "[%s] %s" % (section, text)
+
+
 def getEncodedURL(url, datas):
     datas = None
     if datas:
@@ -113,6 +120,8 @@ def getNow():
 
 
 def openPage(filename):
+    pageresult = None
+
     fd = open(filename, 'rb')
     version = fd.readline().strip()
     statuscode = fd.readline().strip()
@@ -122,21 +131,23 @@ def openPage(filename):
     fd.close()
 
     if version != PAGEVERSION:
-        raise Exception("Mauvaise version pour %s=%s attendu %s" %
-                        (
-                            filename,
-                            version,
-                            PAGEVERSION
-                        )
+        mess = "The %s has bad version, current=%s, needed=%s" % \
+               ( 
+                   filename,
+                   version,
+                   PAGEVERSION
+               )
+        showMessage("Utilities", mess)
+    else:
+        pageresult = PageResult(
+            version=version,
+            statuscode=statuscode,
+            pageid=pageid,
+            url=url,
+            content=content
         )
 
-    return PageResult(
-        version=version,
-        statuscode=statuscode,
-        pageid=pageid,
-        url=url,
-        content=content
-    )
+    return pageresult
 
 
 def download(url, datas):
