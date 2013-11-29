@@ -38,7 +38,6 @@ class JBPoleEmploi(JobBoard):
 
         for feed in glob.glob(searchdir):
             # Load the HTML feed
-            utilities.openPage(feed)
             page = utilities.openPage(feed)
             feedid = page.pageid
             html = page.content
