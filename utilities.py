@@ -49,7 +49,7 @@ DownloadResult = namedtuple('DownloadResult', ['url', 'statuscode', 'content'])
 PAGEVERSION = '1.0'
 
 
-def showMessage(text, level="error", section=""):
+def showMessage(text, level="info", section=""):
     messcolor = tcolor.GREEN
     if level.lower() == "error":
         messcolor = tcolor.RED
@@ -370,7 +370,7 @@ def db_add_offer(configs, offer):
         if (e.args[0] == "columns source, offerid are not unique"):
             return 0
         else:
-            print e
+            showMessage(e, 'error', 'Utilities')
             return 1
     finally:
         if conn:
@@ -405,11 +405,12 @@ def blocklist_load(configs):
         conn.commit()
 
     except lite.Error, e:
-        print "Error %s:" % e.args[0]
+        showMessage("Error %s:" % e.args[0], 'error', 'Utilities')
 
     finally:
         if conn:
             conn.close()
+
 
 def filter_contract_fr(contract):
     contract = re.sub(ur'Perm', "CDI", contract)

@@ -98,7 +98,7 @@ class JobBoard(object):
                 self.configs.globals['refreshfeeds']
             )
         except:
-            print ("Error for download %s feed" % feed['url'])
+            utilities.showMessage("Error for download %s feed" % feed['url'],'error','P2P')
 
         return saveto
 

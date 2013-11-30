@@ -75,7 +75,7 @@ class P2PDownloader(object):
 
         for name, url in self.configs.globals['p2pservers'].iteritems():
             # Download feed ifnormations
-            print 'Search for %s' % name
+            utilities.showMessage('Search for %s' % name)
             destdir = "%s/%s" % (self.p2pdir, name)
             saveto = "%s/feeds.txt" % destdir
             utilities.downloadFile(saveto, '%s/feeds.txt' % url)
