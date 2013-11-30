@@ -185,10 +185,13 @@ def download(url, datas):
         #'Content-Type': 'application/json',
     }
 
-    if datas:
-        r = requests.post(url, data=datas, headers=headers)
-    else:
-        r = requests.get(url)
+    try:
+        if datas:
+            r = requests.post(url, data=datas, headers=headers)
+        else:
+            r = requests.get(url)
+    except Exception, e:
+        showMessage(e, 'error', 'Utilities')
 
     return DownloadResult(url=url, statuscode=r.status_code, content=r.content)
 
@@ -215,7 +218,16 @@ def downloadFile(
         os.makedirs(destdir)
 
     # Download file
-    print "Download %s(%s)" % (url, filename)
+    showMessage("Download %s(%s%s%s)" %
+                (
+                    url,
+                    tcolor.MAGENTA,
+                    filename,
+                    tcolor.DEFAULT
+                ),
+                'info',
+                'Utilities',
+            )
     r = download(url, datas)
 
     if r.statuscode in [200, 404, 410]:
