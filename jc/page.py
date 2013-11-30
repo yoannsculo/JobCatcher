@@ -205,9 +205,9 @@ class Pages(object):
                 forcedownload
             )
         except UnicodeDecodeError:
-            print ("Error encoding for %s page" % url)
+            utilities.showMessage("Error encoding for %s page" % url,'error', 'Page')
         except requests.exceptions.ConnectionError:
-            print ("Error for download %s page" % url)
+            utilities.showMessage("Error for download %s page" % url,'error', 'Page')
 
         return saveto
 
