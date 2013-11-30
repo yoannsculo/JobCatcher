@@ -103,7 +103,8 @@ def insertpage(conf, jobboardname):
                 utilities.showMessage(mess, "warn", "JobCatcher")
             else:
                 mess = "%s analyzed" % page.url
-                utilities.showMessage(mess, "info", "JobCatcher")
+                if conf.globals['debug']:
+                    utilities.showMessage(mess, "info", "JobCatcher")
 
 
 def insertpages(conf, selecteduser):
