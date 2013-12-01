@@ -327,8 +327,13 @@ def db_delete_jobboard_datas(configs, jobboardname):
     conn = lite.connect(configs.globals['database'])
     cursor = conn.cursor()
 
+    # Check if must delete all offers
+    filter = ''
+    if jobboardname != 'ALL':
+        filter = "where source='%s'" % jobboardname
+
     # Delete jobbord datas in offers
-    sql = "delete from offers where source='%s'" % jobboardname
+    sql = "delete from offers %s" % filter
     cursor.execute(sql)
 
     # # Delete jobbor datas on jobboard table
@@ -460,9 +465,16 @@ def filter_location_fr(location):
 def filter_salary_fr(salary):
     # TODO : use regexp once whe have a better view of possible combinations
     # TODO : use something similar as ^...$
-    # Selon profil
-    salary = re.sub(ur'.*selon profil.*', "NA", salary, flags=re.DOTALL | re.IGNORECASE)
-    salary = re.sub(ur'Selon diplôme et expérience', "NA", salary)
+    flags = re.DOTALL | re.IGNORECASE
+    men_salary = salary
+
+    salary = re.sub(ur'selon profil', '', salary, flags=flags)
+    salary = re.sub(ur"Selon (l')?exp.?rien.?e", '', salary, flags=flags)
+    salary = re.sub(ur'.? n.?gocier', '', salary, flags=flags)
+    salary = re.sub(ur'.? d.?finir', '', salary, flags=flags)
+    salary = re.sub(ur'Non pr.?cis.?', '', salary, flags=flags)
+    salary = re.sub(ur'Selon dipl.?me', '', salary, flags=flags)
+    salary = re.sub(ur'et exp.?rience', '', salary, flags=flags)
     #salary = re.sub(ur'fixe + variable selon profil', "NA", salary)
     #salary = re.sub(ur'Fixe+Variable selon profil', "NA", salary)
     #salary = re.sub(ur'Fixe + Variable selon profil', "NA", salary)
@@ -476,9 +488,6 @@ def filter_salary_fr(salary):
     #salary = re.sub(ur'à négocier selon le profil', "NA", salary)
     #salary = re.sub(ur'à déterminer selon profil', "NA", salary)
     salary = re.sub(ur'à définir selon expérience', "NA", salary)
-    salary = re.sub(ur'A négocier selon expérience.', "NA", salary)
-    salary = re.sub(ur'A négocier selon expérience', "NA", salary)
-    salary = re.sub(ur'à négocier selon expérience', "NA", salary)
     salary = re.sub(ur'à négocier selon exp', "NA", salary)
     salary = re.sub(ur'à negocier K€ brut/an', "NA", salary)
     #salary = re.sub(ur'A voir selon profil', "NA", salary)
@@ -592,5 +601,12 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'N.C', "NA", salary)
     salary = re.sub(ur'NC', "NA", salary)
     salary = re.sub(ur'nc', "NA", salary)
+
+    # Final clean
+    salary = re.sub(ur'\.$', "", salary)
+    if salary.strip() == '':
+        salary = "NA"
+    else:
+        salary = men_salary
 
     return salary

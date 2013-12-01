@@ -173,6 +173,7 @@ class JBRegionJob(JobBoard):
 
         # Salary
         self.datas['salary'] = self._extractRubrique("Salaire", item)
+        self.filterSalaries(self.datas)
 
         # Insert to jobboard table
         self.datas['state'] = 'ACTIVE'
@@ -204,6 +205,13 @@ class JBRegionJob(JobBoard):
                        location TEXT, \
                        department TEXT, \
                        salary TEXT, \
+                       salary_min FLOAT, \
+                       salary_max FLOAT, \
+                       salary_nbperiod INTEGER, \
+                       salary_unit FLOAT, \
+                       salary_bonus TEXT, \
+                       salary_minbonus FLOAT, \
+                       salary_maxbonus FLOAT, \
                        state TEXT, \
                        PRIMARY KEY(offerid))""" % self.name)
 
@@ -212,7 +220,7 @@ class JBRegionJob(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" %
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" %
                            self.name, (
                                self.datas['offerid'],
                                self.datas['lastupdate'],
@@ -228,6 +236,13 @@ class JBRegionJob(JobBoard):
                                self.datas['location'],
                                self.datas['department'],
                                self.datas['salary'],
+                               self.datas['salary_min'],
+                               self.datas['salary_max'],
+                               self.datas['salary_nbperiod'],
+                               self.datas['salary_unit'],
+                               self.datas['salary_bonus'],
+                               self.datas['salary_minbonus'],
+                               self.datas['salary_maxbonus'],
                                self.datas['state'],
 
                            )
@@ -260,6 +275,13 @@ class JBRegionJob(JobBoard):
         o.location = data['location']
         o.department = data['department']
         o.salary = data['salary']
+        o.salary_min = data['salary_min']
+        o.salary_max = data['salary_max']
+        o.salary_unit = data['salary_unit']
+        o.salary_nbperiod = data['salary_nbperiod']
+        o.salary_bonus = data['salary_bonus']
+        o.salary_minbonus = data['salary_minbonus']
+        o.salary_maxbonus = data['salary_maxbonus']
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
         o.state = data['state']
@@ -268,3 +290,140 @@ class JBRegionJob(JobBoard):
             return o
 
         return None
+
+    def filterSalaries(self, data):
+        minbonus = 0
+        maxbonus = 0
+
+        if self.datas['salary']:
+            # Salary
+            self.datas['salary_unit'] = ''
+            self.datas['salary_min'] = 0
+            self.datas['salary_max'] = 0
+            self.datas['salary_nbperiod'] = 0
+            # Bonus
+            self.datas['salary_bonus'] = ''
+            self.datas['salary_minbonus'] = 0
+            self.datas['salary_maxbonus'] = 0
+
+            # Search salary range
+            m = re.search(
+                ur'([0-9]+)/([0-9]+).*par mois sur (.*?) mois\.?(.*)',
+                self.datas['salary'],
+                flags=re.MULTILINE | re.DOTALL
+            )
+            found = False
+            if m:
+                found = True
+                self.datas['salary_unit'] = 1
+                self.datas['salary_min'] = m.group(1)
+                self.datas['salary_max'] = m.group(2)
+                self.datas['salary_nbperiod'] = int(m.group(3))
+                self.datas['salary_bonus'] = m.group(4)
+
+            if not found:
+                m = re.search(
+                    ur'.*?([0-9]+) à ([0-9]+) Euros\.?(.*)',
+                    self.datas['salary'],
+                    flags=re.MULTILINE | re.DOTALL
+                )
+                found = False
+                if m:
+                    found = True
+                    self.datas['salary_unit'] = 1
+                    self.datas['salary_min'] = m.group(1)
+                    self.datas['salary_max'] = m.group(2)
+                    self.datas['salary_nbperiod'] = 12
+                    self.datas['salary_bonus'] = m.group(3)
+
+            if not found:
+                m = re.search(
+                    ur'.*?([0-9]+) à ([0-9]+) KEuros\.?(.*)',
+                    self.datas['salary'],
+                    flags=re.MULTILINE | re.DOTALL
+                )
+                found = False
+                if m:
+                    found = True
+                    self.datas['salary_unit'] = 1
+                    self.datas['salary_min'] = m.group(1)
+                    self.datas['salary_max'] = m.group(2)
+                    self.datas['salary_nbperiod'] = 12
+                    self.datas['salary_bonus'] = m.group(3)
+
+            if not found:
+                m = re.search(
+                    ur'([0-9]+)/([0-9]+) KE(uros)?(.*)',
+                    self.datas['salary'],
+                    flags=re.MULTILINE | re.DOTALL
+                )
+                found = False
+                if m:
+                    found = True
+                    self.datas['salary_unit'] = 12
+                    self.datas['salary_min'] = "%s000" % m.group(1)
+                    self.datas['salary_max'] = "%s000" % m.group(2)
+                    self.datas['salary_nbperiod'] = 12
+                    self.datas['salary_bonus'] = m.group(4)
+
+            if not found:
+                m = re.search(
+                    ur'.*?([0-9]+)-([0-9]+) KE(uros)?(.*)',
+                    self.datas['salary'],
+                    flags=re.MULTILINE | re.DOTALL
+                )
+                found = False
+                if m:
+                    found = True
+                    self.datas['salary_unit'] = 12
+                    self.datas['salary_min'] = "%s000" % m.group(1)
+                    self.datas['salary_max'] = "%s000" % m.group(2)
+                    self.datas['salary_nbperiod'] = 12
+                    self.datas['salary_bonus'] = m.group(4)
+
+            if found:
+                # Format
+                self.datas['salary_min'] = float(
+                    re.sub(
+                        r'[\W_]',
+                        '',
+                        self.datas['salary_min']
+                    )
+                )
+                self.datas['salary_max'] = float(
+                    re.sub(
+                        r'[\W_]',
+                        '',
+                        self.datas['salary_max']
+                    )
+                )
+
+            if not found:
+                # Search salary
+                m = re.search(
+                    ur'(.*?) Euros(/mois)?\.(.*)',
+                    self.datas['salary'],
+                    flags=re.MULTILINE | re.DOTALL
+                )
+                if m:
+                    found = True
+                    self.datas['salary_unit'] = 1
+                    self.datas['salary_min'] = m.group(1)
+                    self.datas['salary_max'] = 0
+                    self.datas['salary_nbperiod'] = 12
+                    self.datas['salary_bonus'] = m.group(3)
+
+                # Format
+                if found:
+                    self.datas['salary_min'] = float(
+                        re.sub(
+                            r'[\W_]',
+                            '',
+                            self.datas['salary_min']
+                        )
+                    )
+
+            if self.datas['salary_unit'] == 'Annuel':
+                self.datas['salary_unit'] = 12
+            elif self.datas['salary_unit'] == 'Mensuel':
+                self.datas['salary_unit'] = 1

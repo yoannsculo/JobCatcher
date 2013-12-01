@@ -144,7 +144,7 @@ class Offer():
 
         # Not find the salary, return de origin text
         if self.salary_min == 0:
-            self.salary_cleaned = self.salary
+            self.salary_cleaned = utilities.filter_salary_fr(self.salary)
             return
 
         # Month salary
