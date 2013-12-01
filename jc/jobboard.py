@@ -121,7 +121,14 @@ class JobBoard(object):
             o = self.createOffer(d)
             if o:
                 o.cleanFields()
-                utilities.db_add_offer(self.configs, o)
+                try:
+                    utilities.db_add_offer(self.configs, o)
+                except Exception, e:
+                    utilities.showMessage(
+                        "%s for %s" % (e, d['url']),
+                        "error",
+                        self.name,
+                    )
             else:
                 utilities.showMessage(
                     "Error moving to offers of %s" % d['url'],
