@@ -323,9 +323,9 @@ def db_delete_jobboard_datas(configs, jobboardname):
     sql = "delete from offers where source='%s'" % jobboardname
     cursor.execute(sql)
 
-    # Delete jobbor datas on jobboard table
-    sql = "delete from jb_%s" % jobboardname
-    cursor.execute(sql)
+    # # Delete jobbor datas on jobboard table
+    # sql = "delete from jb_%s" % jobboardname
+    # cursor.execute(sql)
 
     conn.commit()
 
