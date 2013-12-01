@@ -301,6 +301,14 @@ def db_create(configs):
                         lat TEXT, \
                         lon TEXT, \
                         salary TEXT, \
+                        salary_cleaned TEXT, \
+                        salary_min FLOAT, \
+                        salary_max FLOAT, \
+                        salary_nbperiod INTEGER, \
+                        salary_unit FLOAT, \
+                        salary_bonus TEXT, \
+                        salary_minbonus FLOAT, \
+                        salary_maxbonus FLOAT, \
                         url TEXT, \
                         content TEXT, \
                         state TEXT, \
@@ -352,14 +360,16 @@ def db_add_offer(configs, offer):
         conn.text_factory = str
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO offers VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
-                offer.src, offer.offerid, offer.lastupdate, offer.ref, offer.feedid,
-                offer.date_pub, offer.date_add,
+                offer.src, offer.offerid, offer.lastupdate, offer.ref,
+                offer.feedid, offer.date_pub, offer.date_add,
                 offer.title, offer.company, offer.contract,
                 offer.duration, offer.location, offer.department,
-                offer.lat, offer.lon, offer.salary,
-                offer.url, offer.content,offer.state
+                offer.lat, offer.lon, offer.salary, offer.salary_cleaned,
+                offer.salary_min, offer.salary_max, offer.salary_nbperiod,
+                offer.salary_unit, offer.salary_bonus, offer.salary_minbonus,
+                offer.salary_maxbonus, offer.url, offer.content, offer.state
             )
         )
         conn.commit()
@@ -582,7 +592,5 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'N.C', "NA", salary)
     salary = re.sub(ur'NC', "NA", salary)
     salary = re.sub(ur'nc', "NA", salary)
-
-
 
     return salary

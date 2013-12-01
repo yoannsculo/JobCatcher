@@ -281,7 +281,7 @@ class ReportGenerator(object):
                     row[7], row[8], row[9], row[10], row[11], row[12],
                     row[13], row[14], row[15], row[16], row[17], row[18],
                     row[19], row[20], row[21], row[22], row[23], row[24],
-                    row[25]
+                    row[25],row[26]
                 )
 
                 if (not self.configs.globals['report']['dynamic'] and s_date != offer.date_pub.strftime('%Y-%m-%d')):
@@ -320,7 +320,7 @@ class ReportGenerator(object):
                     report.write(self.box('', offer.contract))
                     report.write(duration)
                 report.write('</td>\n')
-                report.write('\t\t\t\t<td class="salary">' + offer.salary + '</td>\n')
+                report.write('\t\t\t\t<td class="salary">' + offer.salary_cleaned + '</td>\n')
 
                 # Source
                 feedurl = feedsinfo[offer.src][offer.feedid]['url']
