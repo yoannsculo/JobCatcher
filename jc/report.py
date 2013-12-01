@@ -111,12 +111,16 @@ class ReportGenerator(object):
             ("All %s offers" % offers_count)
         filtered_text = "Filtered offers" if filtered_count is None else\
             ("%s filtered offers" % filtered_count)
-        filtered_ratio_text = "" if\
+        try:
+            filtered_ratio_text = "" if\
             (offers_count is None or filtered_count is None) else\
             "%s blacklisted offers (%.0f%%)" % (\
                 offers_count - filtered_count,\
                 100*(float) (offers_count - filtered_count) / offers_count\
             )
+        except:
+            filtered_ratio_text = "?"
+
         fhandle.write('\t<nav class="navbar navbar-fixed-top" role="navigation">\n')
         fhandle.write('\t\t<div class="collapse navbar-collapse">\n')
         fhandle.write('\t\t\t<ul class="nav navbar-nav nav-pills">\n')
@@ -275,7 +279,9 @@ class ReportGenerator(object):
                 offer.load(
                     row[0], row[1], row[2], row[3], row[4], row[5], row[6],
                     row[7], row[8], row[9], row[10], row[11], row[12],
-                    row[13], row[14], row[15], row[16], row[17], row[18]
+                    row[13], row[14], row[15], row[16], row[17], row[18],
+                    row[19], row[20], row[21], row[22], row[23], row[24],
+                    row[25]
                 )
 
                 if (not self.configs.globals['report']['dynamic'] and s_date != offer.date_pub.strftime('%Y-%m-%d')):
