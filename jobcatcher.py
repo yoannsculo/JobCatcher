@@ -291,12 +291,6 @@ if __name__ == '__main__':
     if options.user:
         selecteduser = [options.user]
 
-    if options.report:
-        print "Report generation..."
-        generatereport(configs, selecteduser)
-        print "Done."
-        sys.exit(0)
-
     if options.all:
         executeall(configs, selecteduser)
         sys.exit(0)
@@ -349,3 +343,8 @@ if __name__ == '__main__':
         p = P2PDownloader(configs)
         p.initLocalCache()
         p.sync()
+
+    if options.report:
+        print "Report generation..."
+        generatereport(configs, selecteduser)
+        print "Done."
