@@ -185,7 +185,8 @@ class Offer():
             maxbonus = int(maxbonus)
 
         # Calc range if needed
-        if self.salary_min and self.salary_max:
+        if self.salary_min and self.salary_max and \
+           self.salaryToText(self.salary_min) != self.salaryToText(self.salary_max):
             self.salary_cleaned = '%s - %s' % (
                 self.salaryToText(self.salary_min),
                 self.salaryToText(self.salary_max)

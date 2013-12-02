@@ -310,7 +310,7 @@ class JBRegionJob(JobBoard):
             # Search salary range
             #####################
             m = re.search(
-                ur'([0-9]+)/([0-9]+).*par mois sur (.*?) mois\.?(.*)',
+                ur'([0-9]+\.?[0-9]+) - ([0-9]+\.?[0-9]+) Euros/heure\.?(.*)',
                 self.datas['salary'],
                 flags=re.MULTILINE | re.DOTALL
             )
@@ -318,10 +318,24 @@ class JBRegionJob(JobBoard):
             if m:
                 found = True
                 self.datas['salary_unit'] = 1
-                self.datas['salary_min'] = m.group(1)
-                self.datas['salary_max'] = m.group(2)
-                self.datas['salary_nbperiod'] = int(m.group(3))
-                self.datas['salary_bonus'] = m.group(4)
+                self.datas['salary_min'] = str(float(m.group(1))*140)
+                self.datas['salary_max'] = str(float(m.group(2))*140)
+                self.datas['salary_nbperiod'] = 12
+                self.datas['salary_bonus'] = m.group(3)
+
+            if not found:
+                m = re.search(
+                    ur'([0-9]+)/([0-9]+).*par mois sur (.*?) mois\.?(.*)',
+                    self.datas['salary'],
+                    flags=re.MULTILINE | re.DOTALL
+                )
+                if m:
+                    found = True
+                    self.datas['salary_unit'] = 1
+                    self.datas['salary_min'] = m.group(1)
+                    self.datas['salary_max'] = m.group(2)
+                    self.datas['salary_nbperiod'] = int(m.group(3))
+                    self.datas['salary_bonus'] = m.group(4)
 
             if not found:
                 m = re.search(
@@ -329,7 +343,6 @@ class JBRegionJob(JobBoard):
                     self.datas['salary'],
                     flags=re.MULTILINE | re.DOTALL
                 )
-                found = False
                 if m:
                     found = True
                     self.datas['salary_unit'] = 1
@@ -344,7 +357,6 @@ class JBRegionJob(JobBoard):
                     self.datas['salary'],
                     flags=re.MULTILINE | re.DOTALL
                 )
-                found = False
                 if m:
                     found = True
                     self.datas['salary_unit'] = 1
@@ -355,11 +367,10 @@ class JBRegionJob(JobBoard):
 
             if not found:
                 m = re.search(
-                    ur'([0-9]+)/([0-9]+) KE(uros)?(.*)',
+                    ur'([0-9]+)/([0-9]+) KE(uros)?\.?(.*)',
                     self.datas['salary'],
                     flags=re.MULTILINE | re.DOTALL
                 )
-                found = False
                 if m:
                     found = True
                     self.datas['salary_unit'] = 12
@@ -370,11 +381,10 @@ class JBRegionJob(JobBoard):
 
             if not found:
                 m = re.search(
-                    ur'.*?([0-9]+)-([0-9]+) KE(uros)?(.*)',
+                    ur'.*?([0-9]+)-([0-9]+) KE(uros)?\.?(.*)',
                     self.datas['salary'],
                     flags=re.MULTILINE | re.DOTALL
                 )
-                found = False
                 if m:
                     found = True
                     self.datas['salary_unit'] = 12
@@ -387,14 +397,14 @@ class JBRegionJob(JobBoard):
                 # Format
                 self.datas['salary_min'] = float(
                     re.sub(
-                        r'[\W_]',
+                        r'[^0-9.]',
                         '',
                         self.datas['salary_min']
                     )
                 )
                 self.datas['salary_max'] = float(
                     re.sub(
-                        r'[\W_]',
+                        r'[^0-9.]',
                         '',
                         self.datas['salary_max']
                     )
@@ -406,7 +416,7 @@ class JBRegionJob(JobBoard):
             if not found:
                 # Search salary
                 m = re.search(
-                    ur'([0-9]+).*?(Euros)?(/mois)?\.(.*)',
+                    ur'([0-9]+).*(Euros)?(/heure)\.(.*)',
                     self.datas['salary'],
                     flags=re.MULTILINE | re.DOTALL
                 )
@@ -418,11 +428,26 @@ class JBRegionJob(JobBoard):
                     self.datas['salary_nbperiod'] = 12
                     self.datas['salary_bonus'] = m.group(4)
 
+            if not found:
+                # Search salary
+                m = re.search(
+                    ur'([0-9 ]+).*(Euros)?/mois\.(.*)',
+                    self.datas['salary'],
+                    flags=re.MULTILINE | re.DOTALL
+                )
+                if m:
+                    found = True
+                    self.datas['salary_unit'] = 1
+                    self.datas['salary_min'] = m.group(1).replace(' ', '')
+                    self.datas['salary_max'] = 0
+                    self.datas['salary_nbperiod'] = 12
+                    self.datas['salary_bonus'] = m.group(3)
+
                 # Format
                 if found:
                     self.datas['salary_min'] = float(
                         re.sub(
-                            r'[\W_]',
+                            r'[^0-9.]',
                             '',
                             self.datas['salary_min']
                         )
