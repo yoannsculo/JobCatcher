@@ -96,6 +96,12 @@ class Config(object):
 
     def getJobboardList(self, selecteduser=None):
         jobboardlist = []
+
+        # If in debug mode return the config.py['debug_jobboard']
+        if 'debug_jobboard' in self.globals:
+            if len(self.globals['debug_jobboard']) > 0:
+                return self.globals['debug_jobboard']
+
         feedlist = self.getFeedsInfo(selecteduser)
         for jobboardname, feedinfo in feedlist.iteritems():
             if jobboardname not in jobboardlist:
