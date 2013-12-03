@@ -283,7 +283,7 @@ class JBApec(JobBoard):
 
             # Search salary range
             m = re.search(
-                ur'([0-9]+)([/-])([0-9]+)K€ brut/an(.*)',
+                ur'([0-9]+)([/-])([0-9]+)K€ *(brut)?/an(.*)',
                 self.datas['salary'],
                 flags=re.MULTILINE | re.DOTALL
             )
@@ -292,7 +292,7 @@ class JBApec(JobBoard):
                 self.datas['salary_min'] = m.group(1)
                 self.datas['salary_max'] = m.group(3)
                 self.datas['salary_nbperiod'] = 12
-                self.datas['salary_bonus'] = m.group(4)
+                self.datas['salary_bonus'] = m.group(5)
 
                 # Format
                 self.datas['salary_min'] = float(
@@ -312,7 +312,7 @@ class JBApec(JobBoard):
             else:
                 # Search salary
                 m = re.search(
-                    ur'([0-9]+) *K€ brut/an(.*)',
+                    ur'([0-9]+) *K€ *brut/an(.*)',
                     self.datas['salary'],
                     flags=re.MULTILINE | re.DOTALL
                 )
