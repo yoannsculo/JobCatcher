@@ -320,8 +320,10 @@ class ReportGenerator(object):
                     report.write(self.box('', offer.contract))
                     report.write(duration)
                 report.write('</td>\n')
-                report.write('\t\t\t\t<td class="salary">' + offer.salary_cleaned + '</td>\n')
-
+                if offer.salary_cleaned == 'NA' or offer.salary == offer.salary_cleaned:
+                    report.write('\t\t\t\t<td class="salary">' + offer.salary_cleaned + '</td>\n')
+                else:
+                    report.write('\t\t\t\t<td class="salary">' + self.box('primary',offer.salary_cleaned + '</td>\n'))
                 # Source
                 feedurl = feedsinfo[offer.src][offer.feedid]['url']
                 report.write('\t\t\t\t<td class="source"><a href="%s">%s</a></td>\n' % \
