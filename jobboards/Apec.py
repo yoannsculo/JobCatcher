@@ -150,6 +150,7 @@ class JBApec(JobBoard):
         self.datas['contract'] = self._extractItem("Nombre de postes", table)
         self.datas['salary'] = self._extractItem("Salaire", table)
         self.datas['experience'] = self._extractItem("Expérience", table)
+        self.filterSalaries(self.datas)
 
         # Insert to jobboard table
         self.datas['state'] = 'ACTIVE'
@@ -180,6 +181,13 @@ class JBApec(JobBoard):
                        contract TEXT, \
                        location TEXT, \
                        salary TEXT, \
+                       salary_min FLOAT, \
+                       salary_max FLOAT, \
+                       salary_nbperiod INTEGER, \
+                       salary_unit FLOAT, \
+                       salary_bonus TEXT, \
+                       salary_minbonus FLOAT, \
+                       salary_maxbonus FLOAT, \
                        experience TEXT, \
                        state TEXT, \
                        PRIMARY KEY(offerid))""" % self.name)
@@ -189,7 +197,7 @@ class JBApec(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
                            self.name, (
                                self.datas['offerid'],
                                self.datas['lastupdate'],
@@ -204,6 +212,13 @@ class JBApec(JobBoard):
                                self.datas['contract'],
                                self.datas['location'],
                                self.datas['salary'],
+                               self.datas['salary_min'],
+                               self.datas['salary_max'],
+                               self.datas['salary_nbperiod'],
+                               self.datas['salary_unit'],
+                               self.datas['salary_bonus'],
+                               self.datas['salary_minbonus'],
+                               self.datas['salary_maxbonus'],
                                self.datas['experience'],
                                self.datas['state'],
 
@@ -235,6 +250,13 @@ class JBApec(JobBoard):
         o.contract = data['contract']
         o.location = data['location']
         o.salary = data['salary']
+        o.salary_min = data['salary_min']
+        o.salary_max = data['salary_max']
+        o.salary_unit = data['salary_unit']
+        o.salary_nbperiod = data['salary_nbperiod']
+        o.salary_bonus = data['salary_bonus']
+        o.salary_minbonus = data['salary_minbonus']
+        o.salary_maxbonus = data['salary_maxbonus']
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
         o.state = data['state']
@@ -243,3 +265,74 @@ class JBApec(JobBoard):
             return o
 
         return None
+
+    def filterSalaries(self, data):
+        minbonus = 0
+        maxbonus = 0
+
+        if self.datas['salary']:
+            # Salary
+            self.datas['salary_unit'] = ''
+            self.datas['salary_min'] = 0
+            self.datas['salary_max'] = 0
+            self.datas['salary_nbperiod'] = 0
+            # Bonus
+            self.datas['salary_bonus'] = ''
+            self.datas['salary_minbonus'] = 0
+            self.datas['salary_maxbonus'] = 0
+
+            # Search salary range
+            m = re.search(
+                ur'([0-9]+)([/-])([0-9]+)K€ brut/an(.*)',
+                self.datas['salary'],
+                flags=re.MULTILINE | re.DOTALL
+            )
+            if m:
+                self.datas['salary_unit'] = 12
+                self.datas['salary_min'] = m.group(1)
+                self.datas['salary_max'] = m.group(3)
+                self.datas['salary_nbperiod'] = 12
+                self.datas['salary_bonus'] = m.group(4)
+
+                # Format
+                self.datas['salary_min'] = float(
+                    re.sub(
+                        r'[^0-9.]',
+                        '',
+                        self.datas['salary_min']
+                    )
+                ) * 1000
+                self.datas['salary_max'] = float(
+                    re.sub(
+                        r'[^0-9.]',
+                        '',
+                        self.datas['salary_max']
+                    )
+                ) * 1000
+            else:
+                # Search salary
+                m = re.search(
+                    ur'([0-9]+) *K€ brut/an(.*)',
+                    self.datas['salary'],
+                    flags=re.MULTILINE | re.DOTALL
+                )
+                if m:
+                    self.datas['salary_unit'] = 12
+                    self.datas['salary_min'] = m.group(1)
+                    self.datas['salary_max'] = 0
+                    self.datas['salary_nbperiod'] = 12
+                    self.datas['salary_bonus'] = m.group(2)
+
+                    # Format
+                    self.datas['salary_min'] = float(
+                        re.sub(
+                            r'[^0-9.]',
+                            '',
+                            self.datas['salary_min']
+                        )
+                    ) * 1000
+
+            if self.datas['salary_unit'] == 'Annuel':
+                self.datas['salary_unit'] = 12
+            elif self.datas['salary_unit'] == 'Mensuel':
+                self.datas['salary_unit'] = 1
