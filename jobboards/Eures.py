@@ -115,8 +115,35 @@ class JBEures(JobBoard):
         # Salary
         self.datas['salary_min'] = self._extractItem("Salaire minimum", page.content)
         self.datas['salary_max'] = self._extractItem("Salaire maximum", page.content)
-        self.datas['salary_period'] = self._extractItem("Période de rémunération", page.content)
+        self.datas['salary_unit'] = self._extractItem("Période de rémunération", page.content)
         self.datas['nb_hours'] = self._extractItem("Horaire hebdomadaire", page.content)
+
+        if self.datas['nb_hours']:
+            self.datas['nb_hours'] = float(re.sub(r'\:[0-9]+', '', self.datas['nb_hours']))
+        
+
+        # clean salary values
+        if self.datas['salary_min']:
+            self.datas['salary_min'] = float(self.datas['salary_min'].replace(',', ''))
+        if self.datas['salary_max']:
+            self.datas['salary_max'] = float(self.datas['salary_max'].replace(',', ''))
+
+        self.datas['salary_bonus'] = ''
+        self.datas['salary_minbonus'] = ''
+        self.datas['salary_maxbonus'] = ''
+        if self.datas['salary_unit'] == "Annuel":
+            self.datas['salary_unit'] = 12
+            self.datas['salary_nbperiod'] = 12
+        elif self.datas['salary_unit'] == "Mensuel":
+            self.datas['salary_unit'] = 1
+            self.datas['salary_nbperiod'] = 12
+        elif self.datas['salary_unit'] == "Horaire":
+            self.datas['salary_unit'] = 1
+            self.datas['salary_nbperiod'] = 12
+            self.datas['salary_min'] = self.datas['salary_min'] * self.datas['nb_hours'] * 4
+            if self.datas['salary_max']:
+                self.datas['salary_max'] = self.datas['salary_max'] * self.datas['nb_hours'] * 4
+
         # Experiences
         self.datas['qualification'] = self._extractItem("Qualifications en formation exigées", page.content)
         self.datas['experience'] = self._extractItem("Expérience requise", page.content)
@@ -147,9 +174,13 @@ class JBEures(JobBoard):
                        company TEXT, \
                        contract TEXT, \
                        location TEXT, \
-                       salary_min TEXT, \
-                       salary_max TEXT, \
-                       salary_period TEXT, \
+                       salary_min FLOAT, \
+                       salary_max FLOAT, \
+                       salary_nbperiod INTEGER, \
+                       salary_unit FLOAT, \
+                       salary_bonus TEXT, \
+                       salary_minbonus FLOAT, \
+                       salary_maxbonus FLOAT, \
                        nb_hours TEXT, \
                        qualification TEXT, \
                        experience TEXT, \
@@ -161,7 +192,7 @@ class JBEures(JobBoard):
         conn.text_factory = str
         cursor = conn.cursor()
         try:
-            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
+            cursor.execute("INSERT INTO jb_%s VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" % 
                            self.name, (
                                self.datas['offerid'],
                                self.datas['lastupdate'],
@@ -177,7 +208,11 @@ class JBEures(JobBoard):
                                self.datas['location'],
                                self.datas['salary_min'],
                                self.datas['salary_max'],
-                               self.datas['salary_period'],
+                               self.datas['salary_nbperiod'],
+                               self.datas['salary_unit'],
+                               self.datas['salary_bonus'],
+                               self.datas['salary_minbonus'],
+                               self.datas['salary_maxbonus'],
                                self.datas['nb_hours'],
                                self.datas['qualification'],
                                self.datas['experience'],
@@ -209,6 +244,13 @@ class JBEures(JobBoard):
         o.contract = data['contract']
         o.location = data['location']
         o.salary = data['salary']
+        o.salary_min = data['salary_min']
+        o.salary_max = data['salary_max']
+        o.salary_unit = data['salary_unit']
+        o.salary_nbperiod = data['salary_nbperiod']
+        o.salary_bonus = data['salary_bonus']
+        o.salary_minbonus = data['salary_minbonus']
+        o.salary_maxbonus = data['salary_maxbonus']
         o.date_pub = data['date_pub']
         o.date_add = data['date_add']
         o.state = data['state']
@@ -225,20 +267,6 @@ class JBEures(JobBoard):
 
     def filterSalaries(self, data):
         data['salary'] = ""
-
-        # Min
-        if data['salary_min']:
-            data['salary_min'] = re.sub(r',', '', data['salary_min'])
-            data['salary_min'] = re.sub(r'(\.[0-9]+)', r'\1 €', data['salary_min'])
-        else:
-            data['salary_min'] = ""
-
-        # Max
-        if data['salary_max']:
-            data['salary_max'] = re.sub(r',', '', data['salary_max'])
-            data['salary_max'] = re.sub(r'(\.[0-9]+)', r'\1 €', data['salary_max'])
-        else:
-            data['salary_max'] = ""
 
         if data['salary_min'] and data['salary_max']:
             data['salary'] = '%s - %s' % (data['salary_min'], data['salary_max'])
