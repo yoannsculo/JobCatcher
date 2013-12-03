@@ -151,7 +151,7 @@ class Offer():
         if self.salary_unit == 1:
             self.salary_min = self.salary_min * self.salary_nbperiod
 
-            if self.salary_max != '':
+            if self.salary_max and self.salary_max != '':
                 self.salary_max = self.salary_max * self.salary_nbperiod
 
         # Annual salary
