@@ -1649,9 +1649,6 @@ var Config = {
  * ENTRY POINT
  */
 $(document).ready(function() {
-    /* Sort the table */
-    $("#offers").tablesorter({sortList: [[0,1]]});
-
     /* Insert the filters */
     var master_filter = new MasterFilter();
 });

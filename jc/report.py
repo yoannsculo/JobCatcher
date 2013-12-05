@@ -95,7 +95,6 @@ class ReportGenerator(object):
                 fhandle.write('\t<script type="text/javascript" src="%s/js/jquery-2.0.3.min.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/bootstrap.min.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/jquery-ui-1.10.3.custom.min.js"></script>\n' % rpath)
-                fhandle.write('\t<script type="text/javascript" src="%s/js/jquery.tablesorter.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/persist-min.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/class.js"></script>\n' % rpath)
                 fhandle.write('\t<script type="text/javascript" src="%s/js/bootstrap-select.min.js"></script>\n' % rpath)
