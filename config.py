@@ -27,7 +27,7 @@ configs = {
         'sculo': 'http://jobcatcher.sculo.fr',
     },
     'report': {
-        # dynamic: true/false
+        # dynamic: True/False
         'dynamic': True,
         # offer_per_page: int
         'offer_per_page': 15,
