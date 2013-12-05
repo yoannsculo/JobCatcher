@@ -457,9 +457,11 @@ def filter_company_fr(company):
     return company
 
 def filter_location_fr(location):
-    location = re.sub(ur'IDF', "Île-de-France", location, flags=re.IGNORECASE)
-    location = re.sub(ur'Ile-de-France', "Île-de-France", location, flags=re.IGNORECASE)
-    location = re.sub(ur'Ile de France', "Île-de-France", location, flags=re.IGNORECASE)
+    location = re.sub(ur'^IDF$', "Île-de-France", location, flags=re.IGNORECASE)
+    location = re.sub(ur'^Ile-de-France$', "Île-de-France", location, flags=re.IGNORECASE)
+    location = re.sub(ur'^Ile de France$', "Île-de-France", location, flags=re.IGNORECASE)
+    location = re.sub(ur'^Region Parisienne$', "Île-de-France", location, flags=re.IGNORECASE)
+    location = re.sub(ur'^PARIS$', "Paris", location, flags=re.IGNORECASE)
     return location
 
 def filter_salary_fr(salary):
@@ -563,7 +565,9 @@ def filter_salary_fr(salary):
     salary = re.sub(ur'A definir', "NA", salary)
     salary = re.sub(ur'À definir', "NA", salary)
     salary = re.sub(ur'A défnir', "NA", salary)
+    salary = re.sub(ur'A defnir', "NA", salary)
     salary = re.sub(ur'A discuter', "NA", salary)
+    salary = re.sub(ur'Attractif', "NA", salary)
     salary = re.sub(ur'à préciser', "NA", salary)
     salary = re.sub(ur'en fonction exp.', "NA", salary)
     salary = re.sub(ur'Negotiable', "NA", salary)
