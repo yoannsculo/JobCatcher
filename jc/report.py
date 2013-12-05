@@ -124,8 +124,6 @@ class ReportGenerator(object):
         fhandle.write('\t<nav class="navbar navbar-fixed-top" role="navigation">\n')
         fhandle.write('\t\t<div class="collapse navbar-collapse">\n')
         fhandle.write('\t\t\t<ul class="nav navbar-nav nav-pills">\n')
-        fhandle.write('\t\t\t\t<li><a id="button-github" title="%s" href="%s"></a></li>\n'\
-            % ("Check us on Github!", "https://github.com/yoannsculo/JobCatcher"))
         fhandle.write('\t\t\t\t<li class="%s"><a href="report_full.html">%s</a></li>\n'\
             % (("active" if "full" == pagename else ""), offers_text))
         fhandle.write('\t\t\t\t<li class="%s"><a href="report_filtered.html">%s</a></li>\n'\
@@ -138,7 +136,12 @@ class ReportGenerator(object):
 
     def footer(self, fhandle):
         lastupdate = datetime.datetime.fromtimestamp(int(time.time()))
-        fhandle.write('\t<footer>&copy; JobCatcher &mdash; generated %s</footer>\n' % lastupdate)
+        fhandle.write('\t<footer>&copy; JobCatcher %s\n'\
+            % '<a class="icon-github" title="Check us on Github!"'\
+            + 'href="https://github.com/yoannsculo/JobCatcher"></a>'\
+        )
+        fhandle.write('\t\t&mdash; generated %s\n' % lastupdate)
+        fhandle.write('\t</footer>\n')
 
     def generateP2PIndex(self):
         # Search feeds

@@ -17,12 +17,6 @@ body > .main {
 nav {
     background-color: #f4f4f8;
 }
-#button-github {
-    background-image: url(../img/github.png);
-    background-size: 48px 48px;
-    width: 48px;
-    height: 48px;
-}
 .pagination {
     margin-top: 0.5em;
     margin-bottom: 1px;
@@ -216,3 +210,16 @@ footer {
    text-align: center;
    color: #777;
 }
+.icon-github {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    vertical-align: bottom;
+    background-image: url(../img/github.png);
+    background-position: 0px 0px;
+    background-size: 48px 24px;
+}
+.icon-github:hover {
+    background-position: -24px 0px;
+}
+
