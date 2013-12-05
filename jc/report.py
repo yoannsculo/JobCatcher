@@ -124,6 +124,8 @@ class ReportGenerator(object):
         fhandle.write('\t<nav class="navbar navbar-fixed-top" role="navigation">\n')
         fhandle.write('\t\t<div class="collapse navbar-collapse">\n')
         fhandle.write('\t\t\t<ul class="nav navbar-nav nav-pills">\n')
+        fhandle.write('\t\t\t\t<li><a title="Back to the community page" href="../index.html">%s</a></li>\n'\
+            % '<span class="glyphicon glyphicon-circle-arrow-left"></span> Community')
         fhandle.write('\t\t\t\t<li class="%s"><a href="report_full.html">%s</a></li>\n'\
             % (("active" if "full" == pagename else ""), offers_text))
         fhandle.write('\t\t\t\t<li class="%s"><a href="report_filtered.html">%s</a></li>\n'\
