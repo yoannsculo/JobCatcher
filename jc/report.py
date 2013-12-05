@@ -79,7 +79,7 @@ class ReportGenerator(object):
         css = " label-%s" % style
         return '<span class="label%s">%s</span>' % (css, text)
 
-    def header(self, fhandle, rpath="..", showNav=True, extra=""):
+    def header(self, fhandle, title, rpath="..", showNav=True, extra=""):
         fhandle.write('<!doctype html>\n')
         fhandle.write('<html dir="ltr" lang="en">\n')
         fhandle.write('<head>\n')
@@ -104,6 +104,7 @@ class ReportGenerator(object):
             else:
                 fhandle.write('\t<link rel="stylesheet" href="%s/css/static.css" />\n' % rpath)
         fhandle.write(extra)
+        fhandle.write('\t<title>Jobcatcher &mdash; %s</title>\n' % title)
         fhandle.write('</head>\n')
 
     def navbar(self, fhandle, pagename, offers_count=None, filtered_count=None):
@@ -169,7 +170,7 @@ class ReportGenerator(object):
 
         # HTML header
         footerstyle='\t<link rel="stylesheet" href="./css/index.css" />\n'
-        self.header(report, '.', False, footerstyle)
+        self.header(report, 'community', '.', False, footerstyle)
         # HTML body
         report.write('<body>\n')
         # special CSS
@@ -231,13 +232,15 @@ class ReportGenerator(object):
             count_filtered = len(data_filtered)
             count_full = len(data_full)
             if (filtered):
+                title = 'filtered job offers'
                 report = open(os.path.join(html_dir, 'report_filtered.html'), 'w')
                 data = data_filtered
             else:
+                title = 'job offers'
                 report = open(os.path.join(html_dir, 'report_full.html'), 'w')
                 data = data_full
 
-            self.header(report)
+            self.header(report, title)
 
             report.write('<body>\n')
             # page header def navbar(self, fhandle, pagename, offers_count=None, filtered_count=None):
