@@ -25,6 +25,7 @@ table#offers > tbody {
 	position: absolute;
 	overflow: auto;
 	height: 80%;
+	width: 100%;
 }
 
 /*
