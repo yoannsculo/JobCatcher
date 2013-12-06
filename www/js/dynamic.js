@@ -512,10 +512,10 @@ var PubdateFilter = AbstractFilter.extend({
         return this._super(id, choices, options);
     },
     /**
-     * \property priv_selected_button_class_name
-     * \brief Name of CSS class for the selected button.
+     * \property priv_dateformat
+     * \brief Dateformat used.
      */
-    priv_selected_button_class_name: "ui-my-selected-button",
+    priv_dateformat: "YYYY-MM-DD",
     /**
      * \fn init(classname, master_filter)
      * \brief Constructor.
@@ -523,88 +523,37 @@ var PubdateFilter = AbstractFilter.extend({
     init: function(classname, master_filter) {
         this._super(classname, master_filter);
         var self = this;
-        /* button creation
-         * <div id="filter_pubdate_box">
-         *      <a id="filter_pubdate_before" class="filter_pubdate_buttons">Before</a>
-         *      <a id="filter_pubdate_at" class="filter_pubdate_buttons">At</a>
-         *      <a id="filter_pubdate_after" class="filter_pubdate_buttons">After</a>
-         *      <div id="filter_pubdate_datepicker" />
-         *  </div>
-         */
-        var $filter_pubdate_box = $("<div>", {id: "filter_pubdate_box"});
-        var $filter_pubdate_before = $("<a>", {
-            id: "filter_pubdate_before",
-            class: "filter_pubdate_buttons"
-        });
-        var $filter_pubdate_at = $("<a>", {
-            id: "filter_pubdate_at",
-            class: "filter_pubdate_buttons"
-        });
-        var $filter_pubdate_after = $("<a>", {
-            id: "filter_pubdate_after",
-            class: "filter_pubdate_buttons"
-        });
-        var $filter_pubdate_datepicker = $("<div>", {id: "filter_pubdate_datepicker"});
+        /* button creation */
+        $pubdate_filter_form =
+        $('<form class="form-horizontal">'
+			+ '<div class="input-group">'
+				+ '<span class="input-group-addon glyphicon glyphicon-calendar"></span>'
+				+ '<input id="pubdate_range" class="form-control" type="text" placeholder="Date range">'
+			+ '</div>'
+		+ '</form>');
 
-        $filter_pubdate_before
-            .text("Before")
-            .button({
-                icons: {primary: "ui-icon-circle-triangle-w"},
-                text: false,
-            })
-            .appendTo($filter_pubdate_box);
-        $filter_pubdate_at
-            .text("At")
-            .button()
-            .appendTo($filter_pubdate_box);
-        $filter_pubdate_after
-            .text("After")
-            .button({
-                icons: {primary: "ui-icon-circle-triangle-e"},
-                text: false,
-            })
-            .appendTo($filter_pubdate_box);
-        $filter_pubdate_datepicker
-            .appendTo($filter_pubdate_box);
-
-        /* datepicker creation */
-        $filter_pubdate_datepicker.datepicker({
-            dateFormat: "yy-mm-dd",
-            defaultDate: 0,
-            onSelect: function(date_text, sender) {
-                $filter_pubdate_at.find("span").text(date_text);
-                $(this).hide();
+        $pubdate_filter_form.find("#pubdate_range").daterangepicker(
+            {
+                format: self.priv_dateformat,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+                    'Last 7 Days': [moment().subtract('days', 6), moment()],
+                    'Last 30 Days': [moment().subtract('days', 29), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+                },
+                startDate: moment().subtract('days', 29),
+                endDate: moment(),
+                maxDate: moment(),
+                showWeekNumbers: true,
+            },
+            function(start, end) {
                 self.apply();
             }
-        });
-        var date_current = $.datepicker.formatDate(
-            $filter_pubdate_datepicker.datepicker("option", "dateFormat"),
-            $filter_pubdate_datepicker.datepicker("getDate")
         );
-        $filter_pubdate_at.find("span").text(date_current);
-        $filter_pubdate_at.mouseenter(function() {
-            $filter_pubdate_datepicker.show();
-        });
-        $("#lineFilters ." + classname).mouseleave(function() {
-            $filter_pubdate_datepicker.hide();
-        });
 
-        /* button picking */
-        $filter_pubdate_box.find("a").click(function(e) {
-            var class_checked = self.priv_selected_button_class_name;
-            var $button = $("#" + e.currentTarget.id);
-            $filter_pubdate_datepicker.hide();
-            if ($button.hasClass(class_checked)) {
-                $button.removeClass(class_checked)
-            } else {
-                $filter_pubdate_box.find("a").each(function(key, val) {
-                    $(val).removeClass(class_checked);
-                });
-                $button.addClass(class_checked);
-            }
-            self.apply();
-        });
-        priv_elements = [$filter_pubdate_box];
+        priv_elements = [$pubdate_filter_form];
     },
     /**
      * \fn apply()
@@ -635,39 +584,31 @@ var PubdateFilter = AbstractFilter.extend({
      * \returns Either \c true of \c false.
      */
     test: function(value)  {
-        /* Find the selected button */
-        var $selected_button = $(
-            "#filter_pubdate_box a.filter_pubdate_buttons."
-            + this.priv_selected_button_class_name
-        );
-        /* If there is no selected button, return true */
-        if (undefined === $selected_button || null === $selected_button)
+        /* parse argument */
+        var offer_date = moment(value, self.priv_dateformat);
+        if (!offer_date.isValid())
             return true;
-        
-        /* Get the selected button text */
-        var text = $selected_button.text();
-        if (undefined === text || null === text || "" === text)
+        /* parse filtering values */
+        var text = $("#pubdate_range").val();
+        if (undefined === text || 0 == text.length)
             return true;
-                
-        /* Else, compare selected pubdate and offer pubdate */
-        var date_format = $("#filter_pubdate_datepicker").datepicker("option", "dateFormat");
-        var date_selected = $("#filter_pubdate_datepicker").datepicker("getDate");
-        var date_selected_text = $.datepicker.formatDate(date_format, date_selected);
-        if (undefined === date_selected || null == date_selected)
-            return true;
-        var date_offer = $.datepicker.parseDate(date_format, value);
-        if (undefined === date_offer || null == date_offer)
-            return true;
-        switch(text)
-        {
-        case "Before":
-            return date_selected >= date_offer;
-        case date_selected_text:
-            return Math.abs(date_selected - date_offer) < 1000*86400-1;
-        case "After":
-            return date_selected <= date_offer;
+        var range_date = new Array();
+        $.each(text.split(/\s+-\s+/), function(key, val) {
+            var d = moment(val, self.priv_dateformat);
+            if (d.isValid())
+                range_date.push(d);
+        });
+        /* compare offer date and filtering range */
+        switch(range_date.length) {
+        case 1:
+            return offer_date.isSame(range_date[0], 'day');
+        case 2:
+            var before_bound = range_date[0].isBefore(offer_date, 'day')
+                || range_date[0].isSame(offer_date, 'day');
+            var after_bound  = range_date[1].isAfter(offer_date, 'day')
+                || range_date[1].isSame(offer_date, 'day');
+            return before_bound && after_bound;
         default:
-            console.error("Inconsistancy here. `text' value is `" + text + "'.");
             return true;
         }
     }

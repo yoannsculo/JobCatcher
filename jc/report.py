@@ -79,27 +79,45 @@ class ReportGenerator(object):
         css = " label-%s" % style
         return '<span class="label%s">%s</span>' % (css, text)
 
+    def csstag(self, rpath, filename):
+        return '\t<link rel="stylesheet" href="%s/css/%s" />\n' % (rpath, filename)
+
+    def jstag(self, rpath, filename):
+        return '\t<script type="text/javascript" src="%s/js/%s"></script>\n' % (rpath, filename)
+
     def header(self, fhandle, title, rpath="..", showNav=True, extra=""):
         fhandle.write('<!doctype html>\n')
         fhandle.write('<html dir="ltr" lang="en">\n')
         fhandle.write('<head>\n')
         fhandle.write('\t<meta http-equiv="Content-type" content="text/html; charset=utf-8" />\n')
         fhandle.write('\t<meta name="generator" content="JobCatcher; github.com/yoannsculo/JobCatcher" />\n')
-        fhandle.write('\t<link rel="stylesheet" href="%s/css/bootstrap.min.css" />\n' % rpath)
+        fhandle.write(self.csstag(rpath, "bootstrap.min.css"))
 
         if showNav:
             if self.configs.globals['report']['dynamic']:
-                fhandle.write('\t<link rel="stylesheet" href="%s/css/jquery-ui-1.10.3.custom.min.css" />\n' % rpath)
-                fhandle.write('\t<link rel="stylesheet" href="%s/css/bootstrap-select.min.css" />\n' % rpath)
-                fhandle.write('\t<link rel="stylesheet" href="%s/css/dynamic.css" />\n' % rpath)
-                fhandle.write('\t<script type="text/javascript" src="%s/js/jquery-2.0.3.min.js"></script>\n' % rpath)
-                fhandle.write('\t<script type="text/javascript" src="%s/js/bootstrap.min.js"></script>\n' % rpath)
-                fhandle.write('\t<script type="text/javascript" src="%s/js/jquery-ui-1.10.3.custom.min.js"></script>\n' % rpath)
-                fhandle.write('\t<script type="text/javascript" src="%s/js/persist-min.js"></script>\n' % rpath)
-                fhandle.write('\t<script type="text/javascript" src="%s/js/class.js"></script>\n' % rpath)
-                fhandle.write('\t<script type="text/javascript" src="%s/js/bootstrap-select.min.js"></script>\n' % rpath)
-                fhandle.write('\t<script type="text/javascript">var offers_per_page = %s;</script>\n' %self.configs.globals['report']['offer_per_page'])
-                fhandle.write('\t<script type="text/javascript" src="%s/js/dynamic.js"></script>\n' % rpath)
+                # css
+                for cssfile in [\
+                    "jquery-ui-1.10.3.custom.min.css",\
+                    "bootstrap-select.min.css",\
+                    "daterangepicker-bs3.css",\
+                    "dynamic.css"\
+                ]:
+                    fhandle.write(self.csstag(rpath, cssfile))
+                # js
+                fhandle.write('\t<script type="text/javascript">var offers_per_page = %s;</script>\n'\
+                    % self.configs.globals['report']['offer_per_page'])
+                for jsfile in [\
+                    "jquery-2.0.3.min.js",\
+                    "bootstrap.min.js",\
+                    "jquery-ui-1.10.3.custom.min.js",\
+                    "persist-min.js",\
+                    "class.js",\
+                    "bootstrap-select.min.js",\
+                    "moment.min.js",\
+                    "daterangepicker.js",\
+                    "dynamic.js",\
+                ]:
+                    fhandle.write(self.jstag(rpath, jsfile))
             else:
                 fhandle.write('\t<link rel="stylesheet" href="%s/css/static.css" />\n' % rpath)
         fhandle.write(extra)
