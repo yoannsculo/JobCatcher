@@ -131,14 +131,14 @@ thead .company {
 
 /* contract */
 .contract {
-    min-width: 10%;
-}
-#filter_contract_combobox {
-    width: 5em;
-}
-thead .contract {
-    text-align: center;
+    min-width: 5%;
     vertical-align: middle !important;
+}
+.contract form {
+    height: 3.2em;
+}
+thead .contract .bootstrap-select {
+    width: 100% !important;
 }
 
 /* salary */
@@ -189,14 +189,11 @@ thead .salary .dropdown-menu .icon-ok {
 
 /* source */
 .source {
-    text-align: center;
     min-width: 4%;
-}
-#filter_source_combobox {
-    width: 6em;
-}
-thead .source {
     vertical-align: middle !important;
+}
+.source form {
+    height: 3.2em;
 }
 
 /*
