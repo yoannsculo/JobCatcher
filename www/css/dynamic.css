@@ -145,29 +145,31 @@ thead .contract {
 .salary {
     min-width: 14em;
     width: 10%;
+    vertical-align: middle !important;
 }
-#filter_salary_feedback {
-    float: left;
-    padding: 5px;
-    font-size: 1.2em;
+thead .salary .dropdown > a, thead .salary .dropdown-menu {
+    width: 100%;
+    text-align: left;
 }
-#filter_salary_na_checkbox {
-    vertical-align: top;
+thead .salary .caret {
+    position: absolute;
+    right: 1em;
+    top: 50%;
 }
-#filter_salary_na {
-    display: inline;
-    float: right;
-    padding-top: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
+thead .salary .dropdown-menu li {
+    position: relative;
 }
-#filter_salary_spacer {
-    clear: both;
+thead .salary .dropdown-menu .icon-ok {
+    position: absolute;
+    right: 1em;
+    top: 25%;
+    vertical-align: middle;
 }
-#filter_salary_root {
-    margin-top: 0px;
+#filter_salary_slider {
+    margin-top: 1em;
     margin-left: 0.75em;
     margin-right: 0.75em;
+    margin-bottom: 0.5em;
     min-width: 5em;
 }
 .ui-slider-handle:nth-child(2) {
