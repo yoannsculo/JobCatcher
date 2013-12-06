@@ -437,12 +437,12 @@ var AbstractFilter = Class.extend({
             .appendTo($div);
         $.each(buttons, function(key, val) {
             var button = $.extend({
-                text: "OK",
+                html: "OK",
                 click: function() {}
             }, val || {});
             var $button = $('<button class="btn btn-default" type="button">')
                 .appendTo($span)
-                .text(button.text)
+                .html(button.html)
                 .click(button.click);
         });
         return $div;
@@ -738,7 +738,7 @@ var TitleFilter = AbstractFilter.extend({
             { keyup: function() { self.apply(); } },
             [
                 {
-                    text: "Clear",
+                    html: '<span class="glyphicon glyphicon-remove"></span>',
                     click: function() {
                         $("#filter_title_text").val("");
                         self.apply();
@@ -846,7 +846,7 @@ var CompanyFilter = AbstractFilter.extend({
             null,
             [
                 {
-                    text: "Clear",
+                    html: '<span class="glyphicon glyphicon-remove"></span>',
                     click: function() {
                         $("#filter_company_dropdown").val("");
                         self.apply();
