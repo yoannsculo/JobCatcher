@@ -541,7 +541,11 @@ var PubdateFilter = AbstractFilter.extend({
                     'Last 7 Days': [moment().subtract('days', 6), moment()],
                     'Last 30 Days': [moment().subtract('days', 29), moment()],
                     'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+                    'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')],
+                    'Any time': [moment('1987-04-24'), moment('2038-01-19')]
+                },
+                locale: {
+                    customRangeLabel: 'Custom range <span class="glyphicon glyphicon-hand-right"></span>'
                 },
                 startDate: moment().subtract('days', 29),
                 endDate: moment(),
