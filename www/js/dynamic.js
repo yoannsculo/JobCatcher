@@ -738,7 +738,7 @@ var TitleFilter = AbstractFilter.extend({
             { keyup: function() { self.apply(); } },
             [
                 {
-                    html: '<span class="glyphicon glyphicon-remove"></span>',
+                    html: '<span style="vertical-align: middle;" class="glyphicon glyphicon-remove"></span>',
                     click: function() {
                         $("#filter_title_text").val("");
                         self.apply();
@@ -846,7 +846,7 @@ var CompanyFilter = AbstractFilter.extend({
             null,
             [
                 {
-                    html: '<span class="glyphicon glyphicon-remove"></span>',
+                    html: '<span style="vertical-align: middle;" class="glyphicon glyphicon-remove"></span>',
                     click: function() {
                         $("#filter_company_dropdown").val("");
                         self.apply();
