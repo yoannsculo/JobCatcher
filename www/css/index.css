@@ -16,3 +16,15 @@ footer {
    text-align: center;
    color: #777;
 }
+.icon-github {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    vertical-align: bottom;
+    background-image: url(../img/github.png);
+    background-position: 0px 0px;
+    background-size: 48px 24px;
+}
+.icon-github:hover {
+    background-position: -24px 0px;
+}
