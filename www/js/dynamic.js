@@ -1117,6 +1117,7 @@ var SalaryFilter = AbstractFilter.extend({
                 max = Math.max(max, range[1]);
             }
         });
+        min = 0; // FIXME: temporary bugfix of #66.
 
         /* htlm */
         var $filter_salary_from = $(
