@@ -4,6 +4,7 @@
 __authors__ = [
     'Bruno Adelé <bruno@adele.im>',
     'Yoann Sculo <yoann.sculo@gmail.com>',
+    'Yankel Scialom (YSC) <yankel.scialom@mail.com>',
 ]
 __license__ = 'GPLv2'
 __version__ = '0.1'
@@ -34,9 +35,18 @@ configs = {
 
         ]
     },
+    # How to add a custom feed?
+    # 1. Go to <http://cadres.apec.fr/MonCompte/Flux-RSS/abonnements-flux-rss.jsp>;
+    # 2. Fill the form;
+    # 3. Find and click the RSS icon next to "Voici le flux RSS généré correspondant à vos critères;"
+    # 4. Copy the url and add it below: "{'url': 'PASTE HERE'},";
+    # 5. Swear & curse Apec.fr for not providing more custom feeds.
     'Apec': {
         'feeds': [
+            # APEC, Informatique, Ile-de-France
             { 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101833_R711.xml'}
+            # APEC, R&D (conception, recherche), Ile-de-France
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101796_R711.xml'}
         ]
     },
     # How to add a custom feed?
