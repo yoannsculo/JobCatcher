@@ -1,0 +1,384 @@
+1120 Cadres supérieurs de l'administration publique
+1130 Chefs traditionnels et chefs de village
+1141 Dirigeants et cadres supérieurs de partis politiques
+1142 Dirigeants et cadres supérieurs d'organisations d'employeurs et de travailleurs et d'autres organisations socio-économiques
+1143 Dirigeants et cadres supérieurs d'organisations humanitaires et d'autres organisations spécialises
+1210 Directeurs
+1221 Cadres de direction, agriculture, chasse, sylviculture et pêche
+1222 Cadres de direction, industries manufacturières
+1223 Cadres de direction, bâtiment et travaux publics
+1224 Cadres de direction. commerce de gros et de détail
+1225 Cadres de direction, restauration et hôtellerie
+1226 Cadres de direction, transports, entreposage et communications
+1227 Cadres de direction, entreprises d'intermédiation et de service aux entreprises
+1228 Cadres de direction, services de soins personnels, de nettoyage et services similaires
+1229 Cadres de direction non classés ailleurs
+1231 Cadres de direction, services administratifs et financiers
+1232 Cadres de direction, personnel et relations professionnelles
+1233 Cadres de direction, ventes et commercialisation
+1234 Cadres de direction, publicité et relations publiques
+1235 Cadres de direction, achats et distribution
+1236 Cadres de direction, services informatiques
+1237 Cadres de direction, recherche-développement
+1239 Autres cadres de direction non classés ailleurs
+1311 Dirigeants et gérants dans l'agriculture, la chasse, la sylviculture et la pêche
+1312 Dirigeants et gérants dans les industries manufacturières
+1313 Dirigeants et gérants dans le bâtiment et les travaux publics
+1314 Dirigeants et gérants dans le commerce de gros et de détail
+1315 Dirigeants et gérants dans la restauration et l'hôtellerie
+1316 Dirigeants et gérants dans les transports, l'entreposage et les communications
+1317 Dirigeants et gérants d'entreprises d'intermédiation et de service aux entreprises
+1318 Dirigeants et gérants de services de soins personnels, de nettoyage et de services similaires
+1319 Dirigeants et gérants non classés ailleurs
+2111 Physiciens et astronomes
+2112 Météorologues
+2113 Chimistes
+2114 Géologues et géophysiciens
+2121 Mathématiciens et assimilés
+2122 Statisticiens
+2131 Concepteurs et analystes de systèmes informatiques
+2132 Programmeurs
+2139 Spécialistes de l'informatique non classés ailleurs
+2141 Architectes, urbanistes et ingénieurs de la circulation routière
+2142 Ingénieurs civils
+2143 Ingénieurs électriciens
+2144 Ingénieurs électroniciens et des télécommunications
+2145 Ingénieurs mécaniciens
+2146 Ingénieurs chimistes
+2147 Ingénieurs des mines, ingénieurs métallurgistes et assimilés
+2148 Cartographes et géomètres
+2149 Architectes, ingénieurs et assimilés, non classés ailleurs
+2211 Biologistes, botanistes, zoologistes et assimilés
+2212 Pharmacologistes, pathologistes et assimilés
+2213 Agronomes et assimilés
+2221 Médecins
+2222 Dentistes
+2223 Vétérinaires
+2224 Pharmaciens
+2229 Médecins et assimilés "à l'exception des cadres infirmiers" non classés ailleurs
+2230 Cadres infirmiers et sages-femmes
+2310 Professeurs d'université et d'établissements d'enseignement supérieur
+2320 Professeurs de l'enseignement secondaire
+2331 Instituteurs de l'enseignement primaire
+2332 Instituteurs de l'enseignement pré primaire
+2340 Enseignants spécialisés dans l'éducation des handicapés
+2351 Spécialistes des méthodes d'enseignement
+2352 Inspecteurs de l'enseignement
+2359 Autres spécialistes de l'enseignement, non classés ailleurs
+2411 Cadres comptables
+2412 Spécialistes des problèmes de personnel et de développement de carrière
+2419 Spécialistes des fonctions administratives et commerciales des entreprises non classés ailleurs
+2421 Avocats
+2422 Magistrats
+2429 Juristes non classés ailleurs
+2431 Archivistes paléographes et conservateurs de musée
+2432 Bibliothécaires, documentalistes et assimilés
+2441 Economistes
+2442 Sociologues. anthropologues et assimilés
+2443 Philosophes, historiens et spécialistes des sciences politiques
+2444 Linguistes, traducteurs et interprètes
+2445 Psychologues
+2446 Spécialistes du travail social
+2451 Auteurs, journalistes et autres écrivains
+2452 Sculpteurs, peintres et assimilés
+2453 Compositeurs, musiciens et chanteurs
+2454 Chorégraphes et danseurs
+2455 Acteurs et metteurs en scène de cinéma. de théâtre et d'autres spectacles
+2460 Membres du clergé
+3111 Techniciens des sciences chimiques et physiques
+3112 Techniciens du génie civil
+3113 Techniciens en électricité
+3114 Techniciens en électronique et en télécommunications
+3115 Techniciens en construction mécanique
+3116 Techniciens en chimie industrielle
+3117 Techniciens des mines, techniciens métallurgistes
+3118 Dessinateurs industriels
+3119 Techniciens des sciences physiques et techniques non classés ailleurs
+3121 Assistants informaticiens
+3122 Techniciens de matériels informatiques
+3123 Techniciens de robots industriels
+3131 Photographes et techniciens d'appareils enregistreurs d'images et de son
+3132 Techniciens de matériels d'émissions de radio, de télévision et de télécommunications
+3133 Techniciens d'appareils électromédicaux
+3139 Techniciens d'appareils optiques et électroniques non classés ailleurs
+3141 Officiers mécaniciens de navires
+3142 Officiers de pont et pilotes
+3143 Pilotes d'avions et assimilés
+3144 Contrôleurs de la circulation aérienne
+3145 Techniciens de la sécurité aérienne
+3151 Inspecteurs de sécurité incendie et d'immeubles
+3152 Inspecteurs de sécurité et d'hygiène et contrôleurs de qualité
+3211 Techniciens des sciences de la vie
+3212 Techniciens agronomes et forestiers
+3213 Conseillers agricoles et forestiers
+3221 Assistants médicaux
+3222 Hygiénistes
+3223 Diététiciens et spécialistes de la nutrition
+3224 Optométriciens et opticiens
+3225 Assistants de médecine dentaire
+3226 Kinésithérapeutes et assimilés
+3227 Assistants vétérinaires
+3228 Assistants pharmaciens et préparateurs en pharmacie
+3229 Professions intermédiaires de la médecine moderne "à l'exception du personnel infirmier" non classées ailleurs
+3231 Personnel infirmier "niveau intermédiaire"
+3232 Sages-femmes "niveau intermédiaire"
+3310 Professions intermédiaires de l'enseignement primaire
+3320 Professions intermédiaires de l'enseignement pré primaire
+3330 Professions intermédiaires de l'éducation des handicapés
+3340 Autres professions intermédiaires de l'enseignement
+3411 Courtiers en valeurs et cambistes
+3412 Agents d'assurances
+3413 Agents immobiliers
+3414 Agents de voyages
+3415 Agents commerciaux et agents commerciaux techniciens
+3416 Acheteurs
+3417 Estimateurs, experts en évaluation et vendeurs aux enchères
+3419 Professions intermédiaires des finances et de la vente non classées ailleurs
+3421 Courtiers en marchandises
+3422 Agents concessionnaires
+3423 Agents d'établissement de contrats d'emploi et de recrutement de main-d'oeuvre
+3429 Agents commerciaux et courtiers non classés ailleurs
+3431 Secrétaires d'administration et professions intermédiaires assimilées de la gestion administrative
+3432 Professions juridiques intermédiaires et intermédiaires assimilés des fonctions administratives et commerciales des entreprises
+3433 Comptables
+3434 Professions intermédiaires de la statistique et des mathématiques, et assimilées
+3441 Inspecteurs des douanes et des frontières
+3442 Contrôleurs des impôts
+3443 Agents des services publics accordant des prestations sociales
+3444 Agents des services publics accordant des permis et des licences
+3449 Professions intermédiaires de l'administration publique des douanes et des impôts, et assimilées, non classées ailleurs
+3450 Inspecteurs de la police judiciaire et détectives
+3460 Professions intermédiaires du travail social
+3471 Décorateurs et dessinateurs modélistes de produits industriels et commerciaux
+3472 Annonceurs-présentateurs de radio, de télévision et de spectacles
+3473 Musiciens, chanteurs et danseurs de rue, de boîte de nuit et assimilés
+3474 Clowns, magiciens, acrobates et assimilés
+3475 Athlètes, sportifs et assimilés
+3480 Assistants laïcs des cultes
+4111 Sténographes et dactylographes
+4112 Opérateurs de traitement de texte et assimilés
+4113 Opérateurs de saisie de données
+4114 Opérateurs sur machines à calculer
+4115 Secrétaires
+4121 Teneurs de livres
+4122 Employés de service statistique ou financier
+4131 Employés du service des stocks
+4132 Employés du service d'ordonnancement de la production
+4133 Employés du service des transports
+4141 Employés de bibliothèque et classeurs-archivistes
+4142 Employés de service du courrier
+4143 Codeurs, correcteurs d'épreuves et assimilés
+4144 Ecrivains publics et assimilés
+4190 Autres employés de bureau
+4211 Caissiers et billettistes
+4212 Guichetiers de banque et autres guichetiers
+4213 Croupiers et assimilés
+4214 Prêteurs sur gages et bailleurs de fonds
+4215 Encaisseurs et assimilés
+4221 Employés d'agence de voyages
+4222 Réceptionnistes et employés d'information
+4223 Téléphonistes-standardistes
+5111 Agents d'accueil de voyage et stewards
+5112 Contrôleurs et receveurs de transports publics
+5113 Guides
+5121 Economes "collectivités", intendants et gouvernantes
+5122 Cuisiniers
+5123 Serveurs et barmen
+5131 Gardes d'enfants
+5132 Aides-soignants en institution
+5133 Aides-soignants à domicile
+5139 Personnel soignant et assimilé, non classé ailleurs
+5141 Coiffeurs, spécialistes des soins de beauté et assimiles
+5142 Personnel de compagnie et valets de chambre
+5143 Agents de pompes funèbres et embaumeurs
+5149 Autre personnel des services directs aux particuliers, non classé ailleurs
+5151 Astrologues et assimilés
+5152 Diseurs de bonne aventure, chiromanciens et assimilés
+5161 Pompiers
+5162 Agents de police
+5163 Gardiens de prison
+5169 Personnel des services de protection et de sécurité, non classé ailleurs
+5210 Mannequins et autres modèles
+5220 Vendeurs et démonstrateurs en magasin
+5230 Vendeurs à l'étal et sur les marchés
+6111 Agriculteurs et ouvriers qualifiés des cultures de plein champ et maraîchères
+6112 Arboriculteurs et ouvriers qualifiés de l'arboriculture
+6113 Agriculteurs et ouvriers qualifiés de l'horticulture et des pépinières
+6114 Agriculteurs et ouvriers qualifiés des cultures mixtes
+6121 Eleveurs et ouvriers qualifiés de l'élevage de bétail et d'autres animaux domestiques, et de la production laitière
+6122 Aviculteurs et ouvriers qualifiés de l'aviculture
+6123 Apiculteurs, sériciculteurs et ouvriers qualifiés de l'apiculture et de la sériciculture
+6124 Eleveurs et ouvriers qualifiés de l'élevage diversifié
+6129 Eleveurs et ouvriers qualifiés de l'élevage destiné aux marchés et assimilés, non classés ailleurs
+6130 Agriculteurs et ouvriers qualifiés de polyculture et d'élevage destinés aux marchés
+6141 Exploitants et ouvriers forestiers
+6142 Charbonniers en charbon de bois et ouvriers assimilés
+6151 Aquaculteurs et ouvriers de l'aquaculture
+6152 Pêcheurs de la pêche côtière et en eaux intérieures
+6153 Pêcheurs de la pêche en haute mer
+6154 Chasseurs et trappeurs
+7111 Mineurs et carriers
+7112 Boutefeux
+7113 Fendeurs et tailleurs de pierre, ciseleurs
+7121 Constructeurs utilisant des techniques et matériaux traditionnels
+7122 Maçons
+7123 Constructeurs en béton armé, maçons ragréeurs et assimilés
+7124 Charpentiers en bois et menuisiers du bâtiment
+7129 Ouvriers du bâtiment "gros oeuvre" et assimilés non classés ailleurs
+7131 Couvreurs et zingueurs
+7132 Poseurs de revêtements de sol et carreleurs
+7133 Plâtriers
+7134 Monteurs en isolation thermique et acoustique
+7135 Vitriers
+7136 Plombiers et tuyauteurs
+7137 Electriciens du bâtiment et assimilés
+7141 Peintres en bâtiment et poseurs de papiers peints
+7142 Laqueurs. vernisseurs et assimilés
+7143 Ravaleurs de façades et ramoneurs
+7211 Mouleurs et noyauteurs de fonderie
+7212 Soudeurs et oxycoupeurs
+7213 Toliers-chaudronniers
+7214 Charpentiers métalliers et monteurs de charpentes métalliques
+7215 Gréeurs et épisseurs de câbles
+7216 Scaphandriers et hommes-grenouilles
+7221 Forgerons, estampeurs et conducteurs de presses à forger
+7222 Outilleurs et assimilés
+7223 Régleurs et régleurs-conducteurs de machines-outils
+7224 Meuleurs, polisseurs et affûteurs
+7231 Mécaniciens et ajusteurs de véhicules à moteur
+7232 Mécaniciens et ajusteurs de moteurs d'avion
+7233 Mécaniciens et ajusteurs de machines agricoles et industrielles
+7241 Mécaniciens et ajusteurs d'appareils électriques
+7242 Ajusteurs d'appareils électroniques
+7243 Mécaniciens et réparateurs d'appareils électroniques
+7244 Monteurs et réparateurs d'installations télégraphiques et téléphoniques
+7245 Monteurs et réparateurs de lignes électriques
+7311 Mécaniciens-réparateurs d'instruments de précision
+7312 Facteurs et accordeurs d'instruments de musique
+7313 Joailliers et orfèvres
+7321 Potiers et assimilés "produits céramiques et abrasifs"
+7322 Souffleurs, mouleurs, tailleurs, meuleurs et polisseurs de verre
+7323 Graveurs sur verre
+7324 Peintres-décorateurs sur verre et céramique. et assimilés
+7331 Ouvriers des métiers d'artisanat sur bois et sur des materiaux similaires
+7332 Ouvriers des métiers d'artisanat sur textile, sur cuir et sur des matériaux similaires
+7341 Compositeurs typographes et assimilés
+7342 Stéréotypeurs et clicheurs-galvanoplastes
+7343 Graveurs d'imprimerie et photograveurs
+7344 Personnel de la photographie et assimilés
+7345 Relieurs et assimilés
+7346 Imprimeurs serigraphes, à la planche et sur textile
+7411 Bouchers, poissonniers et assimilés
+7412 Boulangers, pâtissiers et confiseurs
+7413 Ouvriers de la fabrication des produits laitiers
+7414 Ouvriers de la conserverie de fruits, de légumes et assimilés
+7415 Dégustateurs et classeurs de denrées alimentaires et de boissons
+7416 Ouvriers de la préparation du tabac et de la fabrication des produits du tabac
+7421 Ouvriers du traitement du bois
+7422 Ebénistes, menuisiers et assimilés
+7423 Régleurs et régleurs-conducteurs de machines à bois
+7424 Vanniers, brossiers et assimilés
+7431 Préparateurs de fibres
+7432 Tisserands, tricoteurs et assimilés
+7433 Tailleurs, couturiers, chapeliers et modistes
+7434 Fourreurs et assimilés
+7435 Patronniers et coupeurs du textile, du cuir et assimilés
+7436 Couseurs, brodeurs et assimilés
+7437 Tapissiers et assimilés
+7441 Tanneurs, peaussiers et mégissiers
+7442 Artisans et ouvriers de la chaussure et assimilés
+8111 Conducteurs d'installations de mine
+8112 Conducteurs d'installations de préparation des minerais et de la roche
+8113 Foreurs, sondeurs de puits et assimilés
+8121 Conducteurs de fours à minerais et de fours de première fusion des métaux
+8122 Conducteurs de fours de deuxième fusion des métaux, couleurs de fonderie et conducteurs de laminoirs
+8123 Conducteurs d'installations de traitement thermique des métaux
+8124 Tréfileurs et étireurs de métaux
+8131 Conducteurs de fours de verrerie et de céramique, et conducteurs de machines assimilés
+8139 Conducteurs d'installations de verrerie et de céramique et assimilés non classés ailleurs
+8141 Conducteurs d'installations pour le travail du bois
+8142 Conducteurs d'installations pour la fabrication de la pâte à papier
+8143 Conducteurs d'installations pour la fabrication du papier
+8151 Conducteurs d'installations de fragmentation et de broyage, et d'installations de malaxage chimique
+8152 Conducteurs d'appareils de traitement thermique de la chimie
+8153 Conducteurs d'appareils de filtrage et de séparation chimiques
+8154 Conducteurs d'appareils de distillation et de réacteurs chimiques "traitement du pétrole et du gaz naturel excepté"
+8155 Conducteurs d'installations de raffinage de pétrole et de gaz naturel
+8159 Conducteurs d'installations de traitement chimique non classés ailleurs
+8161 Conducteurs d'installations de production d'énergie
+8162 Chauffeurs de machines à vapeur et de chaudières
+8163 Conducteurs d'incinérateurs, d'installations de traitement de l'eau et assimilés
+8171 Conducteurs de chaînes de montage automatiques
+8172 Conducteurs de robots industriels
+8211 Conducteurs de machines outils
+8212 Conducteurs de machines à fabriquer du ciment et d'autres produits minéraux
+8221 Conducteurs de machines pour la fabrication de produits pharmaceutiques et cosmétiques
+8222 Conducteurs de machines pour la fabrication de munitions et d'explosifs
+8223 Conducteurs de machines de traitement superficiel des métaux
+8224 Conducteurs de machines pour la fabrication de produits photographiques
+8229 Conducteurs de machines pour la fabrication des produits chimiques non classés ailleurs
+8231 Conducteurs de machines pour la fabrication des produits en caoutchouc
+8232 Conducteurs de machines pour la fabrication des produits en matières plastiques
+8240 Conducteurs de machines à bois
+8251 Conducteurs de machines d'imprimerie
+8252 Conducteurs de machines à relier
+8253 Conducteurs de machines de papeterie
+8261 Conducteurs de machines à préparer les fibres, à filer et à bobiner
+8262 Conducteurs de métiers mécaniques à tisser et à tricoter
+8263 Conducteurs de machines à piquer
+8264 Conducteurs de machines a blanchir, à teindre et à nettoyer
+8265 Conducteurs de machines à préparer les fourrures et le cuir
+8266 Conducteurs de machines pour la fabrication des chaussures et assimilés
+8269 Conducteurs de machines pour la fabrication de produits textiles et d'articles en fourrure et en cuir, non classés ailleurs
+8271 Conducteurs de machines pour la préparation des viandes et du poisson
+8272 Conducteurs de machines pour la fabrication des produits laitiers
+8273 Conducteurs de machines à moudre les céréales et les épices
+8274 Conducteurs de machines pour la production d'articles de boulangerie-pâtisserie, d'articles à base de céréales et d'articles de chocolaterie
+8275 Conducteurs de machines pour le traitement des fruits, des légumes, des noix et des amandes
+8276 Conducteurs de machines pour la production du sucre
+8277 Conducteurs de machines pour le traitement du thé, du café et du cacao
+8278 Conducteurs de machines de brasserie et de machines pour la fabrication du vin et d'autres boissons
+8279 Conducteurs de machines pour la production du tabac
+8281 Monteurs en construction mécanique
+8282 Monteurs en appareillages électriques
+8283 Monteurs d'appareils électroniques
+8284 Assembleurs d'articles en métal, en caoutchouc et en matières plastiques
+8285 Assembleurs d'articles en bois et en matières similaires
+8286 Assembleurs d'articles en carton, en textile et en matières similaires
+8290 Autres conducteurs de machines et ouvriers de I 'assemblage
+8311 Conducteurs de locomotives
+8312 Serre-freins. aiguilleurs et agents de manoeuvre
+8321 Conducteurs de motocycles
+8322 Chauffeurs de taxi et conducteurs d'automobiles et de camionnettes
+8323 Conducteurs d'autobus et de tramways
+8324 Conducteurs de poids lourds et de camions
+8331 Conducteurs de matériels motorisés agricoles et forestiers
+8332 Conducteurs d'engins de terrassement et de matériels similaires
+8333 Conducteurs de grues, d'engins de levage divers et de matériels similaires
+8334 Conducteurs de chariots élévateurs
+8340 Matelots de pont et assimilés
+9111 Vendeurs ambulants de comestibles
+9112 Vendeurs ambulants de produits divers, non alimentaires
+9113 Vendeurs de porte en porte et vendeurs au téléphone
+9120 Cireurs de chaussures et autres petits métiers des rues
+9131 Aides de ménage et nettoyeurs domestiques
+9132 Aides et nettoyeurs dans les bureaux, les hôtels et autres établissements
+9133 Laveurs et repasseurs de linge à la main
+9141 Personnel du service d'immeuble
+9142 Laveurs de véhicules, de vitres et assimilés
+9151 Messagers, porteurs de colis ou de bagages, livreurs
+9152 Portiers, gardiens et assimilés
+9153 Encaisseurs de distributeurs automatiques à prépaiement, releveurs de compteurs et assimilés
+9161 Eboueurs
+9162 Balayeurs et manoeuvres assimilés
+9211 Aides et manoeuvres agricoles
+9212 Manoeuvres forestiers
+9213 Manoeuvres pêcheurs, chasseurs et trappeurs
+9311 Manoeuvres des mines et des carrières
+9312 Manoeuvres de chantier de travaux publics et d'entretien: routes, barrages et ouvrages similaires
+9313 Manoeuvres du bâtiment
+9321 Manoeuvres de l'assemblage
+9322 Emballeurs à la main et autres manoeuvres des industries manufacturières
+9331 Conducteurs de véhicules à bras ou à pédales
+9332 Conducteurs de véhicules et de machines à traction animale
+9333 Manutentionnaires

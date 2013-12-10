@@ -75,9 +75,22 @@ configs = {
             {'url': 'http://www.parisjob.com/fr/rss/flux.aspx?&fonction=10'},
         ]
     },
+    # How to add a custom feed?
+    # 1. Select your country                            {COUNTRY_CODE}
+    #   See ./help/eures-contry-codes.txt
+    # 2. Select your region                             {REGION_CODE}
+    #   See ./help/eures-region-codes.txt
+    # 3. Select your job sector                         {SECTOR_CODE}
+    #   See ./help/eures-sector-codes.txt
+    # 4. Craft your feed url {URL} =
+    #   https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?country={COUNTRY_CODE}&multipleRegions={REGION_CODE}&isco={SECTOR_CODE}&lg=FR&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=99&page=1&totalCount=1
+    # 5. Add the line {'url': '{URL}'},
     'Eures': {
         'feeds': [
-            #{ 'url': 'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?lg=FR&isco=213&multipleCountries=FR-R281&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=99&page=1&country=FR&totalCount=1&multipleRegions=R281'}
+            # France (FR), Ile-de-France (R21), Concepteurs et analystes de systèmes informatiques (2131)
+            # { 'url': 'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?country=FR&multipleRegions=R21&isco=2131&lg=FR&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=99&page=1&totalCount=1'}
+            # Allemagne (DE), Berlin (R1B), Pompiers (5161)
+            # { 'url': 'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?country=DE&multipleRegions=R1B&isco=5161&lg=FR&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=99&page=1&totalCount=1'}
         ]
     }
 }
