@@ -1,0 +1,34 @@
+1 Gros Oeuvre/Second Oeuvre               
+4 Achat                                         
+5 Commercial-Vendeur en magasin                 
+6 Compta/Gestion/Finance/Audit                  
+7 Développement                  
+9 Systèmes d'Information         
+10 Systèmes/Réseaux               
+11 Agro/Agri                        
+12 Chimie/Pharmacie/Bio.            
+13 Electro-tech./Automat.           
+14 Mécanique/Aéron.                 
+15 Telecoms/Electronique            
+16 Marketing/Communication/Graphisme             
+17 Gestion/Maintenance              
+18 Qualité/Hygiène/Sécurité/Environnement        
+19 RH/Personnel/Formation                        
+20 Assistanat/Adm.ventes/Accueil                 
+21 Import/Export/International                   
+22 Dével. Hardware                
+25 Santé/Social                                  
+26 Restauration/Tourisme/Hôtellerie/Loisirs      
+30 Commercial auprès des professionnels          
+31 Commercial auprès des particuliers            
+34 Direction/Resp. Co. et Centre de Profit       
+35 SAV/Hotline/Téléconseiller                    
+36 Logistique/Métiers du Transport               
+37 Bureau d'Etudes/R&D/BTP archi/conception      
+39 Technico-Commercial              
+40 Métiers de la Fonction Publique               
+41 Opérateur/Manoeuvre              
+42 Services à la personne/aux entreprises        
+43 Négociation/Gestion immobilière               
+44 Juridique/Droit                               
+45 Management/Resp. 

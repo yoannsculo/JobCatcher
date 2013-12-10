@@ -1,0 +1,8 @@
+CentreJob.com "Centre"
+NordJob.com "Nord"
+PacaJob.com "Paca and Languedoc-Roussillon"
+RhoneAlpesJob.com "Rhone-Alpes"
+EstJob.com "Est"
+OuestJob.com "Grand Ouest"
+ParisJob.com "Ile-de-France"
+SudOuestJob.com "Sud-Ouest"

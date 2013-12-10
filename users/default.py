@@ -60,6 +60,14 @@ configs = {
             #{ 'url': 'http://www.cadresonline.com/resultat-emploi/feed.rss?flux=1&kw=developpeur&kt=1&jc=5t.0.1.2.3.4.5.6.7-10t.0.1.2.3.4.5.6.7.8&ct=0&dt=1374746615' }
         ]
     },
+    # How to add a custom feed?
+    # 1. Select your region                             {REGION_CODE}
+    #   See ./help/regionjobs-region-codes.txt
+    # 2. Select your job sector                         {SECTOR_CODE}
+    #   See ./help/regionjobs-sector-codes.txt
+    # 3. Craft your feed url {URL} =
+    #   http://www.{REGION_CODE}/fr/rss/flux.aspx?&fonction={SECTOR_CODE}
+    # 4. Add the line {'url': '{URL}'},
     'RegionJob': {
         'feeds': [
             {'url': 'http://www.parisjob.com/fr/rss/flux.aspx?&fonction=7'},
