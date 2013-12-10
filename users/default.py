@@ -44,9 +44,9 @@ configs = {
     'Apec': {
         'feeds': [
             # APEC, Informatique, Ile-de-France
-            { 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101833_R711.xml'}
+            { 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101833_R711.xml'},
             # APEC, R&D (conception, recherche), Ile-de-France
-            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101796_R711.xml'}
+            #{ 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101796_R711.xml'},
         ]
     },
     # How to add a custom feed?
@@ -57,7 +57,7 @@ configs = {
     # 5. Copy the url and add it below: "{'url': 'PASTE HERE'},".
     'cadresonline': {
         'feeds': [
-            #{ 'url': 'http://www.cadresonline.com/resultat-emploi/feed.rss?flux=1&kw=developpeur&kt=1&jc=5t.0.1.2.3.4.5.6.7-10t.0.1.2.3.4.5.6.7.8&ct=0&dt=1374746615' }
+            #{ 'url': 'http://www.cadresonline.com/resultat-emploi/feed.rss?flux=1&kw=developpeur&kt=1&jc=5t.0.1.2.3.4.5.6.7-10t.0.1.2.3.4.5.6.7.8&ct=0&dt=1374746615' },
         ]
     },
     # How to add a custom feed?
@@ -88,9 +88,9 @@ configs = {
     'Eures': {
         'feeds': [
             # France (FR), Ile-de-France (R21), Concepteurs et analystes de systèmes informatiques (2131)
-            # { 'url': 'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?country=FR&multipleRegions=R21&isco=2131&lg=FR&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=99&page=1&totalCount=1'}
+            # { 'url': 'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?country=FR&multipleRegions=R21&isco=2131&lg=FR&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=99&page=1&totalCount=1'},
             # Allemagne (DE), Berlin (R1B), Pompiers (5161)
-            # { 'url': 'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?country=DE&multipleRegions=R1B&isco=5161&lg=FR&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=99&page=1&totalCount=1'}
+            # { 'url': 'https://ec.europa.eu/eures/eures-searchengine/servlet/BrowseCountryJVsServlet?country=DE&multipleRegions=R1B&isco=5161&lg=FR&date=01%2F01%2F1975&title=&durex=&exp=&serviceUri=browse&qual=&pageSize=99&page=1&totalCount=1'},
         ]
     }
 }
