@@ -39,6 +39,12 @@ configs = {
             { 'url': 'http://www.apec.fr/fluxRss/XML/OffresCadre_F101833_R711.xml'}
         ]
     },
+    # How to add a custom feed?
+    # 1. Go to <http://www.cadresonline.com/recherche-emploi>;
+    # 2. Fill the form;
+    # 3. Click "Lancer la recherche" (Search);
+    # 4. Find & click the RSS logo (on the right-hand side of "x offres correspondent à votre recherche d'emploi;"
+    # 5. Copy the url and add it below: "{'url': 'PASTE HERE'},".
     'cadresonline': {
         'feeds': [
             #{ 'url': 'http://www.cadresonline.com/resultat-emploi/feed.rss?flux=1&kw=developpeur&kt=1&jc=5t.0.1.2.3.4.5.6.7-10t.0.1.2.3.4.5.6.7.8&ct=0&dt=1374746615' }
