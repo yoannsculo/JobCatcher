@@ -27,6 +27,8 @@ table#offers > tbody {
  ******************************************************************************/
 #lineHeaders > th {
 	text-align: center;
+}table#offers tbody td .label {
+    font-size: 1em;
 }
 td.pubdate, th.pubdate {
 	width: 7%;

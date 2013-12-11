@@ -45,9 +45,13 @@ table#offers thead tr .header {
     cursor: pointer;
 }
 table#offers tbody td {
-    color: #3D3D3D;
+    color: #3d3d3d;
+    font-size: 10pt;
     background-color: #FFF;
     vertical-align: top;
+}
+table#offers tbody td .label {
+    font-size: 1em;
 }
 table#offers tbody tr.odd td {
     background-color:#F0F0F6;
