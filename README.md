@@ -53,7 +53,6 @@ soon.
 
 - Lolix.org (France)
 - Linux.com (Int.)
-- L'eXpress-Board (France)
 - Remixjobs.com (France)
 
 Help me to add new job boards to JobCatcher ! :)
